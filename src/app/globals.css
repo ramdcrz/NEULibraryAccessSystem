@@ -4,46 +4,46 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 0 0% 10%;
     --primary: 231 48% 48%;
-    --primary-foreground: 210 40% 98%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222 47% 11.2%;
+    --secondary-foreground: 0 0% 15%;
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted-foreground: 0 0% 45%;
     --accent: 231 48% 48%;
-    --accent-foreground: 210 40% 98%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
     --ring: 231 48% 48%;
-    --radius: 1.5rem;
+    --radius: 1.25rem;
   }
   .dark {
-    --background: 222 47% 4%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 6%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 6%;
-    --popover-foreground: 210 40% 98%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 95%;
     --primary: 231 48% 55%;
-    --primary-foreground: 222 47% 4%;
-    --secondary: 217.2 32.6% 12%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 12%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --primary-foreground: 0 0% 5%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 60%;
     --accent: 231 48% 55%;
-    --accent-foreground: 210 40% 98%;
+    --accent-foreground: 0 0% 95%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 15%;
-    --input: 217.2 32.6% 15%;
+    --destructive-foreground: 0 0% 95%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
     --ring: 231 48% 55%;
   }
 }
@@ -54,40 +54,39 @@
   }
   body {
     @apply bg-background text-foreground transition-colors duration-300;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    /* Apple-like font feature settings for Inter */
+    font-feature-settings: "cv11", "ss01", "ss02", "rsms" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
 .glass {
-  @apply bg-card/60 backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)];
+  @apply bg-card/70 backdrop-blur-3xl border border-white/10 shadow-[0_4px_32px_0_rgba(0,0,0,0.05)];
 }
 
 .gradient-bg {
   background: 
-    radial-gradient(circle at 0% 0%, hsl(var(--primary) / 0.12), transparent 45%),
-    radial-gradient(circle at 100% 0%, hsl(var(--primary) / 0.08), transparent 45%),
-    radial-gradient(circle at 100% 100%, hsl(var(--primary) / 0.12), transparent 45%),
-    radial-gradient(circle at 0% 100%, hsl(var(--primary) / 0.08), transparent 45%),
+    radial-gradient(circle at 50% 0%, hsl(var(--primary) / 0.05), transparent 50%),
     hsl(var(--background));
 }
 
 .dark .gradient-bg {
   background: 
-    radial-gradient(circle at 0% 0%, hsl(var(--primary) / 0.08), transparent 45%),
-    radial-gradient(circle at 100% 100%, hsl(var(--primary) / 0.05), transparent 45%),
+    radial-gradient(circle at 50% 0%, hsl(var(--primary) / 0.1), transparent 50%),
     hsl(var(--background));
 }
 
 .glow-primary {
-  @apply shadow-[0_0_20px_rgba(var(--primary),0.3)] transition-all duration-300;
+  @apply shadow-[0_0_25px_rgba(var(--primary),0.15)] transition-all duration-500;
 }
 
 .animate-float {
-  animation: float 6s ease-in-out infinite;
+  animation: float 8s ease-in-out infinite;
 }
 
 @keyframes float {
   0% { transform: translateY(0px); }
-  50% { transform: translateY(-12px); }
+  50% { transform: translateY(-8px); }
   100% { transform: translateY(0px); }
 }
