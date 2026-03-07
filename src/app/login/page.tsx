@@ -7,9 +7,11 @@ import { BookMarked, LoaderCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
   const { user, loading, signInWithGoogle } = useAuth();
+  const { toast } = useToast();
   const router = useRouter();
 
   useEffect(() => {
@@ -22,8 +24,18 @@ export default function LoginPage() {
     try {
       await signInWithGoogle();
       router.push('/');
-    } catch (error) {
+    } catch (error: any) {
+      // Gracefully handle user cancelling the popup
+      if (error.code === 'auth/popup-closed-by-user') {
+        return;
+      }
+      
       console.error('Sign in failed:', error);
+      toast({
+        variant: "destructive",
+        title: "Sign in failed",
+        description: "There was a problem signing in with Google. Please try again.",
+      });
     }
   };
   
