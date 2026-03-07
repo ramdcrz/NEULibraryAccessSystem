@@ -147,7 +147,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
       <CardHeader className="bg-white/5 dark:bg-white/5 pb-10 pt-10 px-10 border-b border-black/5 dark:border-white/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5">
-            <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-black/5 dark:border-white/20 shadow-inner">
+            <div className="p-3.5 rounded-2xl purple-gradient text-white border border-black/5 dark:border-white/20 shadow-inner">
               <Library className="h-8 w-8" />
             </div>
             <div>
@@ -155,7 +155,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
               <CardDescription className="text-sm font-medium opacity-60 tracking-tight text-muted-foreground">Identity verification terminal</CardDescription>
             </div>
           </div>
-          <Badge className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.25em] bg-primary text-primary-foreground rounded-full shadow-lg shadow-primary/20 border-none">
+          <Badge className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.25em] purple-gradient text-white rounded-full shadow-lg shadow-primary/20 border-none">
             {user.user_type}
           </Badge>
         </div>
@@ -167,7 +167,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
             <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
               <div className="md:col-span-2 p-6 rounded-3xl glass flex flex-col items-start justify-center text-left border border-black/5 dark:border-white/20 hover:bg-black/5 transition-all relative overflow-hidden group">
                 <div className="absolute -bottom-20 -right-20 opacity-[0.07] group-hover:opacity-[0.12] transition-all duration-700 rotate-12 group-hover:rotate-6">
-                  <User className="h-40 w-40" />
+                  <User className="h-40 w-40 text-primary" />
                 </div>
                 <div className="flex items-center gap-2 mb-2 text-primary/60 relative z-10">
                   <User className="h-3.5 w-3.5" />
@@ -177,7 +177,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
               </div>
               <div className="md:col-span-3 p-6 rounded-3xl glass border border-black/5 dark:border-white/20 hover:bg-black/5 transition-all relative overflow-hidden group">
                 <div className="absolute -bottom-20 -right-20 opacity-[0.07] group-hover:opacity-[0.12] transition-all duration-700 rotate-12 group-hover:rotate-6">
-                  <School className="h-40 w-40" />
+                  <School className="h-40 w-40 text-primary" />
                 </div>
                 <div className="flex items-center gap-2 mb-2 text-primary/60 relative z-10">
                   <School className="h-3.5 w-3.5" />
@@ -239,7 +239,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
 
             <Button 
               type="submit" 
-              className="w-full h-20 text-xl font-black rounded-3xl transition-all hover:scale-[1.01] active:scale-[0.99] group bg-primary shadow-lg shadow-primary/20" 
+              className="w-full h-20 text-xl font-black rounded-3xl transition-all hover:scale-[1.01] active:scale-[0.99] group purple-gradient text-white shadow-lg shadow-primary/20 border-none" 
               disabled={isSubmitting}
             >
               {isSubmitting ? (

@@ -86,6 +86,15 @@
     hsl(var(--background));
 }
 
+.purple-gradient {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, #9333ea 100%);
+}
+
+.text-purple-gradient {
+  @apply text-transparent bg-clip-text;
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, #9333ea 100%);
+}
+
 .hover-glass:hover {
   @apply border-primary/30;
   background: rgba(255, 255, 255, 0.95);
@@ -96,11 +105,10 @@
   @apply border-primary/50;
 }
 
-/* Light Mode Hover Contrast and Brand Purple */
 .light .light-purple-hover:hover {
-  color: hsl(var(--primary)) !important;
+  color: #9333ea !important;
   background-color: hsl(var(--primary) / 0.1) !important;
-  border-color: hsl(var(--primary) / 0.2) !important;
+  border-color: #9333ea / 0.2 !important;
 }
 
 .light .hover\:bg-primary\/\[0\.04\]:hover {

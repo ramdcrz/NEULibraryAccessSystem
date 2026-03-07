@@ -232,7 +232,7 @@ export default function AdminDashboard() {
             <Button 
               onClick={exportToPDF} 
               disabled={isExporting || logsLoading || filteredLogs.length === 0}
-              className="h-14 px-8 rounded-2xl font-black gap-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
+              className="h-14 px-8 rounded-2xl font-black gap-2 purple-gradient text-white hover:opacity-90 transition-all border-none"
             >
               {isExporting ? (
                 <LoaderCircle className="h-4 w-4 animate-spin" />
@@ -252,7 +252,7 @@ export default function AdminDashboard() {
           ].map((stat, i) => (
             <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group border border-black/5 dark:border-white/18">
               <div className="absolute -bottom-8 -right-8 opacity-[0.03] group-hover:opacity-[0.07] transition-all duration-700 rotate-12 group-hover:rotate-6">
-                <stat.icon className="h-32 w-32" />
+                <stat.icon className="h-32 w-32 text-primary" />
               </div>
               <CardDescription className="text-[11px] font-black uppercase tracking-[0.3em] opacity-50 mb-3 relative z-10">{stat.label}</CardDescription>
               <CardTitle className="text-5xl font-black tracking-tighter relative z-10">{stat.val}</CardTitle>

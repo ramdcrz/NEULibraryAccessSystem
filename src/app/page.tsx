@@ -85,7 +85,7 @@ export default function Home() {
               University Terminal
             </div>
             <h1 className="text-6xl font-extrabold tracking-tight sm:text-7xl md:text-8xl text-foreground">
-              Hello, <span className="text-primary">{getFirstName()}!</span>
+              Hello, <span className="text-purple-gradient">{getFirstName()}!</span>
             </h1>
             <p className="mx-auto max-w-4xl text-xl font-medium text-muted-foreground md:text-2xl leading-relaxed tracking-tight">
               {needsOnboarding 

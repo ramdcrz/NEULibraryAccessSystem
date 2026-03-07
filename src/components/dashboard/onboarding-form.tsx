@@ -118,7 +118,7 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
     <Card className="glass overflow-hidden border-none">
       <CardHeader className="bg-primary/5 pb-3">
         <div className="flex items-center gap-3 mb-1">
-          <div className="p-2 rounded-xl bg-primary/10 text-primary shadow-inner rotate-0 hover:rotate-6 transition-transform">
+          <div className="p-2 rounded-xl purple-gradient text-white shadow-inner rotate-0 hover:rotate-6 transition-transform">
             <ShieldCheck className="h-6 w-6" />
           </div>
           <div>
@@ -207,7 +207,7 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
 
             <Button 
               type="submit" 
-              className="w-full h-14 text-lg font-black rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] group" 
+              className="w-full h-14 text-lg font-black rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] group purple-gradient text-white border-none" 
               disabled={isSubmitting}
             >
               {isSubmitting ? (
