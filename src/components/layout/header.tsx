@@ -32,7 +32,7 @@ export default function Header() {
   const isAdminPage = pathname?.startsWith('/admin');
 
   return (
-    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border flex h-16 items-center gap-4 px-6 md:px-12 transition-all">
+    <header className="sticky top-0 z-50 w-full bg-background/60 backdrop-blur-2xl border-b border-white/5 flex h-16 items-center gap-4 px-6 md:px-12 transition-all">
       <div className="flex items-center gap-8">
         <Link href="/" className="flex items-center gap-3.5 group transition-opacity hover:opacity-80">
           <div className="p-1.5 rounded-lg bg-foreground text-background shadow-sm transition-transform group-active:scale-95">
@@ -44,7 +44,7 @@ export default function Header() {
           </div>
         </Link>
         
-        <div className="hidden lg:block h-6 w-[1px] bg-border" />
+        <div className="hidden lg:block h-6 w-[1px] bg-border/50" />
         
         <LiveClock />
       </div>
@@ -84,33 +84,35 @@ export default function Header() {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-64 p-2 rounded-2xl shadow-2xl border-border mt-3" align="end">
-              <DropdownMenuLabel className="font-normal p-3">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10 border border-border">
+            <DropdownMenuContent className="w-72 p-2 rounded-[1.5rem] shadow-2xl border-white/10 glass mt-3 overflow-hidden" align="end">
+              <DropdownMenuLabel className="font-normal p-4">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-12 w-12 border border-white/10 shadow-sm">
                     <AvatarImage src={user.photoURL ?? ''} />
                     <AvatarFallback className="font-bold text-xs bg-muted text-foreground">{getInitials(user.email)}</AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col space-y-0.5">
-                    <p className="text-sm font-bold leading-none truncate w-36 tracking-tight">
+                  <div className="flex flex-col space-y-1 overflow-hidden">
+                    <p className="text-sm font-black leading-none truncate w-44 tracking-tight text-foreground">
                       {user.displayName || 'Faculty/Staff'}
                     </p>
-                    <p className="truncate text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                    <p className="truncate text-[9px] font-bold text-muted-foreground uppercase tracking-widest w-44">
                       {user.email}
                     </p>
                   </div>
                 </div>
                 {user.user_type && (
-                  <Badge variant="secondary" className="mt-3 w-full justify-center py-1.5 rounded-lg text-foreground/70 font-bold uppercase text-[8px] tracking-[0.2em]">
+                  <Badge variant="secondary" className="mt-4 w-full justify-center py-2 rounded-xl text-foreground/70 font-black uppercase text-[8px] tracking-[0.2em] border-none bg-primary/5">
                     Verified {user.user_type}
                   </Badge>
                 )}
               </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={signOut} className="rounded-xl cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive py-2.5 px-3 text-sm font-bold transition-all gap-2">
-                <LogOut className="h-3.5 w-3.5" />
-                <span className="uppercase tracking-widest text-[9px]">Log out System</span>
-              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-white/5 mx-2" />
+              <div className="p-1">
+                <DropdownMenuItem onClick={signOut} className="rounded-xl cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive py-3 px-3 text-sm font-bold transition-all gap-3">
+                  <LogOut className="h-4 w-4" />
+                  <span className="uppercase tracking-[0.2em] text-[9px] font-black">Log out System</span>
+                </DropdownMenuItem>
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
         ) : null}
