@@ -108,7 +108,7 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
       });
 
       toast({
-        title: 'Welcome to NEU Library!',
+        title: 'Thanks for utilizing NEU Library',
         description: 'Your visit has been logged successfully. Signing out for the next user...',
       });
       
@@ -134,7 +134,7 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
         <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
           <BookMarked className="h-10 w-10" />
         </div>
-        <CardTitle className="text-3xl font-bold mb-4">Welcome to NEU Library!</CardTitle>
+        <CardTitle className="text-3xl font-bold mb-4">Thanks for utilizing NEU Library</CardTitle>
         <CardDescription className="text-lg">
           Your visit has been recorded. This terminal will reset in a few seconds...
         </CardDescription>
