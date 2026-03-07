@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { LoaderCircle, ChevronRight, UserCircle, Briefcase, GraduationCap, BookMarked, LogOut } from 'lucide-react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -72,6 +73,7 @@ type VisitLoggerProps = {
 export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
   const { toast } = useToast();
   const { signOut } = useAuth();
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLogged, setIsLogged] = useState(false);
 
@@ -107,22 +109,36 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
         entryDate: entryDate,
       });
 
-      toast({
-        title: 'Thanks for utilizing NEU Library',
-        description: 'Your visit has been logged successfully. Signing out for the next user...',
-      });
-      
-      setIsLogged(true);
-      onLogSuccess?.();
-      form.reset();
+      if (user.role === 'admin') {
+        toast({
+          title: 'Visit Logged',
+          description: 'Redirecting to Admin Dashboard...',
+        });
+        onLogSuccess?.();
+        router.push('/admin');
+      } else {
+        toast({
+          title: 'Thanks for utilizing NEU Library',
+          description: 'Your visit has been logged successfully. Signing out for the next user...',
+        });
+        
+        setIsLogged(true);
+        onLogSuccess?.();
+        form.reset();
 
-      // The Kiosk Reset: Auto-logout after 5 seconds
-      setTimeout(() => {
-        signOut();
-      }, 5000);
+        // The Kiosk Reset: Auto-logout after 5 seconds
+        setTimeout(() => {
+          signOut();
+        }, 5000);
+      }
 
     } catch (error) {
       console.error('Failed to log visit:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to record your visit. Please try again.",
+      });
     } finally {
       setIsSubmitting(false);
     }
