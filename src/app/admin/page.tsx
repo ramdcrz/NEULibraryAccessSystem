@@ -238,7 +238,7 @@ export default function AdminDashboard() {
             <Button 
               onClick={exportToPDF} 
               disabled={isExporting || logsLoading || filteredLogs.length === 0}
-              className="h-12 px-6 rounded-2xl font-black gap-2 shadow-xl shadow-primary/10 transition-all hover:scale-[1.02] active:scale-[0.98] glow-primary"
+              className="h-12 px-6 rounded-2xl font-black gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] glow-primary"
             >
               {isExporting ? (
                 <LoaderCircle className="h-4 w-4 animate-spin" />
@@ -303,7 +303,7 @@ export default function AdminDashboard() {
 
         {/* Filter Controls */}
         {showFilters && (
-          <Card className="glass border-none shadow-2xl rounded-[2.5rem] overflow-hidden animate-in slide-in-from-top-4 duration-500">
+          <Card className="glass border-none rounded-[2.5rem] overflow-hidden animate-in slide-in-from-top-4 duration-500">
             <CardContent className="p-8">
               <div className="flex flex-col lg:flex-row gap-6 items-end">
                 <div className="flex-1 w-full space-y-3">
@@ -337,7 +337,7 @@ export default function AdminDashboard() {
                         {startDate ? format(startDate, "PPP") : "Select date"}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 rounded-3xl shadow-2xl border-none glass" align="start">
+                    <PopoverContent className="w-auto p-0 rounded-3xl border-none glass" align="start">
                       <Calendar
                         mode="single"
                         selected={startDate}
@@ -375,7 +375,7 @@ export default function AdminDashboard() {
                         {endDate ? format(endDate, "PPP") : "Select date"}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 rounded-3xl shadow-2xl border-none glass" align="start">
+                    <PopoverContent className="w-auto p-0 rounded-3xl border-none glass" align="start">
                       <Calendar
                         mode="single"
                         selected={endDate}
@@ -409,7 +409,7 @@ export default function AdminDashboard() {
         )}
 
         {logsError && (
-          <Alert variant="destructive" className="glass border-none shadow-2xl rounded-3xl p-6">
+          <Alert variant="destructive" className="glass border-none rounded-3xl p-6">
             <AlertCircle className="h-6 w-6" />
             <AlertTitle className="text-xl font-black ml-2">Configuration Required</AlertTitle>
             <AlertDescription className="mt-4 opacity-90">
@@ -418,7 +418,7 @@ export default function AdminDashboard() {
           </Alert>
         )}
 
-        <Card className="glass border-none shadow-2xl overflow-hidden rounded-[2.5rem]">
+        <Card className="glass border-none overflow-hidden rounded-[2.5rem]">
           <CardHeader className="p-8 border-b border-white/5 bg-white/[0.02]">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-2xl bg-primary/5 text-primary">

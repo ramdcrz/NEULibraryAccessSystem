@@ -29,8 +29,6 @@ export default function LoginPage() {
       await signInWithGoogle();
       // Navigation is handled by the useEffect above
     } catch (error: any) {
-      // The auth-provider already filters out popup-closed-by-user
-      // but we catch any other real errors here
       console.error('Sign in failed:', error);
       toast({
         variant: "destructive",
@@ -61,9 +59,9 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 gradient-bg">
-      <Card className="w-full max-w-md glass border-none shadow-[0_32px_64px_-12px_rgba(0,0,0,0.15)] animate-in fade-in zoom-in-95 duration-700">
+      <Card className="w-full max-w-md glass border-none animate-in fade-in zoom-in-95 duration-700">
         <CardHeader className="text-center pb-12 pt-10">
-          <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-primary text-white shadow-2xl shadow-primary/30 rotate-0 transition-transform hover:rotate-6 animate-float">
+          <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-primary text-white rotate-0 transition-transform hover:rotate-6 animate-float">
             <BookMarked className="h-12 w-12" />
           </div>
           <CardTitle className="text-5xl font-black tracking-tighter text-foreground mb-2">NEU Library</CardTitle>
@@ -75,7 +73,7 @@ export default function LoginPage() {
           <Button
             onClick={handleSignIn}
             disabled={isAuthenticating}
-            className="w-full h-16 text-lg font-black transition-all hover:bg-primary/5 hover:text-primary hover:border-primary/50 border-2 rounded-2xl gap-4 shadow-xl active:scale-95"
+            className="w-full h-16 text-lg font-black transition-all hover:bg-primary/5 hover:text-primary hover:border-primary/50 border-2 rounded-2xl gap-4 active:scale-95"
             variant="outline"
           >
             {isAuthenticating ? (

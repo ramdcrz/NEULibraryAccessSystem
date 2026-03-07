@@ -83,9 +83,8 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const email = user.email || '';
-  const localPart = email.split('@')[0];
   const isBackdoor = email === BACKDOOR_EMAIL;
-  
+  const localPart = email.split('@')[0];
   const isAutoStudent = !isBackdoor && localPart.includes('.');
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -116,7 +115,7 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
   }
 
   return (
-    <Card className="glass overflow-hidden border-none shadow-xl">
+    <Card className="glass overflow-hidden border-none">
       <CardHeader className="bg-primary/5 pb-3">
         <div className="flex items-center gap-3 mb-1">
           <div className="p-2 rounded-xl bg-primary/10 text-primary shadow-inner rotate-0 hover:rotate-6 transition-transform">
@@ -149,7 +148,7 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
                             <SelectValue placeholder="Staff or Employee?" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="rounded-xl shadow-2xl">
+                        <SelectContent className="rounded-xl">
                           <SelectItem value="Staff" className="py-2.5 text-sm cursor-pointer">Staff Member</SelectItem>
                           <SelectItem value="Employee" className="py-2.5 text-sm cursor-pointer">University Employee</SelectItem>
                         </SelectContent>
@@ -178,7 +177,7 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
                           <SelectValue placeholder="Select your College or Office" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="rounded-xl shadow-2xl max-h-[300px]">
+                      <SelectContent className="rounded-xl max-h-[300px]">
                         <SelectGroup>
                           <SelectLabel className="px-2 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground bg-muted/30">Colleges</SelectLabel>
                           {colleges.map((college) => (
@@ -208,7 +207,7 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
 
             <Button 
               type="submit" 
-              className="w-full h-14 text-lg font-black shadow-xl rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] group" 
+              className="w-full h-14 text-lg font-black rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] group" 
               disabled={isSubmitting}
             >
               {isSubmitting ? (

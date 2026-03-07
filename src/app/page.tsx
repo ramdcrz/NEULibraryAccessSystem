@@ -49,7 +49,7 @@ export default function Home() {
   if (user.isBlocked) {
     return (
       <div className="flex min-h-screen items-center justify-center p-6 gradient-bg">
-        <Alert variant="destructive" className="max-w-md glass border-none rounded-[2.5rem] p-10 shadow-2xl">
+        <Alert variant="destructive" className="max-w-md glass border-none rounded-[2.5rem] p-10">
           <ShieldAlert className="h-10 w-10 mb-6 mx-auto text-destructive" />
           <AlertTitle className="text-3xl font-bold text-center tracking-tight">Access Denied</AlertTitle>
           <AlertDescription className="text-lg text-center mt-4 font-medium opacity-90">

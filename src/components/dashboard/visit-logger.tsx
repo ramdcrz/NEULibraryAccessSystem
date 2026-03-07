@@ -127,8 +127,8 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
 
   if (isLogged) {
     return (
-      <Card className="glass border-none shadow-2xl p-12 text-center animate-in zoom-in-95 duration-500 rounded-[3rem]">
-        <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-green-500/10 text-green-500 shadow-[0_0_40px_rgba(34,197,94,0.1)] transition-transform hover:scale-105">
+      <Card className="glass border-none p-12 text-center animate-in zoom-in-95 duration-500 rounded-[3rem]">
+        <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-green-500/10 text-green-500 transition-transform hover:scale-105">
           <CheckCircle2 className="h-12 w-12" />
         </div>
         <CardTitle className="text-4xl font-black mb-4 tracking-tighter">Access Granted</CardTitle>
@@ -148,7 +148,7 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
   }
 
   return (
-    <Card className="glass overflow-hidden border-none shadow-2xl rounded-[2.5rem]">
+    <Card className="glass overflow-hidden border-none rounded-[2.5rem]">
       <CardHeader className="bg-primary/[0.02] pb-10 pt-8 px-8 border-b border-white/5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -170,14 +170,14 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="md:col-span-1 p-5 rounded-2xl bg-muted/20 border border-white/5 backdrop-blur-md flex flex-col items-center justify-center text-center">
+              <div className="md:col-span-1 p-5 rounded-2xl bg-muted/10 border border-white/5 backdrop-blur-md flex flex-col items-center justify-center text-center">
                 <div className="flex items-center gap-2 mb-2 text-primary/60">
                   <User className="h-3.5 w-3.5" />
                   <span className="text-[10px] font-black uppercase tracking-widest">Type</span>
                 </div>
                 <p className="text-sm font-black text-foreground">{user.user_type}</p>
               </div>
-              <div className="md:col-span-3 p-5 rounded-2xl bg-muted/20 border border-white/5 backdrop-blur-md">
+              <div className="md:col-span-3 p-5 rounded-2xl bg-muted/10 border border-white/5 backdrop-blur-md">
                 <div className="flex items-center gap-2 mb-2 text-primary/60">
                   <School className="h-3.5 w-3.5" />
                   <span className="text-[10px] font-black uppercase tracking-widest">Academic Affiliation</span>
@@ -204,7 +204,7 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
                         <SelectValue placeholder="Select one..." />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="rounded-2xl shadow-2xl border-none glass">
+                    <SelectContent className="rounded-2xl border-none glass">
                       {visitReasons.map((reason) => (
                         <SelectItem key={reason} value={reason} className="py-3 px-4 text-base font-medium cursor-pointer rounded-xl">
                           {reason}
@@ -238,7 +238,7 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
 
             <Button 
               type="submit" 
-              className="w-full h-16 text-xl font-black shadow-2xl rounded-2xl transition-all hover:scale-[1.01] active:scale-[0.99] group relative overflow-hidden glow-primary" 
+              className="w-full h-16 text-xl font-black rounded-2xl transition-all hover:scale-[1.01] active:scale-[0.99] group relative overflow-hidden glow-primary" 
               disabled={isSubmitting}
             >
               {isSubmitting ? (
