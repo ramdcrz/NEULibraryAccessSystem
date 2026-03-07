@@ -31,7 +31,9 @@ export default function AdminDashboard() {
         router.push('/login');
       } else if (user.role === 'admin') {
         // Only mark as ready if we are sure the user is an admin
-        setIsAuthReady(true);
+        // and add a small delay to ensure Firestore Auth is stable
+        const timer = setTimeout(() => setIsAuthReady(true), 500);
+        return () => clearTimeout(timer);
       } else {
         router.push('/');
       }
@@ -43,11 +45,16 @@ export default function AdminDashboard() {
     if (!firestore || !isAuthReady || !user || user.role !== 'admin') return null;
     
     // collectionGroup allows querying across all users/userId/visit_logs
-    return query(
-      collectionGroup(firestore, 'visit_logs'), 
-      orderBy('timestamp', 'desc'), 
-      limit(300)
-    );
+    try {
+      return query(
+        collectionGroup(firestore, 'visit_logs'), 
+        orderBy('timestamp', 'desc'), 
+        limit(300)
+      );
+    } catch (e) {
+      console.error("Query construction error:", e);
+      return null;
+    }
   }, [firestore, isAuthReady, user?.role]);
 
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection(logsQuery);
@@ -130,7 +137,7 @@ export default function AdminDashboard() {
             <AlertTitle>Database Access Error</AlertTitle>
             <AlertDescription className="mt-2 space-y-4">
               <p>
-                We encountered a problem retrieving the visitor logs. This is usually caused by a missing Database Index.
+                We encountered a problem retrieving the visitor logs. This is usually caused by a missing <strong>Database Index</strong>.
               </p>
               <div className="bg-destructive/10 p-4 rounded-xl border border-destructive/20 text-foreground">
                 <p className="font-bold flex items-center gap-2 mb-2">
