@@ -27,16 +27,18 @@ export default function AdminDashboard() {
   }, [user, loading, router]);
 
   /**
-   * CRITICAL: We hardcode 'visit_logs' directly in the collectionGroup call.
-   * This ensures the query target is explicitly defined as a string literal 
-   * and prevents the query from resolving to the root database path.
+   * We explicitly hardcode 'visit_logs' as a string literal.
+   * This ensures the query target is 'visit_logs' and not the root database.
+   * collectionGroup is used because visit_logs are nested under /users/{userId}.
    */
   const logsQuery = useMemoFirebase(() => {
     if (!firestore || !user || user.role !== 'admin') return null;
     
-    // Explicitly using the string literal 'visit_logs'
+    // Hardcoding the collection group ID as 'visit_logs'
+    const visitLogsGroup = collectionGroup(firestore, 'visit_logs');
+    
     return query(
-      collectionGroup(firestore, 'visit_logs'), 
+      visitLogsGroup, 
       orderBy('timestamp', 'desc'),
       limit(100)
     );
