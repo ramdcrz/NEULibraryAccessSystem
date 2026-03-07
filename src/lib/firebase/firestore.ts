@@ -80,11 +80,15 @@ export function updateUserDoc(uid: string, data: Partial<UserProfile>) {
  * Fetches the current status first to ensure accurate toggling.
  */
 export async function toggleUserBlock(uid: string) {
+  if (!uid || typeof uid !== 'string') {
+    throw new Error('A valid User ID is required to toggle block status.');
+  }
+
   const userRef = doc(db, 'users', uid);
   const userSnap = await getDoc(userRef);
   
   if (!userSnap.exists()) {
-    throw new Error('User profile not found.');
+    throw new Error('User profile not found in the system.');
   }
 
   const currentStatus = !!userSnap.data().is_blocked;

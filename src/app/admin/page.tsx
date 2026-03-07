@@ -47,6 +47,15 @@ export default function AdminDashboard() {
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection(logsQuery);
 
   const handleToggleBlock = async (uid: string, email: string) => {
+    if (!uid) {
+      toast({
+        variant: "destructive",
+        title: "Missing Data",
+        description: "Cannot identify the user associated with this log entry.",
+      });
+      return;
+    }
+
     if (email === user?.email) {
       toast({
         variant: "destructive",
@@ -167,22 +176,26 @@ export default function AdminDashboard() {
                           {log.reason}
                         </TableCell>
                         <TableCell className="text-center">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-9 px-3 text-destructive hover:bg-destructive/10 hover:text-destructive font-bold rounded-xl gap-2 transition-all active:scale-95"
-                            onClick={() => handleToggleBlock(log.userId, log.email)}
-                            disabled={blockingUid === log.userId}
-                          >
-                            {blockingUid === log.userId ? (
-                              <LoaderCircle className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <>
-                                <UserX className="h-4 w-4" />
-                                Block
-                              </>
-                            )}
-                          </Button>
+                          {log.userId ? (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-9 px-3 text-destructive hover:bg-destructive/10 hover:text-destructive font-bold rounded-xl gap-2 transition-all active:scale-95"
+                              onClick={() => handleToggleBlock(log.userId, log.email)}
+                              disabled={blockingUid === log.userId}
+                            >
+                              {blockingUid === log.userId ? (
+                                <LoaderCircle className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <>
+                                  <UserX className="h-4 w-4" />
+                                  Block
+                                </>
+                              )}
+                            </Button>
+                          ) : (
+                            <span className="text-[10px] text-muted-foreground uppercase font-black">Legacy Log</span>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
