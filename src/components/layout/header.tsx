@@ -16,6 +16,7 @@ import { Button } from '../ui/button';
 import { ThemeToggle } from '../theme-toggle';
 import Link from 'next/link';
 import { Badge } from '../ui/badge';
+import LiveClock from './live-clock';
 
 export default function Header() {
   const { user, signOut, loading } = useAuth();
@@ -32,15 +33,21 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40 flex h-16 items-center gap-4 px-6 md:px-10 transition-all">
-      <Link href="/" className="flex items-center gap-3 font-black text-primary animate-in fade-in slide-in-from-left-4 duration-500">
-        <div className="p-2 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 rotate-0 hover:rotate-6 transition-transform">
-          <BookMarked className="h-6 w-6" />
-        </div>
-        <div className="flex flex-col">
-          <span className="text-lg leading-tight tracking-tighter sm:inline-block">NEU Library</span>
-          <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground leading-none">Access System</span>
-        </div>
-      </Link>
+      <div className="flex items-center gap-6">
+        <Link href="/" className="flex items-center gap-3 font-black text-primary animate-in fade-in slide-in-from-left-4 duration-500">
+          <div className="p-2 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 transition-transform hover:rotate-6">
+            <BookMarked className="h-6 w-6" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-lg leading-tight tracking-tighter sm:inline-block">NEU Library</span>
+            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground leading-none">Access System</span>
+          </div>
+        </Link>
+        
+        <div className="hidden lg:block h-6 w-[1px] bg-border/40" />
+        
+        <LiveClock />
+      </div>
 
       <div className="ml-auto flex items-center gap-4">
         {isAdmin && (
