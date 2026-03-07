@@ -23,7 +23,7 @@ function Calendar({
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
-        month_caption: "hidden", // We use a custom Caption component
+        month_caption: "flex justify-center pt-1 relative items-center mb-4",
         caption_label: "text-sm font-bold",
         nav: "flex items-center gap-1",
         month_grid: "w-full border-collapse space-y-1",
