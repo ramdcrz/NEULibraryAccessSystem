@@ -18,7 +18,7 @@ service cloud.firestore {
      * Key Security Decisions:
      * 1. Ownership: Users have full access to their own profile and visit logs.
      * 2. Administrative Override: Users with the 'admin' role in their profile can manage all system data.
-     * 3. Blocked Status: Access is globally denied if a user's 'isBlocked' flag is set to true.
+     * 3. Blocked Status: Access is globally denied if a user's 'is_blocked' flag is set to true.
      * 4. Relational Integrity: The rules enforce that the 'userId' inside documents matches the path-based UID.
      * 5. Denormalization: The 'userId' is duplicated within subcollections to allow for secure collection 
      *    group queries by admins without path-dependency.
@@ -38,7 +38,7 @@ service cloud.firestore {
 
     /** @description Checks if the authenticated user is NOT blocked from the system. */
     function isNotBlocked() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isBlocked == false;
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.is_blocked == false;
     }
 
     /** @description Checks if the authenticated user has the 'admin' role. */

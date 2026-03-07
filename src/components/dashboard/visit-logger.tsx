@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { LoaderCircle, ChevronRight, UserCircle, Briefcase, GraduationCap } from 'lucide-react';
+import { LoaderCircle, ChevronRight, UserCircle, Briefcase, GraduationCap, BookMarked } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -78,7 +78,7 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
 
       addVisitLog({
         userId: user.uid,
-        email: user.email,
+        email: user.email!,
         userType: data.userType.toLowerCase() as any,
         reason: data.reason,
         entryDate: entryDate,

@@ -19,11 +19,11 @@
           "type": "string",
           "description": "The access role of the user within the system. (enum: 'admin', 'user')"
         },
-        "collegeOffice": {
+        "college_office": {
           "type": "string",
           "description": "The college or office the user is affiliated with. Can be null."
         },
-        "isBlocked": {
+        "is_blocked": {
           "type": "boolean",
           "description": "Indicates if the user's access to the system is blocked. Defaults to false."
         },
@@ -37,7 +37,7 @@
         "id",
         "email",
         "role",
-        "isBlocked",
+        "is_blocked",
         "createdAt"
       ]
     },
@@ -105,7 +105,7 @@
           "schema": {
             "$ref": "#/backend/entities/User"
           },
-          "description": "Stores user profile information. The document ID (`userId`) corresponds to the Firebase Authentication UID. Includes the 'role' field for database access control (DBAC) and 'isBlocked' status. Provides explicit path-based ownership for individual users."
+          "description": "Stores user profile information. The document ID (`userId`) corresponds to the Firebase Authentication UID. Includes the 'role' field for database access control (DBAC) and 'is_blocked' status. Provides explicit path-based ownership for individual users."
         }
       },
       {
@@ -128,7 +128,6 @@
           ]
         }
       }
-    ],
-    "reasoning": "The proposed Firestore structure prioritizes Authorization Independence and secure `list` operations (QAPs) by leveraging hierarchical paths and strategic denormalization. \n\n1.  **Users Collection (`/users/{userId}`):** User profiles are stored in a top-level collection where the document ID is the Firebase Authentication `uid`. This inherently links the document to its owner, simplifying authorization for individual user profile access (`request.auth.uid == userId`). The `role` field within each user document enables DBAC (Database Access Control) without requiring custom claims or `get()` calls on unrelated documents to determine the requesting user's role. This structure provides homogeneous security for all user profile documents: self-read/write and admin-read/write based on the `role` field of the requesting user.\n\n2.  **Visit Logs Subcollection (`/users/{userId}/visit_logs/{visitLogId}`):** Visit logs are modeled as a subcollection under the respective user's document. This design ensures **strong ownership** and **authorization independence** for each `VisitLog` document. Each `VisitLog` document also explicitly includes the `userId` field. \n    *   **Authorization Independence:** To authorize access to a specific `VisitLog`, security rules can directly compare `request.auth.uid` with the `userId` from the path (`/users/{userId}/...`) or from the `resource.data.userId` field. This eliminates the need for `get()` calls to the parent `User` document, as all necessary authorization context (owner's UID) is present within the `VisitLog` document itself or its immediate path. This supports atomic operations, such as creating a `VisitLog` without needing to read the parent `User` document first.\n    *   **QAPs (Secure List Operations):** For regular users, listing their own visit logs is straightforward and secure. A query to `/users/$(request.auth.uid)/visit_logs` directly targets the user's personal logs, and rules can easily enforce `allow list: if request.auth.uid == userId;`. For administrators, a collection group query on `visit_logs` can be used. Authorization for this admin-level `list` would rely on checking the `role` field of the requesting admin's own user document (e.g., `get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'`), which is a `get()` on the *requesting user's* document, not the parent of the listed items, thus maintaining Authorization Independence from the listed `VisitLog` documents themselves. The `email` field in `VisitLog` is denormalized from the `User` entity to provide historical accuracy and simplify queries, adhering to the invariants principle."
+    ]
   }
 }
