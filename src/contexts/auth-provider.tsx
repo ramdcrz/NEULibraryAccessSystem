@@ -2,8 +2,8 @@
 
 import { createContext, useState, useEffect, ReactNode } from 'react';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut as firebaseSignOut, User as FirebaseUser } from 'firebase/auth';
-import { auth } from '@/lib/firebase/config';
-import { createUserDoc, getUserDoc } from '@/lib/firebase/firestore';
+import { onSnapshot, doc, Timestamp, serverTimestamp, setDoc } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase/config';
 import type { UserProfile } from '@/types';
 
 export type AuthenticatedUser = UserProfile & { 
@@ -25,40 +25,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+    let unsubscribeDoc: (() => void) | null = null;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
       if (firebaseUser) {
-        const userDoc = await getUserDoc(firebaseUser.uid);
-        if (userDoc) {
-          setUser({ ...userDoc, uid: firebaseUser.uid, photoURL: firebaseUser.photoURL });
-        } else {
-          // Sprint 1 Logic: Create new user with default values
-          // Restriction check: domain @neu.edu.ph
-          const isInstitutional = firebaseUser.email?.endsWith('@neu.edu.ph');
-          
-          const newUserProfileData: Omit<UserProfile, 'id' | 'createdAt'> = {
-            email: firebaseUser.email!,
-            role: 'user',
-            college_office: null,
-            is_blocked: false,
-          };
-          
-          createUserDoc(firebaseUser.uid, newUserProfileData);
-          
-          setUser({ 
-            ...newUserProfileData, 
-            id: firebaseUser.uid,
-            uid: firebaseUser.uid, 
-            photoURL: firebaseUser.photoURL,
-            createdAt: new Date() 
-          });
-        }
+        const userRef = doc(db, 'users', firebaseUser.uid);
+        
+        // Use onSnapshot to listen for real-time changes to the user document
+        // This ensures the UI updates immediately when the profile is completed or status changes.
+        unsubscribeDoc = onSnapshot(userRef, (docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setUser({
+              id: firebaseUser.uid,
+              uid: firebaseUser.uid,
+              email: data.email,
+              role: data.role || 'user',
+              college_office: data.college_office,
+              is_blocked: !!data.is_blocked,
+              photoURL: firebaseUser.photoURL,
+              createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
+            } as AuthenticatedUser);
+            setLoading(false);
+          } else {
+            // New user initialization logic: Create a default document if it doesn't exist.
+            const newUserProfileData = {
+              email: firebaseUser.email!,
+              role: 'user',
+              college_office: null,
+              is_blocked: false,
+              id: firebaseUser.uid,
+              createdAt: serverTimestamp(),
+            };
+            
+            // Initiate creation. The onSnapshot listener will trigger again once it's created.
+            setDoc(userRef, newUserProfileData).catch(err => {
+               console.error("Error creating user profile document:", err);
+            });
+          }
+        }, (error) => {
+          console.error("User document listener error:", error);
+          setLoading(false);
+        });
       } else {
+        // User signed out: clear the document listener and reset state.
+        if (unsubscribeDoc) {
+          unsubscribeDoc();
+          unsubscribeDoc = null;
+        }
         setUser(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeDoc) unsubscribeDoc();
+    };
   }, []);
 
   const signInWithGoogle = async () => {
