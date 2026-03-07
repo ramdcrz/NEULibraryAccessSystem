@@ -54,7 +54,7 @@
   }
   body {
     @apply bg-background text-foreground transition-colors duration-300;
-    /* Apple-like font feature settings for Inter */
+    /* Apple-like font feature settings */
     font-feature-settings: "cv11", "ss01", "ss02", "rsms" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -62,31 +62,33 @@
 }
 
 .glass {
-  @apply bg-card/70 backdrop-blur-3xl border border-white/10 shadow-[0_4px_32px_0_rgba(0,0,0,0.05)];
+  @apply bg-card/40 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.03)];
 }
 
 .gradient-bg {
   background: 
-    radial-gradient(circle at 50% 0%, hsl(var(--primary) / 0.05), transparent 50%),
+    radial-gradient(circle at 50% -20%, hsl(var(--primary) / 0.08), transparent 70%),
+    radial-gradient(circle at 0% 100%, hsl(var(--primary) / 0.02), transparent 40%),
     hsl(var(--background));
 }
 
 .dark .gradient-bg {
   background: 
-    radial-gradient(circle at 50% 0%, hsl(var(--primary) / 0.1), transparent 50%),
+    radial-gradient(circle at 50% -20%, hsl(var(--primary) / 0.15), transparent 70%),
+    radial-gradient(circle at 0% 100%, hsl(var(--primary) / 0.05), transparent 40%),
     hsl(var(--background));
 }
 
 .glow-primary {
-  @apply shadow-[0_0_25px_rgba(var(--primary),0.15)] transition-all duration-500;
+  @apply shadow-[0_0_30px_rgba(var(--primary),0.1)] hover:shadow-[0_0_40px_rgba(var(--primary),0.2)] transition-all duration-500;
 }
 
 .animate-float {
-  animation: float 8s ease-in-out infinite;
+  animation: float 10s ease-in-out infinite;
 }
 
 @keyframes float {
   0% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-6px); }
   100% { transform: translateY(0px); }
 }
