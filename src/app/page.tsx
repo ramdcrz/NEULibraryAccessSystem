@@ -77,7 +77,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen w-full flex-col gradient-bg">
       <Header />
-      <main className="flex flex-1 flex-col items-center justify-center gap-12 p-6 md:p-12 animate-in fade-in slide-in-from-bottom-8 duration-700 relative">
+      <main className="flex flex-1 flex-col items-center justify-center gap-12 px-6 md:px-12 py-12 animate-in fade-in slide-in-from-bottom-8 duration-700 relative">
         {!hasLogged && (
           <div className="w-full max-w-3xl text-center space-y-6">
             <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-secondary text-foreground/70 text-[10px] font-bold uppercase tracking-[0.25em] border border-border mb-2">

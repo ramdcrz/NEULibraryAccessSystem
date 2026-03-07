@@ -208,7 +208,7 @@ export default function AdminDashboard() {
   return (
     <div className="flex min-h-screen w-full flex-col gradient-bg">
       <Header />
-      <main className="flex-1 p-6 md:p-12 space-y-12 animate-in fade-in duration-700">
+      <main className="flex-1 px-6 md:px-12 py-12 space-y-12 animate-in fade-in duration-700">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.4em] text-[10px] opacity-60">
