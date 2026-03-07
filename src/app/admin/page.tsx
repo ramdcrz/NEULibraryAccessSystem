@@ -6,8 +6,8 @@ import { useAuth } from '@/hooks/use-auth';
 import Header from '@/components/layout/header';
 import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ShieldCheck, Info, AlertCircle, Database } from 'lucide-react';
-import { collectionGroup, query, orderBy, limit } from 'firebase/firestore';
+import { ShieldCheck, AlertCircle, Database, History } from 'lucide-react';
+import { collectionGroup, query, orderBy } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -28,16 +28,13 @@ export default function AdminDashboard() {
 
   // Simplified and Robust Query
   const logsQuery = useMemoFirebase(() => {
-    // ONLY attempt query if we are fully loaded and confirmed as an admin
+    // Only attempt the query once we have firestore and the user's role is confirmed as admin
     if (!firestore || loading || !user || user.role !== 'admin') return null;
     
-    // We start with a simple sorted query. 
-    // If this fails with a Permission error, it's a Rule issue.
-    // If it fails with an Index error, it will provide the correct link in F12 console.
+    // Explicitly hardcoding 'visit_logs' to ensure it targets the correct collection group
     return query(
       collectionGroup(firestore, 'visit_logs'), 
-      orderBy('timestamp', 'desc'),
-      limit(50)
+      orderBy('timestamp', 'desc')
     );
   }, [firestore, loading, user?.role]);
 
@@ -54,11 +51,11 @@ export default function AdminDashboard() {
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-primary font-bold uppercase tracking-wider text-sm">
             <ShieldCheck className="h-4 w-4" />
-            Command Center
+            Admin Dashboard
           </div>
-          <h1 className="text-4xl font-black tracking-tight">Visit Monitor</h1>
+          <h1 className="text-4xl font-black tracking-tight">Library Visit Logs</h1>
           <p className="text-muted-foreground text-lg">
-            Real-time administrative view of all library access logs.
+            A simplified, real-time view of all recent library entries.
           </p>
         </div>
 
@@ -70,20 +67,17 @@ export default function AdminDashboard() {
               <div className="bg-destructive/10 p-6 rounded-2xl border border-destructive/20 text-foreground">
                 <p className="font-bold flex items-center gap-2 mb-4 text-lg">
                   <Database className="h-5 w-5" />
-                  Resolution Steps:
+                  Troubleshooting Steps:
                 </p>
                 <ol className="list-decimal pl-5 space-y-4">
                   <li>
-                    <strong>Check the Console:</strong> Press <strong>F12</strong> and look for a red error message.
+                    <strong>Check the Console:</strong> Press <strong>F12</strong>. If you see a red error message about "Missing Permissions," your account might not be correctly set as an <code>admin</code> in Firestore.
                   </li>
                   <li>
-                    <strong>Create Index:</strong> If you see "The query requires an index," <strong>click the link</strong> provided in that console message.
+                    <strong>Index Required:</strong> If you see "The query requires an index," <strong>click the unique link</strong> provided in that console message.
                   </li>
                   <li>
-                    <strong>Verify Scope:</strong> When creating the index manually, ensure the <strong>Query Scope</strong> is set to <strong>"Collection Group"</strong> (not just "Collection").
-                  </li>
-                  <li>
-                    <strong>Permissions:</strong> If the error is still "Missing Permissions," double-check that your UID <code>{user.uid}</code> has <code>role: "admin"</code> in the <code>users</code> collection.
+                    <strong>Index Configuration:</strong> When the link opens, ensure the <strong>Query Scope</strong> is set to <strong>"Collection Group"</strong>.
                   </li>
                 </ol>
               </div>
@@ -92,45 +86,50 @@ export default function AdminDashboard() {
         )}
 
         <Card className="glass border-2 border-white/10 shadow-xl overflow-hidden">
-          <CardHeader className="border-b border-white/5 bg-white/5">
-            <CardTitle className="text-xl font-bold">All Logs (Sorted by Date)</CardTitle>
-            <CardDescription>Streaming logs from across all user profiles</CardDescription>
+          <CardHeader className="border-b border-white/5 bg-white/5 flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-xl font-bold flex items-center gap-2">
+                <History className="h-5 w-5 text-primary" />
+                Live Feed
+              </CardTitle>
+              <CardDescription>Recent activity across all departments</CardDescription>
+            </div>
           </CardHeader>
           <CardContent className="p-0">
             {logsLoading ? (
-              <div className="p-12 text-center text-muted-foreground animate-pulse">
-                Establishing secure connection...
+              <div className="p-12 text-center text-muted-foreground animate-pulse font-medium">
+                Fetching latest logs...
               </div>
             ) : !allLogs || allLogs.length === 0 ? (
               <div className="p-20 text-center space-y-4">
-                <h3 className="text-xl font-bold">No logs found</h3>
-                <p className="text-muted-foreground">The system is ready, but no visit entries were found in the database.</p>
+                <h3 className="text-xl font-bold">No activity recorded</h3>
+                <p className="text-muted-foreground">When users log their visits, they will appear here automatically.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader className="bg-muted/30">
                     <TableRow>
-                      <TableHead className="font-bold">Timestamp</TableHead>
+                      <TableHead className="font-bold">Date & Time</TableHead>
                       <TableHead className="font-bold">Email</TableHead>
-                      <TableHead className="font-bold">User Type</TableHead>
+                      <TableHead className="font-bold">Classification</TableHead>
                       <TableHead className="font-bold">College / Office</TableHead>
-                      <TableHead className="font-bold">Reason</TableHead>
+                      <TableHead className="font-bold">Purpose</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {allLogs.map((log) => (
                       <TableRow key={log.id} className="hover:bg-white/5 transition-colors group">
                         <TableCell className="whitespace-nowrap font-medium opacity-80">
-                          {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, h:mm a') : '...'}
+                          {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, h:mm a') : 'Pending...'}
                         </TableCell>
                         <TableCell className="font-semibold">{log.email}</TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="capitalize bg-primary/5 text-primary border-primary/20">
+                          <Badge variant="outline" className="capitalize bg-primary/5 text-primary border-primary/20 font-bold px-3">
                             {log.userType}
                           </Badge>
                         </TableCell>
-                        <TableCell className="max-w-[200px] truncate">{log.college_office}</TableCell>
+                        <TableCell className="max-w-[200px] truncate italic opacity-80">{log.college_office}</TableCell>
                         <TableCell className="max-w-[300px] truncate text-muted-foreground">
                           {log.reason}
                         </TableCell>
