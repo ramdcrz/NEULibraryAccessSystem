@@ -2,43 +2,48 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // --- Core Authorization ---
+    // --- Core Authorization Helpers ---
     function isSignedIn() {
       return request.auth != null;
     }
 
+    // Helper to get the current user's role without nested get() calls if possible.
+    // We use this for collection group queries and cross-document checks.
+    function currentUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
     // --- User Profile Rules ---
     match /users/{userId} {
-      // Base Case: Users can always read their own profile.
-      // CRITICAL: We do NOT call a helper function here to avoid infinite recursion.
+      // BASE CASE: Users can always read their own profile.
+      // CRITICAL: This rule MUST NOT call any functions that use get()
+      // to avoid infinite recursion during admin verification.
       allow read: if isSignedIn() && request.auth.uid == userId;
       
-      // Admin Access: An admin can read any profile.
-      // This calls get() on the admin's own profile, which hits the 'Base Case' rule above.
-      allow read: if isSignedIn() && 
-                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      // ADMIN ACCESS: An admin can read any profile.
+      // This calls get() which triggers the 'Base Case' rule above for the admin's own doc.
+      // Since the Base Case has no get() calls, evaluation terminates safely.
+      allow read: if isSignedIn() && currentUserRole() == 'admin';
 
       // Writes: Owners or Admins
       allow write: if isSignedIn() && (
         request.auth.uid == userId || 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        currentUserRole() == 'admin'
       );
 
       // --- Nested Visit Logs ---
       match /visit_logs/{visitLogId} {
         allow read, write: if isSignedIn() && (
           request.auth.uid == userId || 
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+          currentUserRole() == 'admin'
         );
       }
     }
 
     // --- Collection Group Rules ---
-    // Matches all 'visit_logs' collections across the entire database.
-    // This rule is evaluated when the Admin Dashboard runs its query.
+    // Matches all 'visit_logs' collections for the Admin Dashboard query.
     match /{path=**}/visit_logs/{visitLogId} {
-      allow read: if isSignedIn() && 
-                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow read: if isSignedIn() && currentUserRole() == 'admin';
     }
   }
 }

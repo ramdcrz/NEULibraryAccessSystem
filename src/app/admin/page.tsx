@@ -22,24 +22,25 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
-  const [isAuthConfirmed, setIsAuthConfirmed] = useState(false);
+  const [isAuthReady, setIsAuthReady] = useState(false);
 
-  // Defensive Auth Check
+  // Defensive Auth Check: Wait for the user object and role to be fully loaded
   useEffect(() => {
     if (!loading) {
       if (!user) {
         router.push('/login');
       } else if (user.role === 'admin') {
-        setIsAuthConfirmed(true);
+        // Only mark as ready if we are sure the user is an admin
+        setIsAuthReady(true);
       } else {
         router.push('/');
       }
     }
   }, [user, loading, router]);
 
-  // Guard the query: Only run if auth is fully confirmed to prevent permission errors
+  // Guard the query: NEVER run if auth is not fully confirmed
   const logsQuery = useMemoFirebase(() => {
-    if (!firestore || !isAuthConfirmed) return null;
+    if (!firestore || !isAuthReady || !user || user.role !== 'admin') return null;
     
     // collectionGroup allows querying across all users/userId/visit_logs
     return query(
@@ -47,7 +48,7 @@ export default function AdminDashboard() {
       orderBy('timestamp', 'desc'), 
       limit(300)
     );
-  }, [firestore, isAuthConfirmed]);
+  }, [firestore, isAuthReady, user?.role]);
 
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection(logsQuery);
 
@@ -104,7 +105,7 @@ export default function AdminDashboard() {
     };
   }, [allLogs]);
 
-  if (loading || !isAuthConfirmed) {
+  if (loading || !isAuthReady) {
     return <Loading />;
   }
 
@@ -129,19 +130,19 @@ export default function AdminDashboard() {
             <AlertTitle>Database Access Error</AlertTitle>
             <AlertDescription className="mt-2 space-y-4">
               <p>
-                We encountered a problem retrieving the visitor logs. This usually happens if a required index is missing.
+                We encountered a problem retrieving the visitor logs. This is usually caused by a missing Database Index.
               </p>
-              <div className="bg-destructive/10 p-4 rounded-xl border border-destructive/20">
+              <div className="bg-destructive/10 p-4 rounded-xl border border-destructive/20 text-foreground">
                 <p className="font-bold flex items-center gap-2 mb-2">
                   <Info className="h-4 w-4" />
-                  Important Troubleshooting Step:
+                  Crucial Step to Fix:
                 </p>
                 <ol className="list-decimal pl-5 space-y-2 text-sm">
                   <li>Press <strong>F12</strong> to open your browser Developer Tools.</li>
                   <li>Click the <strong>Console</strong> tab.</li>
-                  <li>Look for a red error message with a link that starts with <code>https://console.firebase.google.com/...</code></li>
-                  <li><strong>Click that link</strong> to automatically create the "Composite Index" required for this dashboard.</li>
-                  <li>Wait 2-3 minutes for the index to build, then refresh this page.</li>
+                  <li>Look for a red error message with a link starting with <code>https://console.firebase.google.com/...</code></li>
+                  <li><strong>Click that link</strong> to automatically create the required index in your Firebase Console.</li>
+                  <li>Wait 3 minutes for it to build, then refresh this page.</li>
                 </ol>
               </div>
             </AlertDescription>
