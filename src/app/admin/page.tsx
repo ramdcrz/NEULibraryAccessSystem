@@ -277,7 +277,7 @@ export default function AdminDashboard() {
                   placeholder="Search by email..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-12 rounded-xl border-2 bg-black/5 transition-all text-sm font-bold focus:border-primary/30"
+                  className="h-12 rounded-full border-2 bg-black/5 transition-all text-sm font-bold focus:border-primary/30"
                 />
               </div>
 
@@ -292,7 +292,7 @@ export default function AdminDashboard() {
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
+                          "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-full border-2 bg-black/5 hover:bg-black/10 transition-colors",
                           !startDate && "text-muted-foreground"
                         )}
                       >
@@ -328,7 +328,7 @@ export default function AdminDashboard() {
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
+                          "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-full border-2 bg-black/5 hover:bg-black/10 transition-colors",
                           !endDate && "text-muted-foreground"
                         )}
                       >
@@ -355,7 +355,7 @@ export default function AdminDashboard() {
               <Button 
                 variant="ghost" 
                 onClick={clearFilters}
-                className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border border-destructive/30 text-destructive bg-destructive/5 hover:bg-destructive/10 shadow-sm"
+                className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border border-destructive/30 text-destructive bg-destructive/5 hover:bg-destructive hover:text-white shadow-sm"
               >
                 <XCircle className="h-3.5 w-3.5 mr-2" />
                 Clear
@@ -449,8 +449,8 @@ export default function AdminDashboard() {
                               className={cn(
                                 "h-11 w-32 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border shadow-sm",
                                 isBlocked 
-                                  ? "text-green-600 bg-green-500/10 border-green-500/20 hover:bg-green-500/20" 
-                                  : "text-destructive bg-destructive/5 border-destructive/10 hover:bg-destructive/10"
+                                  ? "text-green-600 bg-green-500/10 border-green-500/20 hover:bg-green-600 hover:text-white" 
+                                  : "text-destructive bg-destructive/5 border-destructive/10 hover:bg-destructive hover:text-white"
                               )}
                               onClick={() => handleToggleBlock(log.uid, log.email)}
                               disabled={blockingUid === log.uid}
