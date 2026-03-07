@@ -75,7 +75,7 @@ export default function Home() {
   const needsOnboarding = !user.college_office || !user.user_type;
 
   return (
-    <div className="flex min-h-screen w-full flex-col gradient-bg overflow-x-hidden">
+    <div className="flex min-h-screen w-full flex-col gradient-bg">
       <Header />
       <main className="flex flex-1 flex-col items-center justify-center gap-12 p-6 md:p-12 animate-in fade-in slide-in-from-bottom-8 duration-700 relative">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[400px] bg-primary/5 rounded-full blur-[120px] -z-10" />

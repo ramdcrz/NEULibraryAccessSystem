@@ -32,7 +32,7 @@ export default function Header() {
   const isAdminPage = pathname?.startsWith('/admin');
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/60 backdrop-blur-2xl border-b border-white/5 flex h-16 items-center gap-4 px-6 md:px-12 transition-all">
+    <header className="sticky top-0 z-[100] w-full bg-background/60 backdrop-blur-2xl border-b border-white/5 flex h-16 items-center gap-4 px-6 md:px-12 transition-all">
       <div className="flex items-center gap-8">
         <Link href="/" className="flex items-center gap-3.5 group transition-opacity hover:opacity-80">
           <div className="p-1.5 rounded-lg bg-foreground text-background shadow-sm transition-transform group-active:scale-95">
@@ -91,11 +91,11 @@ export default function Header() {
                     <AvatarImage src={user.photoURL ?? ''} />
                     <AvatarFallback className="font-bold text-xs bg-muted text-foreground">{getInitials(user.email)}</AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col space-y-1 overflow-hidden">
-                    <p className="text-sm font-black leading-none truncate w-44 tracking-tight text-foreground">
+                  <div className="flex flex-col space-y-1 overflow-hidden flex-1">
+                    <p className="text-sm font-black leading-none truncate max-w-[180px] tracking-tight text-foreground">
                       {user.displayName || 'Faculty/Staff'}
                     </p>
-                    <p className="truncate text-[9px] font-bold text-muted-foreground uppercase tracking-widest w-44">
+                    <p className="truncate text-[9px] font-bold text-muted-foreground uppercase tracking-widest max-w-[180px]">
                       {user.email}
                     </p>
                   </div>
