@@ -55,7 +55,7 @@ export default function Header() {
           <Button 
             variant="ghost" 
             asChild
-            className="hidden md:flex gap-2 font-black text-[10px] uppercase tracking-widest hover:bg-secondary/50 rounded-full px-6 h-10 transition-all"
+            className="hidden md:flex gap-2 font-black text-[10px] uppercase tracking-widest hover:bg-primary/10 dark:hover:bg-white/5 rounded-full px-6 h-10 transition-all"
           >
             {isAdminPage ? (
               <Link href="/">

@@ -426,7 +426,7 @@ export default function AdminDashboard() {
                       const isBlocked = userStatusMap[log.uid] || false;
                       
                       return (
-                        <TableRow key={log.id} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10 group">
+                        <TableRow key={log.id} className="hover:bg-primary/5 dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10 group">
                           <TableCell className="pl-10 py-6 whitespace-nowrap font-bold text-muted-foreground/70">
                             {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, h:mm a') : '...'}
                           </TableCell>
@@ -450,8 +450,8 @@ export default function AdminDashboard() {
                               className={cn(
                                 "h-11 w-32 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all border",
                                 isBlocked 
-                                  ? "text-green-600 bg-green-500/5 border-green-500/10" 
-                                  : "text-destructive bg-destructive/5 border-destructive/10"
+                                  ? "text-green-600 bg-green-500/5 border-green-500/10 hover:bg-green-500/10" 
+                                  : "text-destructive bg-destructive/5 border-destructive/10 hover:bg-destructive/10"
                               )}
                               onClick={() => handleToggleBlock(log.uid, log.email)}
                               disabled={blockingUid === log.uid}

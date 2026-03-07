@@ -61,21 +61,19 @@
 }
 
 .glass {
-  @apply backdrop-blur-3xl border transition-all duration-300;
+  @apply backdrop-blur-3xl border transition-all duration-300 shadow-none;
   background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(0, 0, 0, 0.1);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 .dark .glass {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .gradient-bg {
   background: 
-    radial-gradient(circle at 50% -20%, hsl(var(--primary) / 0.15), transparent 70%),
+    radial-gradient(circle at 50% -20%, hsl(var(--primary) / 0.12), transparent 70%),
     radial-gradient(circle at 0% 100%, hsl(var(--primary) / 0.05), transparent 50%),
     radial-gradient(circle at 100% 100%, hsl(var(--primary) / 0.05), transparent 50%),
     hsl(var(--background));
@@ -83,7 +81,7 @@
 
 .dark .gradient-bg {
   background: 
-    radial-gradient(circle at 50% -20%, hsl(var(--primary) / 0.2), transparent 80%),
+    radial-gradient(circle at 50% -20%, hsl(var(--primary) / 0.15), transparent 80%),
     radial-gradient(circle at 0% 100%, hsl(var(--primary) / 0.08), transparent 60%),
     hsl(var(--background));
 }

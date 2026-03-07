@@ -20,7 +20,7 @@ export default function LiveClock() {
   }
 
   return (
-    <div className="hidden lg:flex items-center gap-4 px-6 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground animate-in fade-in duration-700 shadow-inner">
+    <div className="hidden lg:flex items-center gap-4 px-6 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground shadow-inner">
       <Clock className="h-4 w-4 text-primary opacity-60" />
       <div className="flex items-center gap-3">
         <span className="font-bold">{format(currentTime, 'EEEE, MMM d')}</span>
