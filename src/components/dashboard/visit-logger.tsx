@@ -241,7 +241,6 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
                   name="otherReason"
                   render={({ field }) => (
                     <FormItem className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                      <FormLabel className="text-sm font-medium">Please specify your reason</FormLabel>
                       <FormControl>
                         <Input 
                           {...field} 
@@ -249,7 +248,7 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
                           className="h-12 glass border-2 focus:border-primary"
                         />
                       </FormControl>
-                      <FormDescription>Minimum 4 characters required.</FormDescription>
+                      <FormDescription>Please specify your reason (minimum 4 characters).</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
