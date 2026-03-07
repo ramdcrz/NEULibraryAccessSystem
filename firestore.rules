@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -7,8 +8,6 @@ service cloud.firestore {
      * 
      * Core Philosophy:
      * This ruleset implements a strict hierarchical ownership model combined with role-based access control (RBAC).
-     * Security is designed around "Authorization Independence," meaning documents contain enough internal 
-     * state (like userId) to be secured without excessive lookups.
      */
 
     // --- Helper Functions ---
@@ -23,12 +22,9 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    /** @description Checks if the authenticated user is NOT blocked from the system. 
-        Handles cases where the user document might not exist yet for new users. */
+    /** @description Checks if the authenticated user is NOT blocked from the system. */
     function isNotBlocked() {
       let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
-      // Defensive check: if doc doesn't exist, they aren't blocked yet.
-      // If it exists, check the is_blocked flag, defaulting to false if the field is missing.
       return !exists(userPath) || get(userPath).data.get('is_blocked', false) == false;
     }
 
@@ -69,6 +65,7 @@ service cloud.firestore {
 
     /**
      * @description Collection Group rules for visit logs to support administrative reporting.
+     * This rule is specifically used by the collectionGroup('visit_logs') query in the Admin Dashboard.
      */
     match /{path=**}/visit_logs/{visitLogId} {
       allow read: if isAdmin();

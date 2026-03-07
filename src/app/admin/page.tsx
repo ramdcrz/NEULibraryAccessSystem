@@ -24,10 +24,12 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
 
-  // Fetch all logs across all users using collectionGroup
+  // Guard the query: Only attempt to fetch if the user is confirmed as an admin.
+  // This prevents "Missing or insufficient permissions" errors during initial load or for unauthorized users.
   const logsQuery = useMemoFirebase(() => {
+    if (!user || user.role !== 'admin') return null;
     return query(collectionGroup(db, 'visit_logs'), orderBy('timestamp', 'desc'), limit(200));
-  }, []);
+  }, [user]);
 
   const { data: allLogs, isLoading: logsLoading } = useCollection<VisitLog>(logsQuery);
 
