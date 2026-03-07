@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { LoaderCircle, ChevronRight, UserCircle, Briefcase, GraduationCap, BookMarked } from 'lucide-react';
+import { LoaderCircle, ChevronRight, UserCircle, Briefcase, GraduationCap, BookMarked, LogOut } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -139,7 +139,12 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
           Your visit has been recorded. This terminal will reset in a few seconds...
         </CardDescription>
         <div className="mt-8">
-           <Button variant="outline" onClick={() => signOut()}>
+           <Button 
+            variant="outline" 
+            onClick={() => signOut()}
+            className="h-12 px-6 text-base font-bold transition-all hover:bg-primary/5 hover:text-primary hover:border-primary/50 border-2 rounded-2xl gap-2"
+           >
+             <LogOut className="h-4 w-4" />
              Logout Now
            </Button>
         </div>
