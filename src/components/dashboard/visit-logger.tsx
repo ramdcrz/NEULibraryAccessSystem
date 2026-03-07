@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { addVisitLog } from '@/lib/firebase/firestore';
@@ -39,9 +40,9 @@ const visitReasons = [
 ];
 
 const userTypes = [
-  { id: 'Student', icon: GraduationCap },
-  { id: 'Faculty', icon: UserCircle },
-  { id: 'Employee', icon: Briefcase },
+  { id: 'Student', icon: GraduationCap, label: 'Student' },
+  { id: 'Faculty', icon: UserCircle, label: 'Faculty' },
+  { id: 'Employee', icon: Briefcase, label: 'Employee' },
 ] as const;
 
 const formSchema = z.object({
@@ -113,15 +114,15 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
   }
 
   return (
-    <Card className="glass overflow-hidden border-2 border-white/10">
-      <CardHeader className="bg-primary/5 pb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 rounded-full bg-primary/20 text-primary">
-            <BookMarked className="h-5 w-5" />
+    <Card className="glass overflow-hidden border-2 border-white/10 shadow-2xl transition-all duration-500">
+      <CardHeader className="bg-primary/5 pb-8 border-b border-white/5">
+        <div className="flex items-center gap-3 mb-2 animate-in fade-in slide-in-from-left-4 duration-500">
+          <div className="p-2 rounded-xl bg-primary/20 text-primary shadow-inner">
+            <BookMarked className="h-6 w-6" />
           </div>
-          <CardTitle className="text-2xl font-bold">Log Library Visit</CardTitle>
+          <CardTitle className="text-2xl font-bold tracking-tight">Log Library Visit</CardTitle>
         </div>
-        <CardDescription className="text-base">Quickly record your entry by selecting your role and purpose.</CardDescription>
+        <CardDescription className="text-base text-muted-foreground/80">Quickly record your entry by selecting your role and purpose.</CardDescription>
       </CardHeader>
       <CardContent className="pt-8 px-6 pb-6">
         <Form {...form}>
@@ -131,7 +132,7 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
               name="userType"
               render={({ field }) => (
                 <FormItem className="space-y-4">
-                  <FormLabel className="text-lg font-semibold">I am a...</FormLabel>
+                  <FormLabel className="text-lg font-semibold text-foreground">I am a...</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -141,22 +142,28 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
                       {userTypes.map((type) => {
                         const Icon = type.icon;
                         const isSelected = selectedUserType === type.id;
+                        const radioId = `user-type-${type.id}`;
                         return (
-                          <div
-                            key={type.id}
-                            onClick={() => field.onChange(type.id)}
-                            className={cn(
-                              "group flex flex-col items-center justify-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]",
-                              isSelected 
-                                ? "border-primary bg-primary/5 shadow-inner" 
-                                : "border-border/50 opacity-70 hover:opacity-100 hover:bg-accent/5"
-                            )}
-                          >
-                            <RadioGroupItem value={type.id} className="sr-only" />
-                            <Icon className={cn("h-8 w-8 transition-colors", isSelected ? "text-primary" : "text-muted-foreground group-hover:text-foreground")} />
-                            <span className={cn("font-bold transition-colors", isSelected ? "text-primary" : "text-muted-foreground group-hover:text-foreground")}>
-                              {type.id}
-                            </span>
+                          <div key={type.id} className="relative group">
+                            <RadioGroupItem 
+                              value={type.id} 
+                              id={radioId}
+                              className="sr-only" 
+                            />
+                            <Label
+                              htmlFor={radioId}
+                              className={cn(
+                                "flex flex-col items-center justify-center gap-3 p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 h-full",
+                                isSelected 
+                                  ? "border-primary bg-primary/10 shadow-lg scale-[1.02] ring-2 ring-primary/20" 
+                                  : "border-border/40 opacity-70 hover:opacity-100 hover:bg-accent/5 hover:border-border/80 hover:scale-[1.01]"
+                              )}
+                            >
+                              <Icon className={cn("h-10 w-10 transition-all duration-300", isSelected ? "text-primary scale-110" : "text-muted-foreground group-hover:text-foreground")} />
+                              <span className={cn("text-base font-bold transition-colors", isSelected ? "text-primary" : "text-muted-foreground group-hover:text-foreground")}>
+                                {type.label}
+                              </span>
+                            </Label>
                           </div>
                         );
                       })}
@@ -173,10 +180,10 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
                 name="reason"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-lg font-semibold">Purpose of Visit</FormLabel>
+                    <FormLabel className="text-lg font-semibold text-foreground">Purpose of Visit</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50">
+                        <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50 focus:ring-primary/20">
                           <SelectValue placeholder="Select why you are here" />
                         </SelectTrigger>
                       </FormControl>
@@ -203,7 +210,7 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
                       <FormControl>
                         <Input 
                           placeholder="What is the reason for your visit?" 
-                          className="h-14 glass border-2 focus-visible:ring-primary/20" 
+                          className="h-14 glass border-2 focus-visible:ring-primary/20 transition-all" 
                           {...field} 
                         />
                       </FormControl>
@@ -216,7 +223,7 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
 
             <Button 
               type="submit" 
-              className="w-full h-16 text-xl font-bold shadow-xl transition-all hover:scale-[1.01] active:scale-[0.99] rounded-xl" 
+              className="w-full h-16 text-xl font-bold shadow-2xl transition-all hover:scale-[1.01] active:scale-[0.99] rounded-2xl group" 
               disabled={isSubmitting}
             >
               {isSubmitting ? (
@@ -224,7 +231,7 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
               ) : (
                 <>
                   Log My Visit
-                  <ChevronRight className="ml-2 h-6 w-6" />
+                  <ChevronRight className="ml-2 h-6 w-6 transition-transform group-hover:translate-x-1" />
                 </>
               )}
             </Button>

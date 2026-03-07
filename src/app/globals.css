@@ -23,27 +23,27 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 231 48% 48%;
-    --radius: 0.75rem;
+    --radius: 1rem;
   }
   .dark {
-    --background: 222 47% 6%;
+    --background: 222 47% 4%;
     --foreground: 210 40% 98%;
-    --card: 222 47% 9%;
+    --card: 222 47% 6%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 47% 9%;
+    --popover: 222 47% 6%;
     --popover-foreground: 210 40% 98%;
     --primary: 231 48% 55%;
-    --primary-foreground: 222 47% 6%;
-    --secondary: 217.2 32.6% 17.5%;
+    --primary-foreground: 222 47% 4%;
+    --secondary: 217.2 32.6% 12%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
+    --muted: 217.2 32.6% 12%;
     --muted-foreground: 215 20.2% 65.1%;
     --accent: 180 100% 30%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: 217.2 32.6% 15%;
+    --input: 217.2 32.6% 15%;
     --ring: 231 48% 55%;
   }
 }
@@ -59,10 +59,15 @@
 }
 
 .glass {
-  @apply bg-background/60 backdrop-blur-md border border-white/10 shadow-xl;
+  @apply bg-background/60 backdrop-blur-xl border border-white/10 shadow-2xl;
 }
 
 .gradient-bg {
-  background: radial-gradient(circle at top left, hsl(var(--primary) / 0.15), transparent),
-              radial-gradient(circle at bottom right, hsl(var(--accent) / 0.15), transparent);
+  background: radial-gradient(circle at 10% 10%, hsl(var(--primary) / 0.12), transparent 40%),
+              radial-gradient(circle at 90% 90%, hsl(var(--accent) / 0.12), transparent 40%);
+}
+
+.dark .gradient-bg {
+  background: radial-gradient(circle at 10% 10%, hsl(var(--primary) / 0.08), transparent 40%),
+              radial-gradient(circle at 90% 90%, hsl(var(--accent) / 0.08), transparent 40%);
 }
