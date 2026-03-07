@@ -66,8 +66,11 @@ export function updateUserDoc(uid: string, data: Partial<UserProfile>) {
 
 // Add a new visit log to Firestore (Non-blocking)
 export function addVisitLog(logData: VisitLogPayload) {
-  // Path: /users/{userId}/visit_logs/{visitLogId}
-  const visitLogsCollection = collection(db, 'users', logData.userId, 'visit_logs');
+  /**
+   * Schema Correction: Using a flat top-level collection.
+   * Path: /visit_logs
+   */
+  const visitLogsCollection = collection(db, 'visit_logs');
   
   const payload = {
     ...logData,

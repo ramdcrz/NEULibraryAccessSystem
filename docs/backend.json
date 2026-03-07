@@ -1,4 +1,3 @@
-
 {
   "entities": {
     "User": {
@@ -54,7 +53,7 @@
         },
         "userId": {
           "type": "string",
-          "description": "Reference to the User who made the visit. (Relationship: User 1:N VisitLog)"
+          "description": "Reference to the User who made the visit."
         },
         "email": {
           "type": "string",
@@ -98,32 +97,21 @@
   },
   "auth": {
     "providers": [
-      "password",
-      "anonymous"
+      "google.com"
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Stores user profile information."
-        }
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/backend/entities/User"
       },
-      {
-        "path": "/users/{userId}/visit_logs/{visitLogId}",
-        "definition": {
-          "entityName": "VisitLog",
-          "schema": {
-            "$ref": "#/backend/entities/VisitLog"
-          },
-          "description": "Stores individual visit logs, nested under the owning user's profile."
-        }
-      }
-    ]
+      "description": "Stores user profile information."
+    },
+    "/visit_logs/{visitLogId}": {
+      "schema": {
+        "$ref": "#/backend/entities/VisitLog"
+      },
+      "description": "Stores individual visit logs in a flat, top-level collection."
+    }
   }
 }

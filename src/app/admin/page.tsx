@@ -7,7 +7,7 @@ import Header from '@/components/layout/header';
 import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ShieldCheck, History, Database, AlertCircle } from 'lucide-react';
-import { collectionGroup, query, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -27,15 +27,15 @@ export default function AdminDashboard() {
   }, [user, loading, router]);
 
   /**
-   * We use collectionGroup('visit_logs') because logs are nested under /users/{userId}/visit_logs.
-   * Explicitly hardcoding the collection ID string 'visit_logs' as requested.
+   * Database Correction: Switched from collectionGroup to a flat collection query.
+   * Path: /visit_logs
    */
   const logsQuery = useMemoFirebase(() => {
     if (!firestore || !user || user.role !== 'admin') return null;
     
-    // Hardcoded string literal to ensure target is never empty or undefined
+    // Explicitly hardcoding 'visit_logs' as a top-level collection
     return query(
-      collectionGroup(firestore, 'visit_logs'), 
+      collection(firestore, 'visit_logs'), 
       orderBy('timestamp', 'desc')
     );
   }, [firestore, user?.uid, user?.role]);
@@ -73,10 +73,13 @@ export default function AdminDashboard() {
                 </p>
                 <ol className="list-decimal pl-5 space-y-2 text-sm">
                   <li>
-                    <strong>Security Rules Check:</strong> Ensure that <code>collectionGroup</code> queries are permitted for your user role.
+                    <strong>Schema Check:</strong> Ensure the <code>/visit_logs</code> collection exists at the top level.
                   </li>
                   <li>
-                    <strong>Index Required:</strong> If the error mentions a missing index, check your browser console (F12) for the link to create the <strong>Composite Index</strong>.
+                    <strong>Security Rules:</strong> Confirm that admins have <code>read</code> and <code>list</code> permissions for the <code>/visit_logs</code> collection.
+                  </li>
+                  <li>
+                    <strong>Index Required:</strong> If you see a link in the browser console (F12), click it to create the composite index for sorting.
                   </li>
                 </ol>
               </div>
