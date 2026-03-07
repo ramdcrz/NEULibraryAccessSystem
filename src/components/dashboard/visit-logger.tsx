@@ -175,14 +175,14 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
                   <Info className="h-3 w-3" />
                   <span className="text-[9px] font-black uppercase tracking-tighter">Classification</span>
                 </div>
-                <p className="text-base font-black text-primary truncate">{user.user_type}</p>
+                <p className="text-sm font-black text-primary truncate">{user.user_type}</p>
               </div>
               <div className="md:col-span-3 p-4 rounded-xl bg-muted/40 border border-border/40 backdrop-blur-sm transition-all hover:bg-muted/60">
                 <div className="flex items-center gap-2 mb-1 text-muted-foreground">
                   <Info className="h-3 w-3" />
-                  <span className="text-[9px] font-black uppercase tracking-tighter">Affiliation</span>
+                  <span className="text-[9px] font-black uppercase tracking-tighter">Academic Affiliation</span>
                 </div>
-                <p className="text-base font-black text-primary truncate" title={user.college_office ?? ''}>
+                <p className="text-sm font-black text-primary truncate" title={user.college_office ?? ''}>
                   {user.college_office}
                 </p>
               </div>

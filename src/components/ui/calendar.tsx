@@ -54,7 +54,7 @@ function Calendar({
             <div className="flex justify-center items-center h-10 gap-2 mb-4">
               <Button
                 variant="outline"
-                className="h-8 w-8 p-0 rounded-full border-2 border-primary/20 bg-transparent hover:bg-primary/5 hover:border-primary/50 transition-all"
+                className="h-8 w-8 p-0 rounded-full border-2 border-primary/20 bg-transparent hover:bg-primary/5 hover:border-primary/50 transition-all flex items-center justify-center"
                 onClick={() => previousMonth && goToMonth(previousMonth)}
                 disabled={!previousMonth}
               >
@@ -65,7 +65,7 @@ function Calendar({
               </div>
               <Button
                 variant="outline"
-                className="h-8 w-8 p-0 rounded-full border-2 border-primary/20 bg-transparent hover:bg-primary/5 hover:border-primary/50 transition-all"
+                className="h-8 w-8 p-0 rounded-full border-2 border-primary/20 bg-transparent hover:bg-primary/5 hover:border-primary/50 transition-all flex items-center justify-center"
                 onClick={() => nextMonth && goToMonth(nextMonth)}
                 disabled={!nextMonth}
               >
