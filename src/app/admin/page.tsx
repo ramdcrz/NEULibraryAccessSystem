@@ -8,7 +8,6 @@ import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { 
   ShieldCheck, 
-  History, 
   Database, 
   AlertCircle, 
   UserX, 
@@ -33,7 +32,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useToast } from '@/hooks/use-toast';
 import { toggleUserBlock } from '@/lib/firebase/firestore';
 import { cn } from '@/lib/utils';
-import jsPDF from 'jspdf';
+import jsPDF from 'jsPDF';
 import autoTable from 'jspdf-autotable';
 
 export default function AdminDashboard() {
@@ -42,28 +41,26 @@ export default function AdminDashboard() {
   const firestore = useFirestore();
   const router = useRouter();
   
-  // State for Filters
+  // UI State
+  const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   
-  // Popover control for flow
+  // Popover control
   const [isStartOpen, setIsStartOpen] = useState(false);
   const [isEndOpen, setIsEndOpen] = useState(false);
 
   const [blockingUid, setBlockingUid] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
 
-  // Route Guard: Ensure user is an admin
+  // Route Guard
   useEffect(() => {
     if (!loading && (!user || user.role !== 'admin')) {
       router.push('/');
     }
   }, [user, loading, router]);
 
-  /**
-   * Database Logic: Query visit logs and users.
-   */
   const logsQuery = useMemoFirebase(() => {
     if (!firestore || !user || user.role !== 'admin') return null;
     return query(
@@ -80,7 +77,6 @@ export default function AdminDashboard() {
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection(logsQuery);
   const { data: allUsers } = useCollection(usersQuery);
 
-  // Create a reactive lookup map for blocked status
   const userStatusMap = useMemo(() => {
     const map: Record<string, boolean> = {};
     allUsers?.forEach(u => {
@@ -89,44 +85,28 @@ export default function AdminDashboard() {
     return map;
   }, [allUsers]);
 
-  // Client-side Filtering Logic
   const filteredLogs = useMemo(() => {
     if (!allLogs) return [];
     
     return allLogs.filter(log => {
-      // 1. Email Search
       const emailMatch = log.email.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      // 2. Date Range Check
       let dateMatch = true;
       if (log.timestamp) {
         const logDate = log.timestamp.toDate();
-        // Check if log is before start of start date
         if (startDate && isBefore(logDate, startOfDay(startDate))) dateMatch = false;
-        // Check if log is after end of end date
         if (endDate && isAfter(logDate, endOfDay(endDate))) dateMatch = false;
       }
-
       return emailMatch && dateMatch;
     });
   }, [allLogs, searchQuery, startDate, endDate]);
 
   const handleToggleBlock = async (uid: string, email: string) => {
     if (!uid) {
-      toast({
-        variant: "destructive",
-        title: "Missing Data",
-        description: "Cannot identify the user (missing uid) associated with this log entry.",
-      });
+      toast({ variant: "destructive", title: "Missing Data", description: "Cannot identify user UID." });
       return;
     }
-
     if (email === user?.email) {
-      toast({
-        variant: "destructive",
-        title: "Action Denied",
-        description: "You cannot block your own administrative account.",
-      });
+      toast({ variant: "destructive", title: "Action Denied", description: "You cannot block yourself." });
       return;
     }
 
@@ -135,15 +115,10 @@ export default function AdminDashboard() {
       const isNowBlocked = await toggleUserBlock(uid);
       toast({
         title: isNowBlocked ? "User Blocked" : "User Restored",
-        description: `${email} has been ${isNowBlocked ? 'denied' : 'granted'} access to the library system.`,
+        description: `${email} access status updated.`,
       });
     } catch (error: any) {
-      console.error('Failed to toggle block status:', error);
-      toast({
-        variant: "destructive",
-        title: "System Error",
-        description: error.message || "Failed to update user status.",
-      });
+      toast({ variant: "destructive", title: "System Error", description: error.message });
     } finally {
       setBlockingUid(null);
     }
@@ -157,11 +132,7 @@ export default function AdminDashboard() {
 
   const exportToPDF = () => {
     if (!filteredLogs || filteredLogs.length === 0) {
-      toast({
-        variant: "destructive",
-        title: "Export Failed",
-        description: "There are no records in the current filtered view to export.",
-      });
+      toast({ variant: "destructive", title: "Export Failed", description: "No records to export." });
       return;
     }
 
@@ -170,31 +141,24 @@ export default function AdminDashboard() {
       const doc = new jsPDF();
       const currentDate = format(new Date(), 'yyyy-MM-dd');
       
-      // Header Section
       doc.setFontSize(22);
-      doc.setTextColor(30, 58, 138); // Dark Navy Primary
+      doc.setTextColor(30, 58, 138);
       doc.text('NEU Library Access System', 14, 22);
       
       doc.setFontSize(14);
       doc.setTextColor(0);
       doc.text('University Visit Activity Report', 14, 32);
       
-      doc.setFontSize(9);
-      doc.setTextColor(100);
-      doc.text(`Generated by: ${user?.displayName || user?.email}`, 14, 40);
-      doc.text(`Report Date: ${format(new Date(), 'PPP p')}`, 14, 46);
-      
-      // Filter Metadata in PDF
       let filterSummary = 'Applied Filters: ';
       const filterParts = [];
       if (searchQuery) filterParts.push(`Search: "${searchQuery}"`);
       if (startDate) filterParts.push(`From: ${format(startDate, 'PP')}`);
       if (endDate) filterParts.push(`To: ${format(endDate, 'PP')}`);
-      
       filterSummary += filterParts.length > 0 ? filterParts.join(' | ') : 'None (Full History)';
       
       doc.setFontSize(8);
-      doc.text(filterSummary, 14, 54);
+      doc.setTextColor(100);
+      doc.text(filterSummary, 14, 40);
       
       const tableRows = filteredLogs.map(log => [
         log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy h:mm a') : 'Pending...',
@@ -205,44 +169,18 @@ export default function AdminDashboard() {
       ]);
 
       autoTable(doc, {
-        startY: 60,
+        startY: 45,
         head: [['Date & Time', 'Email', 'User Type', 'College / Office', 'Purpose']],
         body: tableRows,
         theme: 'grid',
-        headStyles: { 
-          fillColor: [30, 58, 138], 
-          textColor: 255,
-          fontSize: 9,
-          fontStyle: 'bold',
-          halign: 'center'
-        },
-        styles: { 
-          fontSize: 8, 
-          cellPadding: 3,
-          overflow: 'linebreak'
-        },
-        columnStyles: {
-          0: { cellWidth: 35 },
-          1: { cellWidth: 40 },
-          2: { cellWidth: 20 },
-          3: { cellWidth: 40 },
-          4: { cellWidth: 'auto' }
-        }
+        headStyles: { fillColor: [30, 58, 138], textColor: 255, fontSize: 9, fontStyle: 'bold' },
+        styles: { fontSize: 8, cellPadding: 3 }
       });
 
       doc.save(`NEULibrary_Visit_Logs_${currentDate}.pdf`);
-      
-      toast({
-        title: "Report Generated",
-        description: "The filtered PDF report has been downloaded.",
-      });
+      toast({ title: "Report Generated", description: "PDF report downloaded." });
     } catch (error: any) {
-      console.error('PDF Export Error:', error);
-      toast({
-        variant: "destructive",
-        title: "Export Error",
-        description: "Could not generate the PDF report.",
-      });
+      toast({ variant: "destructive", title: "Export Error", description: "Failed to generate PDF." });
     } finally {
       setIsExporting(false);
     }
@@ -268,127 +206,137 @@ export default function AdminDashboard() {
             </p>
           </div>
           
-          <Button 
-            onClick={exportToPDF} 
-            disabled={isExporting || logsLoading || filteredLogs.length === 0}
-            className="h-12 px-6 rounded-xl font-bold gap-2 shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-          >
-            {isExporting ? (
-              <LoaderCircle className="h-5 w-5 animate-spin" />
-            ) : (
-              <FileDown className="h-5 w-5" />
-            )}
-            {isExporting ? 'Generating...' : 'Export PDF'}
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button
+              variant={showFilters ? "secondary" : "outline"}
+              onClick={() => setShowFilters(!showFilters)}
+              className="h-12 px-5 rounded-xl font-bold gap-2 transition-all"
+            >
+              <Search className="h-5 w-5" />
+              {showFilters ? 'Hide Search' : 'Search Logs'}
+            </Button>
+
+            <Button 
+              onClick={exportToPDF} 
+              disabled={isExporting || logsLoading || filteredLogs.length === 0}
+              className="h-12 px-6 rounded-xl font-bold gap-2 shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              {isExporting ? (
+                <LoaderCircle className="h-5 w-5 animate-spin" />
+              ) : (
+                <FileDown className="h-5 w-5" />
+              )}
+              {isExporting ? 'Generating...' : 'Export PDF'}
+            </Button>
+          </div>
         </div>
 
-        {/* Filter Controls */}
-        <Card className="glass border-none shadow-lg overflow-hidden">
-          <CardContent className="p-6">
-            <div className="flex flex-col lg:flex-row gap-4 items-end">
-              <div className="flex-1 w-full space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2">
-                  <Search className="h-3 w-3" />
-                  Search By Email
-                </label>
-                <Input
-                  placeholder="Enter email address..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-11 rounded-xl border-2 bg-background/50 focus:border-primary transition-all"
-                />
-              </div>
+        {/* Filter Controls - Toggleable */}
+        {showFilters && (
+          <Card className="glass border-none shadow-lg overflow-hidden animate-in slide-in-from-top-4 duration-500">
+            <CardContent className="p-6">
+              <div className="flex flex-col lg:flex-row gap-4 items-end">
+                <div className="flex-1 w-full space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2">
+                    <Search className="h-3 w-3" />
+                    Search By Email
+                  </label>
+                  <Input
+                    placeholder="Enter email address..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="h-11 rounded-xl border-2 bg-background/50 focus:border-primary transition-all"
+                  />
+                </div>
 
-              <div className="w-full lg:w-auto space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2">
-                  <CalendarIcon className="h-3 w-3" />
-                  Start Date
-                </label>
-                <Popover open={isStartOpen} onOpenChange={setIsStartOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full lg:w-[200px] h-11 justify-start text-left font-normal rounded-xl border-2 bg-background/50",
-                        !startDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "PPP") : "Pick start date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 rounded-2xl shadow-2xl" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={startDate}
-                      onSelect={(date) => {
-                        setStartDate(date);
-                        setIsStartOpen(false);
-                        // If end date isn't set, or is before new start, open end date picker
-                        if (!endDate || (date && isBefore(endDate, date))) {
-                          setIsEndOpen(true);
+                <div className="w-full lg:w-auto space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2">
+                    <CalendarIcon className="h-3 w-3" />
+                    Start Date
+                  </label>
+                  <Popover open={isStartOpen} onOpenChange={setIsStartOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full lg:w-[200px] h-11 justify-start text-left font-normal rounded-xl border-2 bg-background/50",
+                          !startDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {startDate ? format(startDate, "PPP") : "Pick start date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 rounded-2xl shadow-2xl" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={(date) => {
+                          setStartDate(date);
+                          setIsStartOpen(false);
+                          if (!endDate || (date && isBefore(endDate, date))) {
+                            setIsEndOpen(true);
+                          }
+                        }}
+                        disabled={(date) => 
+                          endDate ? isAfter(date, endOfDay(endDate)) : false
                         }
-                      }}
-                      disabled={(date) => 
-                        // Cannot pick start date after end date
-                        endDate ? isAfter(date, endOfDay(endDate)) : false
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-              <div className="w-full lg:w-auto space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2">
-                  <CalendarIcon className="h-3 w-3" />
-                  End Date
-                </label>
-                <Popover open={isEndOpen} onOpenChange={setIsEndOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full lg:w-[200px] h-11 justify-start text-left font-normal rounded-xl border-2 bg-background/50",
-                        !endDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? format(endDate, "PPP") : "Pick end date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 rounded-2xl shadow-2xl" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={(date) => {
-                        setEndDate(date);
-                        setIsEndOpen(false);
-                      }}
-                      disabled={(date) => 
-                        // Cannot pick end date before start date
-                        startDate ? isBefore(date, startOfDay(startDate)) : false
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+                <div className="w-full lg:w-auto space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2">
+                    <CalendarIcon className="h-3 w-3" />
+                    End Date
+                  </label>
+                  <Popover open={isEndOpen} onOpenChange={setIsEndOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full lg:w-[200px] h-11 justify-start text-left font-normal rounded-xl border-2 bg-background/50",
+                          !endDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {endDate ? format(endDate, "PPP") : "Pick end date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 rounded-2xl shadow-2xl" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={endDate}
+                        onSelect={(date) => {
+                          setEndDate(date);
+                          setIsEndOpen(false);
+                        }}
+                        disabled={(date) => 
+                          startDate ? isBefore(date, startOfDay(startDate)) : false
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-              <div className="flex gap-2 w-full lg:w-auto">
-                <Button 
-                  variant="ghost" 
-                  onClick={clearFilters}
-                  disabled={!searchQuery && !startDate && !endDate}
-                  className="h-11 px-4 rounded-xl font-bold gap-2 text-muted-foreground hover:text-foreground"
-                >
-                  <XCircle className="h-4 w-4" />
-                  Clear
-                </Button>
+                <div className="flex gap-2 w-full lg:w-auto">
+                  <Button 
+                    variant="ghost" 
+                    onClick={clearFilters}
+                    disabled={!searchQuery && !startDate && !endDate}
+                    className="h-11 px-4 rounded-xl font-bold gap-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <XCircle className="h-4 w-4" />
+                    Clear
+                  </Button>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         {logsError && (
           <Alert variant="destructive" className="glass border-2 border-destructive/20 shadow-lg">
@@ -418,11 +366,7 @@ export default function AdminDashboard() {
                 </CardTitle>
                 <CardDescription>
                   {searchQuery || startDate || endDate 
-                    ? `Showing results for: ${[
-                        searchQuery && `"${searchQuery}"`,
-                        startDate && `from ${format(startDate, 'PP')}`,
-                        endDate && `to ${format(endDate, 'PP')}`
-                      ].filter(Boolean).join(' ')}`
+                    ? `Filtered view active`
                     : "Displaying full university visit history"}
                 </CardDescription>
               </div>
