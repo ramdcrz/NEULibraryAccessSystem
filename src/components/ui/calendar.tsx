@@ -23,15 +23,15 @@ function Calendar({
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         month_caption: "flex justify-center pt-1 pb-4 relative items-center h-9 gap-3",
-        caption_label: "text-sm font-bold order-2 min-w-[100px] text-center",
+        caption_label: "text-sm font-bold order-2 text-center",
         nav: "flex items-center gap-1",
         button_previous: cn(
           buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 z-20 order-1 border-2"
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 z-20 order-1 border-2 rounded-full"
         ),
         button_next: cn(
           buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 z-20 order-3 border-2"
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 z-20 order-3 border-2 rounded-full"
         ),
         month_grid: "w-full border-collapse space-y-1",
         weekdays: "flex w-full mb-2",
@@ -41,11 +41,11 @@ function Calendar({
         day: "h-9 w-9 text-center text-sm p-0 relative flex-1 flex items-center justify-center [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
         day_button: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-9 w-9 p-0 font-normal aria-selected:opacity-100 mx-auto rounded-xl"
+          "h-9 w-9 p-0 font-normal aria-selected:opacity-100 mx-auto rounded-full"
         ),
         selected:
-          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-        today: "bg-accent text-accent-foreground font-bold",
+          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground rounded-full",
+        today: "bg-accent text-accent-foreground font-bold rounded-full",
         outside:
           "day-outside text-muted-foreground aria-selected:bg-accent/50 aria-selected:text-muted-foreground",
         disabled: "text-muted-foreground opacity-50",
