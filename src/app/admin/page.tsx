@@ -292,7 +292,7 @@ export default function AdminDashboard() {
                         )}
                       >
                         <CalendarIcon className="mr-3 h-4 w-4" />
-                        {startDate ? format(startDate, "PPP") : "Select date"}
+                        {startDate ? format(startDate, "PP") : "Select date"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start">
@@ -328,7 +328,7 @@ export default function AdminDashboard() {
                         )}
                       >
                         <CalendarIcon className="mr-3 h-4 w-4" />
-                        {endDate ? format(endDate, "PPP") : "Select date"}
+                        {endDate ? format(endDate, "PP") : "Select date"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start">
@@ -348,9 +348,9 @@ export default function AdminDashboard() {
               </div>
 
               <Button 
-                variant="ghost" 
+                variant="outline" 
                 onClick={clearFilters}
-                className="h-16 px-8 rounded-2xl font-black gap-2 text-destructive hover:bg-destructive/10"
+                className="h-16 px-8 rounded-2xl font-black gap-2 border-2 border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all"
               >
                 <XCircle className="h-4 w-4" />
                 Clear
