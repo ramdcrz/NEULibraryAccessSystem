@@ -31,17 +31,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (userDoc) {
           setUser({ ...userDoc, uid: firebaseUser.uid, photoURL: firebaseUser.photoURL });
         } else {
-          // If domain restriction is needed, check firebaseUser.email here
-          // For example: if (!firebaseUser.email?.endsWith('@neu.edu.ph')) { ... }
-          const newUserProfile: UserProfile = {
+          const newUserProfile: Omit<UserProfile, 'createdAt'> = {
             email: firebaseUser.email!,
             role: 'user',
-            college_office: null,
-            is_blocked: false,
-            createdAt: new Date(),
+            collegeOffice: null,
+            isBlocked: false,
           };
-          await createUserDoc(firebaseUser.uid, newUserProfile);
-          setUser({ ...newUserProfile, uid: firebaseUser.uid, photoURL: firebaseUser.photoURL });
+          // createUserDoc is now non-blocking
+          createUserDoc(firebaseUser.uid, newUserProfile);
+          setUser({ 
+            ...newUserProfile, 
+            uid: firebaseUser.uid, 
+            photoURL: firebaseUser.photoURL,
+            createdAt: new Date() 
+          });
         }
       } else {
         setUser(null);
@@ -57,7 +60,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       await signInWithPopup(auth, provider);
-      // onAuthStateChanged will handle setting the user state
     } catch (error) {
       console.error("Error during sign in with Google: ", error);
       setLoading(false);

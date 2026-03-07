@@ -68,7 +68,9 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
       
       const entryDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
-      await addVisitLog({
+      // Path: /users/{userId}/visit_logs
+      // addVisitLog is non-blocking and handles its own errors via errorEmitter
+      addVisitLog({
         userId: user.uid,
         email: user.email,
         userType: data.userType,
@@ -82,12 +84,7 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
       });
       form.reset();
     } catch (error) {
-      console.error('Failed to log visit:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Failed to log your visit. Please try again.',
-      });
+      console.error('Failed to initiate log submission:', error);
     } finally {
       setIsSubmitting(false);
     }

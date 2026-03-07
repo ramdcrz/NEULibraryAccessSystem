@@ -9,6 +9,8 @@ import {
 } from 'firebase/firestore';
 import { db } from './config';
 import type { UserProfile, VisitLogPayload } from '@/types';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 // Fetch a user document from Firestore
 export async function getUserDoc(uid: string): Promise<UserProfile | null> {
@@ -20,29 +22,44 @@ export async function getUserDoc(uid: string): Promise<UserProfile | null> {
     return {
       email: data.email,
       role: data.role,
-      college_office: data.college_office,
-      is_blocked: data.is_blocked,
-      createdAt: (data.createdAt as Timestamp).toDate(),
-    };
+      collegeOffice: data.collegeOffice,
+      isBlocked: data.isBlocked,
+      createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
+    } as UserProfile;
   } else {
     return null;
   }
 }
 
-// Create a new user document in Firestore
-export async function createUserDoc(uid: string, data: Omit<UserProfile, 'createdAt'>): Promise<void> {
+// Create a new user document in Firestore (Non-blocking)
+export function createUserDoc(uid: string, data: Omit<UserProfile, 'createdAt'>) {
   const userRef = doc(db, 'users', uid);
-  await setDoc(userRef, {
+  setDoc(userRef, {
     ...data,
     createdAt: serverTimestamp(),
+  }).catch(async (error) => {
+    errorEmitter.emit('permission-error', new FirestorePermissionError({
+      path: userRef.path,
+      operation: 'create',
+      requestResourceData: data,
+    }));
   });
 }
 
-// Add a new visit log to Firestore
-export async function addVisitLog(logData: VisitLogPayload): Promise<void> {
-  const visitLogsCollection = collection(db, 'visit_logs');
-  await addDoc(visitLogsCollection, {
+// Add a new visit log to Firestore (Non-blocking)
+export function addVisitLog(logData: VisitLogPayload) {
+  // Path corrected to match security rules: /users/{userId}/visit_logs/{visitLogId}
+  const visitLogsCollection = collection(db, 'users', logData.userId, 'visit_logs');
+  
+  addDoc(visitLogsCollection, {
     ...logData,
     timestamp: serverTimestamp(),
+  }).catch(async (error) => {
+    const permissionError = new FirestorePermissionError({
+      path: visitLogsCollection.path,
+      operation: 'create',
+      requestResourceData: logData,
+    });
+    errorEmitter.emit('permission-error', permissionError);
   });
 }

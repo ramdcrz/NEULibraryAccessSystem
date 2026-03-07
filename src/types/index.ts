@@ -3,8 +3,8 @@ import type { Timestamp } from 'firebase/firestore';
 export interface UserProfile {
   email: string;
   role: 'admin' | 'user';
-  college_office: string | null;
-  is_blocked: boolean;
+  collegeOffice: string | null;
+  isBlocked: boolean;
   createdAt: Date | Timestamp;
 }
 
