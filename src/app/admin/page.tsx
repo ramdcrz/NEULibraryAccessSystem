@@ -15,8 +15,6 @@ import { format, isWithinInterval, subDays, startOfDay, endOfDay } from 'date-fn
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import type { VisitLog } from '@/types';
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
@@ -24,35 +22,34 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
+  const [isAuthConfirmed, setIsAuthConfirmed] = useState(false);
 
-  // Guard the query: only run if user is confirmed as admin
-  const logsQuery = useMemoFirebase(() => {
-    if (!firestore || !user || user.role !== 'admin') return null;
-    
-    try {
-      // collectionGroup allows querying across all users/userId/visit_logs
-      return query(
-        collectionGroup(firestore, 'visit_logs'), 
-        orderBy('timestamp', 'desc'), 
-        limit(300)
-      );
-    } catch (e) {
-      console.error("Query construction failed:", e);
-      return null;
-    }
-  }, [firestore, user?.role, user?.uid]);
-
-  const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection<VisitLog>(logsQuery);
-
+  // Defensive Auth Check
   useEffect(() => {
     if (!loading) {
       if (!user) {
         router.push('/login');
-      } else if (user.role !== 'admin') {
+      } else if (user.role === 'admin') {
+        setIsAuthConfirmed(true);
+      } else {
         router.push('/');
       }
     }
   }, [user, loading, router]);
+
+  // Guard the query: Only run if auth is fully confirmed to prevent permission errors
+  const logsQuery = useMemoFirebase(() => {
+    if (!firestore || !isAuthConfirmed) return null;
+    
+    // collectionGroup allows querying across all users/userId/visit_logs
+    return query(
+      collectionGroup(firestore, 'visit_logs'), 
+      orderBy('timestamp', 'desc'), 
+      limit(300)
+    );
+  }, [firestore, isAuthConfirmed]);
+
+  const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection(logsQuery);
 
   const filteredLogs = useMemo(() => {
     if (!allLogs) return [];
@@ -107,7 +104,7 @@ export default function AdminDashboard() {
     };
   }, [allLogs]);
 
-  if (loading || !user || user.role !== 'admin') {
+  if (loading || !isAuthConfirmed) {
     return <Loading />;
   }
 
@@ -132,7 +129,7 @@ export default function AdminDashboard() {
             <AlertTitle>Database Access Error</AlertTitle>
             <AlertDescription className="mt-2 space-y-4">
               <p>
-                We encountered a problem retrieving the visitor logs. This usually happens if a required index is missing or if permissions are strictly denied.
+                We encountered a problem retrieving the visitor logs. This usually happens if a required index is missing.
               </p>
               <div className="bg-destructive/10 p-4 rounded-xl border border-destructive/20">
                 <p className="font-bold flex items-center gap-2 mb-2">
