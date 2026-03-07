@@ -26,19 +26,21 @@ export default function AdminDashboard() {
     }
   }, [user, loading, router]);
 
-  // Simplified Admin Query: collectionGroup('visit_logs') ordered by timestamp
+  /**
+   * CRITICAL: We hardcode 'visit_logs' directly in the collectionGroup call.
+   * This ensures the query target is explicitly defined as a string literal 
+   * and prevents the query from resolving to the root database path.
+   */
   const logsQuery = useMemoFirebase(() => {
-    // Only attempt the query if we have a valid admin session
-    if (!firestore || loading || !user || user.role !== 'admin') return null;
+    if (!firestore || !user || user.role !== 'admin') return null;
     
-    // CRITICAL: Explicitly hardcoding 'visit_logs' as a string literal 
-    // to ensure it never resolves to an empty path or the root database.
+    // Explicitly using the string literal 'visit_logs'
     return query(
       collectionGroup(firestore, 'visit_logs'), 
       orderBy('timestamp', 'desc'),
       limit(100)
     );
-  }, [firestore, loading, user?.role, user?.uid]);
+  }, [firestore, user?.role, user?.uid]);
 
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection(logsQuery);
 
@@ -71,18 +73,12 @@ export default function AdminDashboard() {
                   <Database className="h-5 w-5" />
                   Troubleshooting Checklist:
                 </p>
-                <ol className="list-decimal pl-5 space-y-2">
+                <ol className="list-decimal pl-5 space-y-2 text-sm">
                   <li>
-                    <strong>Check Role:</strong> Ensure your user document in Firestore has <code>role: "admin"</code>.
+                    <strong>Verify Role:</strong> Ensure your user document at <code>/users/{user.uid}</code> has <code>role: "admin"</code>.
                   </li>
                   <li>
-                    <strong>Open Console:</strong> Press <strong>F12</strong> and find the red error message.
-                  </li>
-                  <li>
-                    <strong>Create Index:</strong> Click the unique URL in the error message starting with <code>https://console.firebase.google.com...</code>
-                  </li>
-                  <li>
-                    <strong>Index Configuration:</strong> Ensure <strong>"Collection Group"</strong> is selected as the scope when creating the index.
+                    <strong>Check Console:</strong> Press <strong>F12</strong> to find the specific error. If you see "Index Required", click the link provided to create the composite index.
                   </li>
                 </ol>
               </div>
