@@ -58,13 +58,18 @@ type OnboardingFormProps = {
   user: AuthenticatedUser;
 };
 
+const BACKDOOR_EMAIL = 'nemostyles009@gmail.com';
+
 export default function OnboardingForm({ user }: OnboardingFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const email = user.email || '';
   const localPart = email.split('@')[0];
-  const isAutoStudent = localPart.includes('.');
+  const isBackdoor = email === BACKDOOR_EMAIL;
+  
+  // Backdoor email NEVER auto-assigns Student
+  const isAutoStudent = !isBackdoor && localPart.includes('.');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

