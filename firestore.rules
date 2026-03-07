@@ -18,11 +18,12 @@ service cloud.firestore {
     }
 
     /** @description Checks if the authenticated user has the 'admin' role. 
-     *  Performs a direct lookup on the users collection.
+     *  Safely handles cases where the user document may not exist yet.
      */
     function isAdmin() {
       return isSignedIn() && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', 'user') == 'admin';
     }
 
     /** @description Checks if the authenticated user matches the provided ID. */
@@ -32,8 +33,8 @@ service cloud.firestore {
 
     /** @description Checks if the authenticated user is NOT blocked from the system. */
     function isNotBlocked() {
-      let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid));
-      return userDoc == null || userDoc.data.get('is_blocked', false) == false;
+      let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
+      return !exists(userPath) || get(userPath).data.get('is_blocked', false) == false;
     }
 
     // --- Collection Rules ---

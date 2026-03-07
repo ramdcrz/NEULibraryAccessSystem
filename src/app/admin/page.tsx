@@ -26,10 +26,19 @@ export default function AdminDashboard() {
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
 
   // Guard the query: Only attempt to fetch if the user is confirmed as an admin.
+  // We add an extra check for firestore and user existence to be absolutely defensive.
   const logsQuery = useMemoFirebase(() => {
-    // CRITICAL: Ensure firestore, user, and the admin role are fully resolved before querying.
     if (!firestore || !user || user.role !== 'admin') return null;
-    return query(collectionGroup(firestore, 'visit_logs'), orderBy('timestamp', 'desc'), limit(200));
+    try {
+      return query(
+        collectionGroup(firestore, 'visit_logs'), 
+        orderBy('timestamp', 'desc'), 
+        limit(200)
+      );
+    } catch (e) {
+      console.error("Query construction error:", e);
+      return null;
+    }
   }, [firestore, user]);
 
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection<VisitLog>(logsQuery);
@@ -73,7 +82,7 @@ export default function AdminDashboard() {
 
   // Analytics Calculations
   const stats = useMemo(() => {
-    if (!allLogs) return { today: 0, topCollege: 'N/A', topReason: 'N/A' };
+    if (!allLogs || allLogs.length === 0) return { today: 0, topCollege: 'N/A', topReason: 'N/A' };
 
     const todayStr = new Date().toISOString().split('T')[0];
     const todayLogs = allLogs.filter(l => l.entryDate === todayStr);
@@ -120,11 +129,11 @@ export default function AdminDashboard() {
         {logsError && (
           <Alert variant="destructive" className="glass border-2 border-destructive/20 shadow-lg">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Database Error</AlertTitle>
+            <AlertTitle>Database Sync Issue</AlertTitle>
             <AlertDescription>
               {logsError.message.includes('permission') 
-                ? "You do not have administrative permissions to view these logs. Please check your account role in the console."
-                : "Failed to retrieve logs. If this is your first time, you may need to generate a composite index via the link in your browser console (F12)."}
+                ? "Insufficient permissions to access logs. Please verify your role is set to 'admin' in the database."
+                : "Failed to retrieve logs. Check the browser console (F12) for a clickable link to generate the required Composite Index."}
             </AlertDescription>
           </Alert>
         )}
