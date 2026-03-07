@@ -159,9 +159,6 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
             </div>
             <div>
               <CardTitle className="text-2xl font-bold tracking-tight">Log Library Visit</CardTitle>
-              <CardDescription className="text-base">
-                Welcome, {user.displayName || user.email}
-              </CardDescription>
             </div>
           </div>
           <Badge variant="outline" className="px-4 py-1 text-sm font-bold bg-primary/5 border-primary/20">
