@@ -7,15 +7,16 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Helper: Check if user is an admin
-    // This MUST NOT be used inside the /users/{userId} rule to avoid recursion
+    // Helper: Is the requester an admin?
+    // This performs a lookup. We must ensure the rules for the user doc itself
+    // don't call this function to avoid recursion.
     function isSystemAdmin() {
       return isSignedIn() && 
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
     // 1. COLLECTION GROUP RULE
-    // This targets the Admin Dashboard query. 
+    // This targets the Admin Dashboard query: collectionGroup(db, 'visit_logs')
     // It must be at the top level to catch collectionGroup requests.
     match /{path=**}/visit_logs/{logId} {
       allow list: if isSystemAdmin();
@@ -24,15 +25,18 @@ service cloud.firestore {
 
     // 2. USER DOCUMENT RULES
     match /users/{userId} {
-      // BASE RULE: Ownership check comes first and DOES NOT call isSystemAdmin()
-      // This is the critical "Base Case" that breaks the recursion loop.
+      // BASE RULE: Ownership check. 
+      // CRITICAL: We DO NOT call isSystemAdmin() here. 
+      // This allows the admin to read their OWN document (which is required for 
+      // isSystemAdmin() to work in other rules) without causing a recursion loop.
       allow read, write: if isSignedIn() && request.auth.uid == userId;
 
-      // Secondary rule for admins (this call to isSystemAdmin is safe because 
-      // the ownership check above will have already matched for the admin's own doc)
+      // Secondary rule for admins to manage OTHER users.
+      // This call to isSystemAdmin is safe because if the user is checking 
+      // their own doc, the rule above will have already matched.
       allow read, write: if isSystemAdmin();
 
-      // Rules for nested visit logs (for direct access via user path)
+      // Rules for nested visit logs (direct path access)
       match /visit_logs/{logId} {
         allow read, write: if isSignedIn() && (
           request.auth.uid == userId || isSystemAdmin()

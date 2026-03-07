@@ -26,17 +26,19 @@ export default function AdminDashboard() {
     }
   }, [user, loading, router]);
 
-  // Simplified and Robust Query
+  // Robust Collection Group Query
   const logsQuery = useMemoFirebase(() => {
-    // Only attempt the query once we have firestore and the user's role is confirmed as admin
+    // Only attempt the query if we have a valid admin session
     if (!firestore || loading || !user || user.role !== 'admin') return null;
     
-    // Explicitly hardcoding 'visit_logs' to ensure it targets the correct collection group
+    // Explicitly hardcoding 'visit_logs' as requested to ensure it 
+    // targets the correct collection group across all users.
+    const collectionId = 'visit_logs';
     return query(
-      collectionGroup(firestore, 'visit_logs'), 
+      collectionGroup(firestore, collectionId), 
       orderBy('timestamp', 'desc')
     );
-  }, [firestore, loading, user?.role]);
+  }, [firestore, loading, user?.role, user?.uid]);
 
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection(logsQuery);
 
@@ -55,29 +57,29 @@ export default function AdminDashboard() {
           </div>
           <h1 className="text-4xl font-black tracking-tight">Library Visit Logs</h1>
           <p className="text-muted-foreground text-lg">
-            A simplified, real-time view of all recent library entries.
+            Real-time feed of all library entries across the university.
           </p>
         </div>
 
         {logsError && (
           <Alert variant="destructive" className="glass border-2 border-destructive/20 shadow-lg">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle className="text-lg font-bold">Database Access Error</AlertTitle>
+            <AlertTitle className="text-lg font-bold">Database Connection Error</AlertTitle>
             <AlertDescription className="mt-4 space-y-6">
               <div className="bg-destructive/10 p-6 rounded-2xl border border-destructive/20 text-foreground">
                 <p className="font-bold flex items-center gap-2 mb-4 text-lg">
                   <Database className="h-5 w-5" />
-                  Troubleshooting Steps:
+                  Required Troubleshooting:
                 </p>
                 <ol className="list-decimal pl-5 space-y-4">
                   <li>
-                    <strong>Check the Console:</strong> Press <strong>F12</strong>. If you see a red error message about "Missing Permissions," your account might not be correctly set as an <code>admin</code> in Firestore.
+                    <strong>Check the Console:</strong> Press <strong>F12</strong> and look for a red error message.
                   </li>
                   <li>
-                    <strong>Index Required:</strong> If you see "The query requires an index," <strong>click the unique link</strong> provided in that console message.
+                    <strong>Create Composite Index:</strong> If you see "The query requires an index," <strong>click the unique URL</strong> provided in that message.
                   </li>
                   <li>
-                    <strong>Index Configuration:</strong> When the link opens, ensure the <strong>Query Scope</strong> is set to <strong>"Collection Group"</strong>.
+                    <strong>Verify Role:</strong> Ensure your user document in Firestore has <code>role: "admin"</code>.
                   </li>
                 </ol>
               </div>
