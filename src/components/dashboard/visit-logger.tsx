@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle, ChevronRight, UserCircle, Briefcase, GraduationCap } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { addVisitLog } from '@/lib/firebase/firestore';
 import type { AuthenticatedUser } from '@/contexts/auth-provider';
+import { cn } from '@/lib/utils';
 
 const visitReasons = [
   'Research',
@@ -36,11 +37,15 @@ const visitReasons = [
   'Other',
 ];
 
-const userTypes = ['Student', 'Faculty', 'Employee'];
+const userTypes = [
+  { id: 'Student', icon: GraduationCap },
+  { id: 'Faculty', icon: UserCircle },
+  { id: 'Employee', icon: Briefcase },
+] as const;
 
 const formSchema = z.object({
   userType: z.enum(['Student', 'Faculty', 'Employee'], {
-    required_error: 'You need to select a user type.',
+    required_error: 'Please select your status.',
   }),
   reason: z.string({
     required_error: 'Please select a reason for your visit.',
@@ -57,6 +62,9 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      userType: 'Student',
+    }
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
@@ -66,21 +74,19 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
         throw new Error('User not authenticated');
       }
       
-      const entryDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      const entryDate = new Date().toISOString().split('T')[0];
 
-      // Path: /users/{userId}/visit_logs
-      // addVisitLog is non-blocking and handles its own errors via errorEmitter
       addVisitLog({
         userId: user.uid,
         email: user.email,
-        userType: data.userType,
+        userType: data.userType.toLowerCase() as any,
         reason: data.reason,
         entryDate: entryDate,
       });
 
       toast({
-        title: 'Visit Logged!',
-        description: 'Thank you for logging your visit.',
+        title: 'Success!',
+        description: 'Your visit has been logged. Have a great day!',
       });
       form.reset();
     } catch (error) {
@@ -91,34 +97,54 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
   }
 
   return (
-    <Card className="w-full max-w-2xl shadow-lg">
-      <CardHeader>
-        <CardTitle>Log Library Visit</CardTitle>
-        <CardDescription>Select your status and the purpose of your visit today.</CardDescription>
+    <Card className="glass overflow-hidden">
+      <CardHeader className="bg-primary/5 pb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-2 rounded-full bg-primary/20 text-primary">
+            <BookMarked className="h-5 w-5" />
+          </div>
+          <CardTitle className="text-2xl font-bold">Log Library Visit</CardTitle>
+        </div>
+        <CardDescription className="text-base">Quickly record your entry by selecting your role and purpose.</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-8 px-6 pb-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
               name="userType"
               render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel>I am a...</FormLabel>
+                <FormItem className="space-y-4">
+                  <FormLabel className="text-lg font-semibold">I am a...</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex flex-col space-y-1 sm:flex-row sm:space-x-4 sm:space-y-0"
+                      className="grid grid-cols-1 sm:grid-cols-3 gap-4"
                     >
-                      {userTypes.map((type) => (
-                        <FormItem key={type} className="flex items-center space-x-3 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value={type} />
-                          </FormControl>
-                          <FormLabel className="font-normal">{type}</FormLabel>
-                        </FormItem>
-                      ))}
+                      {userTypes.map((type) => {
+                        const Icon = type.icon;
+                        const isSelected = field.value === type.id;
+                        return (
+                          <FormLabel
+                            key={type.id}
+                            className={cn(
+                              "flex flex-col items-center justify-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:bg-accent/5",
+                              isSelected 
+                                ? "border-primary bg-primary/5 shadow-inner" 
+                                : "border-border/50 opacity-70"
+                            )}
+                          >
+                            <FormControl>
+                              <RadioGroupItem value={type.id} className="sr-only" />
+                            </FormControl>
+                            <Icon className={cn("h-8 w-8", isSelected ? "text-primary" : "text-muted-foreground")} />
+                            <span className={cn("font-semibold", isSelected ? "text-primary" : "text-muted-foreground")}>
+                              {type.id}
+                            </span>
+                          </FormLabel>
+                        );
+                      })}
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
@@ -130,17 +156,17 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
               control={form.control}
               name="reason"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Purpose of Visit</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-lg font-semibold">Purpose of Visit</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a reason" />
+                      <SelectTrigger className="h-12 text-base glass border-2">
+                        <SelectValue placeholder="Select why you are here" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="glass">
                       {visitReasons.map((reason) => (
-                        <SelectItem key={reason} value={reason}>
+                        <SelectItem key={reason} value={reason} className="py-3 text-base">
                           {reason}
                         </SelectItem>
                       ))}
@@ -150,9 +176,19 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-              Log My Visit
+            <Button 
+              type="submit" 
+              className="w-full h-14 text-lg font-bold shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98]" 
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <LoaderCircle className="mr-2 h-6 w-6 animate-spin" />
+              ) : (
+                <>
+                  Log My Visit
+                  <ChevronRight className="ml-2 h-5 w-5" />
+                </>
+              )}
             </Button>
           </form>
         </Form>
