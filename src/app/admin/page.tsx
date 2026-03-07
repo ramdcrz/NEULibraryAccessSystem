@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -48,6 +47,10 @@ export default function AdminDashboard() {
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   
+  // Popover control for flow
+  const [isStartOpen, setIsStartOpen] = useState(false);
+  const [isEndOpen, setIsEndOpen] = useState(false);
+
   const [blockingUid, setBlockingUid] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -98,7 +101,9 @@ export default function AdminDashboard() {
       let dateMatch = true;
       if (log.timestamp) {
         const logDate = log.timestamp.toDate();
+        // Check if log is before start of start date
         if (startDate && isBefore(logDate, startOfDay(startDate))) dateMatch = false;
+        // Check if log is after end of end date
         if (endDate && isAfter(logDate, endOfDay(endDate))) dateMatch = false;
       }
 
@@ -155,7 +160,7 @@ export default function AdminDashboard() {
       toast({
         variant: "destructive",
         title: "Export Failed",
-        description: "There are no records in the current view to export. Adjust your filters and try again.",
+        description: "There are no records in the current filtered view to export.",
       });
       return;
     }
@@ -172,7 +177,7 @@ export default function AdminDashboard() {
       
       doc.setFontSize(14);
       doc.setTextColor(0);
-      doc.text('Filtered Visit Logs Report', 14, 32);
+      doc.text('University Visit Activity Report', 14, 32);
       
       doc.setFontSize(9);
       doc.setTextColor(100);
@@ -180,14 +185,16 @@ export default function AdminDashboard() {
       doc.text(`Report Date: ${format(new Date(), 'PPP p')}`, 14, 46);
       
       // Filter Metadata in PDF
-      let filterText = 'Active Filters: ';
-      if (searchQuery) filterText += `Email contains "${searchQuery}"; `;
-      if (startDate) filterText += `From ${format(startDate, 'PP')}; `;
-      if (endDate) filterText += `To ${format(endDate, 'PP')}; `;
-      if (!searchQuery && !startDate && !endDate) filterText += 'None (Full History)';
+      let filterSummary = 'Applied Filters: ';
+      const filterParts = [];
+      if (searchQuery) filterParts.push(`Search: "${searchQuery}"`);
+      if (startDate) filterParts.push(`From: ${format(startDate, 'PP')}`);
+      if (endDate) filterParts.push(`To: ${format(endDate, 'PP')}`);
+      
+      filterSummary += filterParts.length > 0 ? filterParts.join(' | ') : 'None (Full History)';
       
       doc.setFontSize(8);
-      doc.text(filterText, 14, 52);
+      doc.text(filterSummary, 14, 54);
       
       const tableRows = filteredLogs.map(log => [
         log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy h:mm a') : 'Pending...',
@@ -198,7 +205,7 @@ export default function AdminDashboard() {
       ]);
 
       autoTable(doc, {
-        startY: 58,
+        startY: 60,
         head: [['Date & Time', 'Email', 'User Type', 'College / Office', 'Purpose']],
         body: tableRows,
         theme: 'grid',
@@ -271,7 +278,7 @@ export default function AdminDashboard() {
             ) : (
               <FileDown className="h-5 w-5" />
             )}
-            {isExporting ? 'Generating Report...' : 'Export PDF'}
+            {isExporting ? 'Generating...' : 'Export PDF'}
           </Button>
         </div>
 
@@ -297,7 +304,7 @@ export default function AdminDashboard() {
                   <CalendarIcon className="h-3 w-3" />
                   Start Date
                 </label>
-                <Popover>
+                <Popover open={isStartOpen} onOpenChange={setIsStartOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -307,14 +314,25 @@ export default function AdminDashboard() {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "PPP") : "Pick a date"}
+                      {startDate ? format(startDate, "PPP") : "Pick start date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0 rounded-2xl shadow-2xl" align="start">
                     <Calendar
                       mode="single"
                       selected={startDate}
-                      onSelect={setStartDate}
+                      onSelect={(date) => {
+                        setStartDate(date);
+                        setIsStartOpen(false);
+                        // If end date isn't set, or is before new start, open end date picker
+                        if (!endDate || (date && isBefore(endDate, date))) {
+                          setIsEndOpen(true);
+                        }
+                      }}
+                      disabled={(date) => 
+                        // Cannot pick start date after end date
+                        endDate ? isAfter(date, endOfDay(endDate)) : false
+                      }
                       initialFocus
                     />
                   </PopoverContent>
@@ -326,7 +344,7 @@ export default function AdminDashboard() {
                   <CalendarIcon className="h-3 w-3" />
                   End Date
                 </label>
-                <Popover>
+                <Popover open={isEndOpen} onOpenChange={setIsEndOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -336,14 +354,21 @@ export default function AdminDashboard() {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? format(endDate, "PPP") : "Pick a date"}
+                      {endDate ? format(endDate, "PPP") : "Pick end date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0 rounded-2xl shadow-2xl" align="start">
                     <Calendar
                       mode="single"
                       selected={endDate}
-                      onSelect={setEndDate}
+                      onSelect={(date) => {
+                        setEndDate(date);
+                        setIsEndOpen(false);
+                      }}
+                      disabled={(date) => 
+                        // Cannot pick end date before start date
+                        startDate ? isBefore(date, startOfDay(startDate)) : false
+                      }
                       initialFocus
                     />
                   </PopoverContent>
@@ -392,7 +417,13 @@ export default function AdminDashboard() {
                   {filteredLogs.length} Records Found
                 </CardTitle>
                 <CardDescription>
-                  {searchQuery || startDate || endDate ? "Displaying filtered records" : "Displaying full university visit history"}
+                  {searchQuery || startDate || endDate 
+                    ? `Showing results for: ${[
+                        searchQuery && `"${searchQuery}"`,
+                        startDate && `from ${format(startDate, 'PP')}`,
+                        endDate && `to ${format(endDate, 'PP')}`
+                      ].filter(Boolean).join(' ')}`
+                    : "Displaying full university visit history"}
                 </CardDescription>
               </div>
             </div>
