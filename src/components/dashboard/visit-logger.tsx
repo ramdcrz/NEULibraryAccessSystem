@@ -14,7 +14,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from '@/components/ui/form';
 import {
   Select,
@@ -67,9 +66,10 @@ const formSchema = z.object({
 
 type VisitLoggerProps = {
   user: AuthenticatedUser;
+  onLogSuccess?: () => void;
 };
 
-export default function VisitLogger({ user }: VisitLoggerProps) {
+export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
   const { toast } = useToast();
   const { signOut } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -113,6 +113,7 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
       });
       
       setIsLogged(true);
+      onLogSuccess?.();
       form.reset();
 
       // The Kiosk Reset: Auto-logout after 5 seconds

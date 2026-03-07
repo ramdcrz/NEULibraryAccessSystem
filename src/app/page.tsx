@@ -16,6 +16,7 @@ export default function Home() {
   const router = useRouter();
   const { toast } = useToast();
   const [year, setYear] = useState<number | null>(null);
+  const [hasLogged, setHasLogged] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -78,24 +79,26 @@ export default function Home() {
     <div className="flex min-h-screen w-full flex-col gradient-bg">
       <Header />
       <main className="flex flex-1 flex-col items-center justify-center gap-8 p-4 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <div className="w-full max-w-2xl text-center space-y-4">
-          <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold tracking-wide uppercase mb-2">
-            Library Access Management
+        {!hasLogged && (
+          <div className="w-full max-w-2xl text-center space-y-4">
+            <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold tracking-wide uppercase mb-2">
+              Library Access Management
+            </div>
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+              Welcome, <span className="text-primary">{getFirstName()}</span>
+            </h1>
+            <p className="mx-auto max-w-[700px] text-lg text-muted-foreground md:text-xl">
+              {needsOnboarding 
+                ? "Let's get you set up before you log your visit." 
+                : "Your presence matters. Help us maintain a secure and productive environment by logging your visit."}
+            </p>
           </div>
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            Welcome, <span className="text-primary">{getFirstName()}</span>
-          </h1>
-          <p className="mx-auto max-w-[700px] text-lg text-muted-foreground md:text-xl">
-            {needsOnboarding 
-              ? "Let's get you set up before you log your visit." 
-              : "Your presence matters. Help us maintain a secure and productive environment by logging your visit."}
-          </p>
-        </div>
+        )}
         <div className="w-full max-w-2xl">
           {needsOnboarding ? (
             <OnboardingForm user={user} />
           ) : (
-            <VisitLogger user={user} />
+            <VisitLogger user={user} onLogSuccess={() => setHasLogged(true)} />
           )}
         </div>
       </main>
