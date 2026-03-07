@@ -7,7 +7,7 @@ import Header from '@/components/layout/header';
 import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ShieldCheck, History, Database, AlertCircle } from 'lucide-react';
-import { collectionGroup, query, orderBy } from 'firebase/firestore';
+import { collectionGroup, query, orderBy, limit } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -31,10 +31,12 @@ export default function AdminDashboard() {
     // Only attempt the query if we have a valid admin session
     if (!firestore || loading || !user || user.role !== 'admin') return null;
     
-    // Explicitly hardcoding 'visit_logs' as a string literal to ensure path correctness
+    // CRITICAL: Explicitly hardcoding 'visit_logs' as a string literal 
+    // to ensure it never resolves to an empty path or the root database.
     return query(
       collectionGroup(firestore, 'visit_logs'), 
-      orderBy('timestamp', 'desc')
+      orderBy('timestamp', 'desc'),
+      limit(100)
     );
   }, [firestore, loading, user?.role, user?.uid]);
 
@@ -80,7 +82,7 @@ export default function AdminDashboard() {
                     <strong>Create Index:</strong> Click the unique URL in the error message starting with <code>https://console.firebase.google.com...</code>
                   </li>
                   <li>
-                    <strong>Query Scope:</strong> When creating the index, ensure <strong>"Collection Group"</strong> is selected.
+                    <strong>Index Configuration:</strong> Ensure <strong>"Collection Group"</strong> is selected as the scope when creating the index.
                   </li>
                 </ol>
               </div>
@@ -95,7 +97,7 @@ export default function AdminDashboard() {
                 <History className="h-5 w-5 text-primary" />
                 Live Visit Logs
               </CardTitle>
-              <CardDescription>Recent activity across all departments</CardDescription>
+              <CardDescription>Recent activity across all departments (Last 100 logs)</CardDescription>
             </div>
           </CardHeader>
           <CardContent className="p-0">
