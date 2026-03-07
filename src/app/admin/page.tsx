@@ -269,7 +269,7 @@ export default function AdminDashboard() {
 
         {/* Filter Controls */}
         {showFilters && (
-          <Card className="glass border-none rounded-[3rem] p-10 animate-in slide-in-from-top-4 duration-500">
+          <Card className="glass rounded-[3rem] p-10 animate-in slide-in-from-top-4 duration-500">
             <div className="flex flex-col lg:flex-row gap-8 items-end">
               <div className="flex-1 w-full space-y-4">
                 <label className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground px-1 flex items-center gap-2">
@@ -368,7 +368,7 @@ export default function AdminDashboard() {
         )}
 
         {logsError && (
-          <Alert variant="destructive" className="glass border-none rounded-[3rem] p-10">
+          <Alert variant="destructive" className="glass rounded-[3rem] p-10">
             <AlertCircle className="h-8 w-8" />
             <AlertTitle className="text-2xl font-black ml-4">Terminal Error</AlertTitle>
             <AlertDescription className="mt-4 text-lg font-bold opacity-80">
@@ -377,7 +377,7 @@ export default function AdminDashboard() {
           </Alert>
         )}
 
-        <Card className="glass border-none overflow-hidden rounded-[3rem]">
+        <Card className="glass overflow-hidden rounded-[3rem]">
           <CardHeader className="p-10 border-b border-white/10 bg-white/5">
             <div className="flex items-center gap-5">
               <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-white/10">
@@ -394,7 +394,7 @@ export default function AdminDashboard() {
                 </CardDescription>
               </div>
             </div>
-          </CardHeader>
+          </Header>
           <CardContent className="p-0">
             {logsLoading ? (
               <div className="p-32 flex flex-col items-center justify-center gap-6">

@@ -62,8 +62,10 @@
 }
 
 .glass {
-  /* Apple Liquid Glass: High transparency, high blur, ultra-thin border */
-  @apply bg-white/5 dark:bg-black/10 backdrop-blur-[40px] border border-white/20 dark:border-white/5 shadow-none;
+  /* Apple Liquid Glass: High transparency, high blur, precise white border */
+  @apply bg-white/10 dark:bg-white/5 backdrop-blur-[40px] border border-white/20 dark:border-white/10 shadow-none;
+  /* Simulating physical thickness with a very subtle inner glow */
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .gradient-bg {
