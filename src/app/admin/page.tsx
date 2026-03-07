@@ -34,7 +34,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useToast } from '@/hooks/use-toast';
 import { toggleUserBlock } from '@/lib/firebase/firestore';
 import { cn } from '@/lib/utils';
-import jspdf from 'jspdf';
+import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 export default function AdminDashboard() {
@@ -153,7 +153,7 @@ export default function AdminDashboard() {
 
     setIsExporting(true);
     try {
-      const doc = new jspdf();
+      const doc = new jsPDF();
       const currentDate = format(new Date(), 'yyyy-MM-dd');
       
       doc.setFontSize(22);
@@ -227,7 +227,7 @@ export default function AdminDashboard() {
             <Button
               variant={showFilters ? "secondary" : "outline"}
               onClick={() => setShowFilters(!showFilters)}
-              className="h-14 px-8 rounded-2xl font-black gap-2 transition-all border-2"
+              className="h-14 px-8 rounded-2xl font-black gap-2 transition-all glass border-2"
             >
               <Search className="h-4 w-4" />
               {showFilters ? 'Hide Filters' : 'Filter View'}
@@ -255,7 +255,7 @@ export default function AdminDashboard() {
             { label: 'Today', val: stats.today, icon: Clock, col: 'green-500' },
             { label: 'Verified Reach', val: stats.unique, icon: Users, col: 'amber-500' }
           ].map((stat, i) => (
-            <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group border-none">
+            <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
                 <stat.icon className="h-32 w-32" />
               </div>
@@ -376,7 +376,7 @@ export default function AdminDashboard() {
         )}
 
         <Card className="glass overflow-hidden rounded-[3rem]">
-          <CardHeader className="p-10 border-b border-white/10 bg-white/5">
+          <CardHeader className="p-10 border-b border-black/5 dark:border-white/10 bg-white/5">
             <div className="flex items-center gap-5">
               <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-white/10">
                 <Filter className="h-7 w-7" />
@@ -413,7 +413,7 @@ export default function AdminDashboard() {
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader className="bg-white/5">
-                    <TableRow className="hover:bg-transparent border-white/10">
+                    <TableRow className="hover:bg-transparent border-black/5 dark:border-white/10">
                       <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10">Timestamp</TableHead>
                       <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16">Verified Identity</TableHead>
                       <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16">Classification</TableHead>
@@ -426,7 +426,7 @@ export default function AdminDashboard() {
                       const isBlocked = userStatusMap[log.uid] || false;
                       
                       return (
-                        <TableRow key={log.id} className="hover:bg-white/5 transition-colors border-white/5 group">
+                        <TableRow key={log.id} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/5 group">
                           <TableCell className="pl-10 py-6 whitespace-nowrap font-bold text-muted-foreground/70">
                             {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, h:mm a') : '...'}
                           </TableCell>

@@ -33,7 +33,7 @@ export default function Header() {
   const isAdminPage = pathname?.startsWith('/admin');
 
   return (
-    <header className="sticky top-0 z-[100] w-full bg-background/20 backdrop-blur-3xl border-b border-white/10 flex h-20 items-center gap-4 px-6 md:px-12 transition-all">
+    <header className="sticky top-0 z-[100] w-full bg-background/20 backdrop-blur-3xl border-b border-black/5 dark:border-white/10 flex h-20 items-center gap-4 px-6 md:px-12 transition-all">
       <div className="flex items-center gap-8">
         <Link href="/" className="flex items-center gap-3.5 group transition-opacity hover:opacity-80">
           <div className="p-2 rounded-xl bg-foreground text-background shadow-sm transition-transform group-active:scale-95">
@@ -45,7 +45,7 @@ export default function Header() {
           </div>
         </Link>
         
-        <div className="hidden lg:block h-8 w-[1px] bg-border/30" />
+        <div className="hidden lg:block h-8 w-[1px] bg-black/5 dark:bg-white/10" />
         
         <LiveClock />
       </div>
@@ -78,17 +78,17 @@ export default function Header() {
         ) : user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-accent/10 transition-all active:scale-90 p-0 overflow-hidden border border-white/10">
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-accent/10 transition-all active:scale-90 p-0 overflow-hidden border border-black/5 dark:border-white/10">
                 <Avatar className="h-full w-full">
                   <AvatarImage src={user.photoURL ?? ''} alt={user.email ?? ''} />
                   <AvatarFallback className="bg-primary text-white font-bold text-xs">{getInitials(user.email)}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-72 p-2 rounded-[2rem] border-white/10 glass mt-4 overflow-hidden" align="end">
+            <DropdownMenuContent className="w-72 p-2 rounded-[2rem] border-black/5 dark:border-white/10 glass mt-4 overflow-hidden" align="end">
               <DropdownMenuLabel className="font-normal p-5">
                 <div className="flex items-center gap-4">
-                  <Avatar className="h-14 w-14 border border-white/10 shadow-sm">
+                  <Avatar className="h-14 w-14 border border-black/5 dark:border-white/10 shadow-sm">
                     <AvatarImage src={user.photoURL ?? ''} />
                     <AvatarFallback className="font-bold text-xs bg-muted text-foreground">{getInitials(user.email)}</AvatarFallback>
                   </Avatar>
@@ -107,7 +107,7 @@ export default function Header() {
                   </Badge>
                 )}
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-white/5 mx-2" />
+              <DropdownMenuSeparator className="bg-black/5 dark:bg-white/5 mx-2" />
               <div className="p-1">
                 <DropdownMenuItem onClick={signOut} className="rounded-2xl cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive py-4 px-4 text-sm font-bold transition-all gap-3">
                   <LogOut className="h-4 w-4" />

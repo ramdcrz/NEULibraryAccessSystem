@@ -149,7 +149,7 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
 
   return (
     <Card className="glass rounded-[3rem] overflow-hidden">
-      <CardHeader className="bg-white/5 dark:bg-white/5 pb-10 pt-10 px-10 border-b border-white/10">
+      <CardHeader className="bg-white/5 dark:bg-white/5 pb-10 pt-10 px-10 border-b border-black/5 dark:border-white/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5">
             <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-white/20">
@@ -170,14 +170,14 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-              <div className="md:col-span-1 p-6 rounded-3xl glass border-none flex flex-col items-center justify-center text-center">
+              <div className="md:col-span-1 p-6 rounded-3xl glass flex flex-col items-center justify-center text-center">
                 <div className="flex items-center gap-2 mb-2 text-primary/60">
                   <User className="h-3.5 w-3.5" />
                   <span className="text-[10px] font-black uppercase tracking-widest">ID Class</span>
                 </div>
                 <p className="text-base font-black text-foreground">{user.user_type}</p>
               </div>
-              <div className="md:col-span-3 p-6 rounded-3xl glass border-none">
+              <div className="md:col-span-3 p-6 rounded-3xl glass">
                 <div className="flex items-center gap-2 mb-2 text-primary/60">
                   <School className="h-3.5 w-3.5" />
                   <span className="text-[10px] font-black uppercase tracking-widest">University Affiliation</span>
@@ -188,7 +188,7 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
               </div>
             </div>
 
-            <Separator className="bg-white/10" />
+            <Separator className="bg-black/5 dark:bg-white/10" />
 
             <FormField
               control={form.control}
