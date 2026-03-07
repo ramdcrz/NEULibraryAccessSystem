@@ -1,74 +1,38 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /**
-     * NEU Library Access System - Security Rules
-     * 
-     * Core Philosophy:
-     * This ruleset implements a strict hierarchical ownership model combined with role-based access control (RBAC).
-     */
+    // --- Basic Helpers ---
 
-    // --- Helper Functions ---
-
-    /** @description Checks if the request is from an authenticated user. */
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /** @description Checks if the authenticated user has the 'admin' role. 
-     *  Safely handles cases where the user document may not exist yet.
-     */
-    function isAdmin() {
-      return isSignedIn() && 
-             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', 'user') == 'admin';
-    }
-
-    /** @description Checks if the authenticated user matches the provided ID. */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    /** @description Checks if the authenticated user is NOT blocked from the system. */
-    function isNotBlocked() {
-      let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
-      return !exists(userPath) || get(userPath).data.get('is_blocked', false) == false;
+    // --- Admin Check ---
+    // We use a direct path check to avoid recursion issues in complex queries
+    function isAdmin() {
+      return isSignedIn() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
     // --- Collection Rules ---
 
-    /**
-     * @description Rules for user profile documents.
-     */
     match /users/{userId} {
-      // Essential: Always allow a user to read their own profile for AuthProvider initialization
-      allow get: if isOwner(userId) || isAdmin();
-      
-      // Admin only operations
-      allow list: if isAdmin();
-      allow delete: if isAdmin();
-      
-      // Creation and updates
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId) || isAdmin();
+      // Allow user to manage their own profile, and admins to manage all profiles
+      allow read, write: if isOwner(userId) || isAdmin();
 
-      /**
-       * @description Rules for individual visit log entries nested under a user.
-       */
       match /visit_logs/{visitLogId} {
-        allow read: if (isOwner(userId) && isNotBlocked()) || isAdmin();
-        allow create: if (isOwner(userId) && isNotBlocked() && request.resource.data.userId == userId) || isAdmin();
-        allow update: if (isOwner(userId) && isNotBlocked() && request.resource.data.userId == resource.data.userId) || isAdmin();
-        allow delete: if (isOwner(userId) && isNotBlocked()) || isAdmin();
+        // Simple ownership or admin check
+        allow read, write: if isOwner(userId) || isAdmin();
       }
     }
 
-    /**
-     * @description Collection Group rules for visit logs to support administrative reporting.
-     * This rule is specifically used by the collectionGroup('visit_logs') query in the Admin Dashboard.
-     */
+    // --- Collection Group Rules ---
+    // This is critical for the Admin Analytics Dashboard
     match /{path=**}/visit_logs/{visitLogId} {
       allow read: if isAdmin();
     }

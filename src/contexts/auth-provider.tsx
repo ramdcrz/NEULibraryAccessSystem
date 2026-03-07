@@ -36,11 +36,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (docSnap.exists()) {
             const data = docSnap.data();
             
-            // Automatic Data Cleanup: Remove legacy camelCase field if it exists
+            // Standardizing Field Names: Migrate legacy 'isBlocked' or 'collegeOffice' to snake_case
+            const updates: any = {};
+            if ('isBlocked' in data) {
+              updates.is_blocked = data.isBlocked;
+              updates.isBlocked = deleteField();
+            }
             if ('collegeOffice' in data) {
-              updateDoc(userRef, {
-                collegeOffice: deleteField()
-              }).catch(err => console.error("Cleanup error:", err));
+              updates.college_office = data.collegeOffice;
+              updates.collegeOffice = deleteField();
+            }
+
+            if (Object.keys(updates).length > 0) {
+              updateDoc(userRef, updates).catch(err => console.error("Field migration error:", err));
             }
 
             setUser({
@@ -48,8 +56,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               uid: firebaseUser.uid,
               email: data.email,
               role: data.role || 'user',
-              college_office: data.college_office,
-              is_blocked: !!data.is_blocked,
+              college_office: data.college_office || data.collegeOffice,
+              is_blocked: !!(data.is_blocked || data.isBlocked),
               photoURL: firebaseUser.photoURL,
               displayName: firebaseUser.displayName,
               createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,

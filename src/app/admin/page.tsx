@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -16,6 +15,7 @@ import { format, isWithinInterval, subDays, startOfDay, endOfDay } from 'date-fn
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import type { VisitLog } from '@/types';
 
 export default function AdminDashboard() {
@@ -25,21 +25,15 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
 
-  // Guard the query: Only attempt to fetch if the user is confirmed as an admin.
-  // We add an extra check for firestore and user existence to be absolutely defensive.
+  // Guard the query strictly: Wait until user is confirmed admin in the state
   const logsQuery = useMemoFirebase(() => {
     if (!firestore || !user || user.role !== 'admin') return null;
-    try {
-      return query(
-        collectionGroup(firestore, 'visit_logs'), 
-        orderBy('timestamp', 'desc'), 
-        limit(200)
-      );
-    } catch (e) {
-      console.error("Query construction error:", e);
-      return null;
-    }
-  }, [firestore, user]);
+    return query(
+      collectionGroup(firestore, 'visit_logs'), 
+      orderBy('timestamp', 'desc'), 
+      limit(200)
+    );
+  }, [firestore, user?.role, user?.uid]);
 
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection<VisitLog>(logsQuery);
 
@@ -53,15 +47,13 @@ export default function AdminDashboard() {
     }
   }, [user, loading, router]);
 
-  // Derived filtered data based on Search and Date Range
+  // Derived filtered data
   const filteredLogs = useMemo(() => {
     if (!allLogs) return [];
     
     return allLogs.filter(log => {
-      // Search Filter (Email)
       const matchesSearch = searchQuery === '' || log.email.toLowerCase().includes(searchQuery.toLowerCase());
       
-      // Date Range Filter
       let matchesDate = true;
       if (log.timestamp) {
         const logDate = log.timestamp.toDate();
@@ -80,14 +72,12 @@ export default function AdminDashboard() {
     });
   }, [allLogs, searchQuery, dateFilter]);
 
-  // Analytics Calculations
   const stats = useMemo(() => {
     if (!allLogs || allLogs.length === 0) return { today: 0, topCollege: 'N/A', topReason: 'N/A' };
 
     const todayStr = new Date().toISOString().split('T')[0];
     const todayLogs = allLogs.filter(l => l.entryDate === todayStr);
 
-    // Frequency Analysis for Colleges
     const collegeFreq: Record<string, number> = {};
     const reasonFreq: Record<string, number> = {};
 
@@ -129,16 +119,23 @@ export default function AdminDashboard() {
         {logsError && (
           <Alert variant="destructive" className="glass border-2 border-destructive/20 shadow-lg">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Database Sync Issue</AlertTitle>
-            <AlertDescription>
-              {logsError.message.includes('permission') 
-                ? "Insufficient permissions to access logs. Please verify your role is set to 'admin' in the database."
-                : "Failed to retrieve logs. Check the browser console (F12) for a clickable link to generate the required Composite Index."}
+            <AlertTitle>Security Policy Denial</AlertTitle>
+            <AlertDescription className="mt-2 space-y-4">
+              <p>
+                The database denied your request. This often happens if a <strong>Composite Index</strong> is missing or if your <strong>role</strong> is not yet fully propagated.
+              </p>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
+                  Refresh Page
+                </Button>
+                <p className="text-xs opacity-70 self-center">
+                  Check F12 console for a clickable index creation link.
+                </p>
+              </div>
             </AlertDescription>
           </Alert>
         )}
 
-        {/* Analytics Header Cards */}
         <div className="grid gap-4 md:grid-cols-3">
           <Card className="glass border-2 border-white/10 shadow-lg">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -180,7 +177,6 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
-        {/* Unified Visitor Table with Filters */}
         <Card className="glass border-2 border-white/10 shadow-xl overflow-hidden">
           <CardHeader className="border-b border-white/5 bg-white/5">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
