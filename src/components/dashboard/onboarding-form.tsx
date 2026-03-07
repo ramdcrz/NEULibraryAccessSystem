@@ -1,10 +1,9 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { LoaderCircle, ChevronRight, School, UserCircle } from 'lucide-react';
+import { LoaderCircle, ChevronRight, School, UserCircle, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -28,6 +27,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { updateUserDoc } from '@/lib/firebase/firestore';
 import type { AuthenticatedUser } from '@/contexts/auth-provider';
+import { Separator } from '@/components/ui/separator';
 
 const colleges = [
   'College of Arts and Sciences',
@@ -62,8 +62,6 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // If email local part doesn't have a dot, user is NOT a Student by default
-  // and must choose between Staff/Employee.
   const email = user.email || '';
   const localPart = email.split('@')[0];
   const isAutoStudent = localPart.includes('.');
@@ -85,8 +83,8 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
       });
 
       toast({
-        title: 'Profile Updated',
-        description: 'Thank you! You can now log your library visit.',
+        title: 'Profile verified',
+        description: 'You are now ready to log your first library visit.',
       });
     } catch (error) {
       console.error('Failed to update profile:', error);
@@ -96,45 +94,46 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
   }
 
   return (
-    <Card className="glass overflow-hidden border-2 border-white/10 shadow-2xl">
-      <CardHeader className="bg-primary/5 pb-8 border-b border-white/5">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 rounded-xl bg-primary/20 text-primary shadow-inner">
-            <School className="h-6 w-6" />
+    <Card className="glass overflow-hidden border-none shadow-2xl">
+      <CardHeader className="bg-primary/5 pb-10">
+        <div className="flex items-center gap-4 mb-3">
+          <div className="p-3 rounded-2xl bg-primary/10 text-primary shadow-inner">
+            <ShieldCheck className="h-7 w-7" />
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight">Complete Your Profile</CardTitle>
+          <div>
+            <CardTitle className="text-3xl font-black tracking-tight">Profile Verification</CardTitle>
+            <CardDescription className="text-base">One-time setup required for library access</CardDescription>
+          </div>
         </div>
-        <CardDescription className="text-base text-muted-foreground/80">
-          Please provide your affiliation and classification details to continue.
-        </CardDescription>
       </CardHeader>
-      <CardContent className="pt-8 px-6 pb-6">
+      
+      <CardContent className="pt-10 px-8 pb-8">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="grid gap-6">
+            <div className="grid gap-8">
               {!isAutoStudent && (
                 <FormField
                   control={form.control}
                   name="user_type"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
-                      <FormLabel className="text-lg font-semibold text-foreground flex items-center gap-2">
-                        <UserCircle className="h-4 w-4 text-primary" />
-                        Classification
+                    <FormItem className="space-y-4">
+                      <FormLabel className="text-xl font-black flex items-center gap-3">
+                        <UserCircle className="h-5 w-5 text-primary" />
+                        Identify Classification
                       </FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50 focus:ring-primary/20">
-                            <SelectValue placeholder="Are you Staff or Employee?" />
+                          <SelectTrigger className="h-16 text-lg border-2 bg-background/50 hover:border-primary transition-all rounded-2xl">
+                            <SelectValue placeholder="Staff or Employee?" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="glass">
-                          <SelectItem value="Staff" className="py-3 text-base">Staff</SelectItem>
-                          <SelectItem value="Employee" className="py-3 text-base">Employee</SelectItem>
+                        <SelectContent className="rounded-2xl shadow-2xl">
+                          <SelectItem value="Staff" className="py-4 text-base cursor-pointer">Staff Member</SelectItem>
+                          <SelectItem value="Employee" className="py-4 text-base cursor-pointer">University Employee</SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormDescription>
-                        Based on your email format, please select your specific role.
+                      <FormDescription className="text-sm font-medium px-1">
+                        Select based on your official appointment status.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -146,17 +145,20 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
                 control={form.control}
                 name="college_office"
                 render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="text-lg font-semibold text-foreground">College / Office</FormLabel>
+                  <FormItem className="space-y-4">
+                    <FormLabel className="text-xl font-black flex items-center gap-3">
+                      <School className="h-5 w-5 text-primary" />
+                      Academic Affiliation
+                    </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50 focus:ring-primary/20">
-                          <SelectValue placeholder="Select your affiliation" />
+                        <SelectTrigger className="h-16 text-lg border-2 bg-background/50 hover:border-primary transition-all rounded-2xl">
+                          <SelectValue placeholder="Select your College or Office" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="glass">
+                      <SelectContent className="rounded-2xl shadow-2xl max-h-[400px]">
                         {colleges.map((college) => (
-                          <SelectItem key={college} value={college} className="py-3 text-base">
+                          <SelectItem key={college} value={college} className="py-4 text-base cursor-pointer">
                             {college}
                           </SelectItem>
                         ))}
@@ -168,18 +170,20 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
               />
             </div>
 
+            <Separator className="bg-border/40" />
+
             <Button 
               type="submit" 
-              className="w-full h-16 text-xl font-bold shadow-2xl transition-all hover:scale-[1.01] active:scale-[0.99] rounded-2xl group" 
+              className="w-full h-20 text-2xl font-black shadow-2xl rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] group" 
               disabled={isSubmitting}
             >
               {isSubmitting ? (
-                <LoaderCircle className="mr-2 h-6 w-6 animate-spin" />
+                <LoaderCircle className="h-8 w-8 animate-spin" />
               ) : (
-                <>
-                  Complete Setup
-                  <ChevronRight className="ml-2 h-6 w-6 transition-transform group-hover:translate-x-1" />
-                </>
+                <div className="flex items-center justify-center gap-3">
+                  Verify & Continue
+                  <ChevronRight className="h-7 w-7 transition-transform group-hover:translate-x-2" />
+                </div>
               )}
             </Button>
           </form>
