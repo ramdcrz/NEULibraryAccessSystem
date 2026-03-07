@@ -9,6 +9,7 @@ import type { UserProfile } from '@/types';
 export type AuthenticatedUser = UserProfile & { 
   uid: string;
   photoURL?: string | null;
+  displayName?: string | null;
 };
 
 interface AuthContextType {
@@ -31,8 +32,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (firebaseUser) {
         const userRef = doc(db, 'users', firebaseUser.uid);
         
-        // Use onSnapshot to listen for real-time changes to the user document
-        // This ensures the UI updates immediately when the profile is completed or status changes.
         unsubscribeDoc = onSnapshot(userRef, (docSnap) => {
           if (docSnap.exists()) {
             const data = docSnap.data();
@@ -44,11 +43,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               college_office: data.college_office,
               is_blocked: !!data.is_blocked,
               photoURL: firebaseUser.photoURL,
+              displayName: firebaseUser.displayName,
               createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
             } as AuthenticatedUser);
             setLoading(false);
           } else {
-            // New user initialization logic: Create a default document if it doesn't exist.
             const newUserProfileData = {
               email: firebaseUser.email!,
               role: 'user',
@@ -58,7 +57,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               createdAt: serverTimestamp(),
             };
             
-            // Initiate creation. The onSnapshot listener will trigger again once it's created.
             setDoc(userRef, newUserProfileData).catch(err => {
                console.error("Error creating user profile document:", err);
             });
@@ -68,7 +66,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setLoading(false);
         });
       } else {
-        // User signed out: clear the document listener and reset state.
         if (unsubscribeDoc) {
           unsubscribeDoc();
           unsubscribeDoc = null;

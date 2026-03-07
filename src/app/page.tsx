@@ -27,7 +27,6 @@ export default function Home() {
     setYear(new Date().getFullYear());
   }, []);
 
-  // Sprint 2: Status Check (Blocked Users)
   useEffect(() => {
     if (!loading && user?.is_blocked) {
       toast({
@@ -35,7 +34,6 @@ export default function Home() {
         title: "Access Denied",
         description: "Your account has been blocked. Please contact the administrator.",
       });
-      // We use a small timeout to ensure the toast is seen if the redirect is too fast
       const timer = setTimeout(() => {
         signOut();
       }, 3000);
@@ -47,7 +45,6 @@ export default function Home() {
     return <Loading />;
   }
 
-  // If blocked, show a static message while waiting for sign out logic
   if (user.is_blocked) {
     return (
       <div className="flex min-h-screen items-center justify-center p-4 gradient-bg">
@@ -62,7 +59,19 @@ export default function Home() {
     );
   }
 
-  // Sprint 2: First-Time Logic (Onboarding Check)
+  const getFirstName = () => {
+    if (user.displayName) {
+      return user.displayName.split(' ')[0];
+    }
+    if (user.email) {
+      const prefix = user.email.split('@')[0];
+      // Handles formats like ramiljr.deocariza
+      const namePart = prefix.split(/[._]/)[0];
+      return namePart.charAt(0).toUpperCase() + namePart.slice(1);
+    }
+    return 'Guest';
+  };
+
   const needsOnboarding = !user.college_office;
 
   return (
@@ -74,7 +83,7 @@ export default function Home() {
             Library Access Management
           </div>
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            Welcome, <span className="text-primary">{user.email?.split('@')[0]}</span>
+            Welcome, <span className="text-primary">{getFirstName()}</span>
           </h1>
           <p className="mx-auto max-w-[700px] text-lg text-muted-foreground md:text-xl">
             {needsOnboarding 
