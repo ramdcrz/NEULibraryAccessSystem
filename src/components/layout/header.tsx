@@ -56,16 +56,16 @@ export default function Header() {
             <Button 
               variant="ghost" 
               asChild
-              className="flex gap-2 font-black text-[10px] uppercase tracking-widest h-10 px-6 rounded-full transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-inner hover:bg-primary/10 hover:text-primary dark:hover:bg-white/10 group"
+              className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm hover:bg-primary/10 hover:text-primary dark:hover:bg-white/10 group"
             >
               {isAdminPage ? (
                 <Link href="/">
-                  <LayoutDashboard className="h-3.5 w-3.5 group-hover:text-primary transition-colors" />
+                  <LayoutDashboard className="h-3.5 w-3.5 mr-2 group-hover:text-primary transition-colors" />
                   Logger Mode
                 </Link>
               ) : (
                 <Link href="/admin">
-                  <ShieldCheck className="h-3.5 w-3.5 group-hover:text-primary transition-colors" />
+                  <ShieldCheck className="h-3.5 w-3.5 mr-2 group-hover:text-primary transition-colors" />
                   Admin Panel
                 </Link>
               )}

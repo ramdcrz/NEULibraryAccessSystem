@@ -221,23 +221,28 @@ export default function AdminDashboard() {
           
           <div className="flex items-center gap-4">
             <Button
-              variant={showFilters ? "secondary" : "outline"}
+              variant="ghost"
               onClick={() => setShowFilters(!showFilters)}
-              className="h-14 px-8 rounded-2xl font-black gap-2 transition-all glass hover:bg-primary/5"
+              className={cn(
+                "h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all border shadow-sm",
+                showFilters 
+                  ? "bg-primary/10 text-primary border-primary/20" 
+                  : "border-black/5 dark:border-white/10 bg-white/5 hover:bg-primary/10 hover:text-primary"
+              )}
             >
-              <Search className="h-4 w-4" />
+              <Search className="h-3.5 w-3.5 mr-2" />
               {showFilters ? 'Hide Filters' : 'Filter View'}
             </Button>
 
             <Button 
               onClick={exportToPDF} 
               disabled={isExporting || logsLoading || filteredLogs.length === 0}
-              className="h-14 px-8 rounded-2xl font-black gap-2 purple-gradient text-white hover:opacity-90 transition-all border-none"
+              className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm hover:bg-primary/10 hover:text-primary disabled:opacity-50"
             >
               {isExporting ? (
-                <LoaderCircle className="h-4 w-4 animate-spin" />
+                <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" />
               ) : (
-                <FileDown className="h-4 w-4" />
+                <FileDown className="h-3.5 w-3.5 mr-2" />
               )}
               Export Activity
             </Button>
@@ -287,7 +292,7 @@ export default function AdminDashboard() {
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full lg:w-[240px] h-16 justify-start text-left font-bold rounded-2xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
+                          "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
                           !startDate && "text-muted-foreground"
                         )}
                       >
@@ -323,7 +328,7 @@ export default function AdminDashboard() {
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full lg:w-[240px] h-16 justify-start text-left font-bold rounded-2xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
+                          "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
                           !endDate && "text-muted-foreground"
                         )}
                       >
@@ -348,11 +353,11 @@ export default function AdminDashboard() {
               </div>
 
               <Button 
-                variant="outline" 
+                variant="ghost" 
                 onClick={clearFilters}
-                className="h-16 px-8 rounded-2xl font-black gap-2 border-2 border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all"
+                className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all border border-destructive/10 text-destructive bg-destructive/5 hover:bg-destructive/10 shadow-sm"
               >
-                <XCircle className="h-4 w-4" />
+                <XCircle className="h-3.5 w-3.5 mr-2" />
                 Clear
               </Button>
             </div>
@@ -454,12 +459,12 @@ export default function AdminDashboard() {
                                 <LoaderCircle className="h-4 w-4 animate-spin" />
                               ) : isBlocked ? (
                                 <>
-                                  <UserCheck className="h-4 w-4 mr-2" />
+                                  <UserCheck className="h-3.5 w-3.5 mr-2" />
                                   Restore
                                 </>
                               ) : (
                                 <>
-                                  <UserX className="h-4 w-4 mr-2" />
+                                  <UserX className="h-3.5 w-3.5 mr-2" />
                                   Block
                                 </>
                               )}
