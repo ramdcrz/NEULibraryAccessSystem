@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import Loading from './loading';
@@ -10,12 +10,17 @@ import VisitLogger from '@/components/dashboard/visit-logger';
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [year, setYear] = useState<number | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
     }
   }, [user, loading, router]);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
 
   if (loading || !user) {
     return <Loading />;
@@ -41,7 +46,7 @@ export default function Home() {
         </div>
       </main>
       <footer className="w-full border-t glass py-6 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} New Era University Library. All rights reserved.
+        © {year ?? '...'} New Era University Library. All rights reserved.
       </footer>
     </div>
   );

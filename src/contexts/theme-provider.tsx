@@ -14,7 +14,7 @@ const ThemeContext = React.createContext<ThemeContextType | undefined>(undefined
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = React.useState<Theme>('dark');
 
-  useEffect(() => {
+  React.useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as Theme | null;
     if (savedTheme) {
       setTheme(savedTheme);
@@ -40,8 +40,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     </ThemeContext.Provider>
   );
 }
-
-import { useEffect } from 'react';
 
 export function useTheme() {
   const context = React.useContext(ThemeContext);
