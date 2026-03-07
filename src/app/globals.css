@@ -94,7 +94,7 @@
   background: linear-gradient(135deg, hsl(var(--primary)) 0%, #9333ea 100%);
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
+  color: transparent !important;
   display: inline-block;
 }
 
