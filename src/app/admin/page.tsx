@@ -27,13 +27,13 @@ export default function AdminDashboard() {
   }, [user, loading, router]);
 
   /**
-   * Database Correction: Switched from collectionGroup to a flat collection query.
+   * Database Logic: Query the flat top-level collection 'visit_logs'.
    * Path: /visit_logs
    */
   const logsQuery = useMemoFirebase(() => {
     if (!firestore || !user || user.role !== 'admin') return null;
     
-    // Explicitly hardcoding 'visit_logs' as a top-level collection
+    // Explicitly hardcoding 'visit_logs' as a top-level collection reference
     return query(
       collection(firestore, 'visit_logs'), 
       orderBy('timestamp', 'desc')
@@ -73,13 +73,13 @@ export default function AdminDashboard() {
                 </p>
                 <ol className="list-decimal pl-5 space-y-2 text-sm">
                   <li>
-                    <strong>Schema Check:</strong> Ensure the <code>/visit_logs</code> collection exists at the top level.
+                    <strong>Security Rules:</strong> Ensure the <code>isSystemAdmin</code> check in <code>firestore.rules</code> is not recursive.
                   </li>
                   <li>
-                    <strong>Security Rules:</strong> Confirm that admins have <code>read</code> and <code>list</code> permissions for the <code>/visit_logs</code> collection.
+                    <strong>Index Required:</strong> If the console (F12) shows a "query requires an index" error, click the link to create it.
                   </li>
                   <li>
-                    <strong>Index Required:</strong> If you see a link in the browser console (F12), click it to create the composite index for sorting.
+                    <strong>Schema Sync:</strong> Confirm that logs are being saved to the top-level <code>/visit_logs</code> collection.
                   </li>
                 </ol>
               </div>

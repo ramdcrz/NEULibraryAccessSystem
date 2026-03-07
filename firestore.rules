@@ -8,32 +8,33 @@ service cloud.firestore {
     }
 
     // Helper: Is the requester an admin?
-    // This helper performs a cross-document lookup.
+    // This helper performs a cross-document lookup to the users collection.
     function isSystemAdmin() {
       return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
     // 1. VISIT LOGS (FLAT TOP-LEVEL COLLECTION)
     match /visit_logs/{logId} {
-      // Allow any signed-in user to create their own visit log.
-      // The userId field in the document must match the creator's UID.
+      // allow create: Any signed-in user can log their own visit.
+      // We check that the userId field in the document matches the authenticated UID.
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       
-      // Admins can read and list all visit logs for the dashboard.
-      allow read, list: if isSystemAdmin();
-      
-      // Users can read their own specific log entries.
-      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+      // allow read, list: Admins can see all logs. Users can see their own logs.
+      // Note: order of evaluation is important to avoid unnecessary get() calls.
+      allow read, list: if isSignedIn() && (
+        (resource != null && resource.data.userId == request.auth.uid) || 
+        isSystemAdmin()
+      );
     }
 
     // 2. USER PROFILE RULES
     match /users/{userId} {
       // BASE CASE: User reading or writing their own profile.
-      // We check UID ownership FIRST to break potential recursion loops when isSystemAdmin() is called.
+      // This MUST come first to break the potential recursion loop when isSystemAdmin() 
+      // is called from other rules, as isSystemAdmin() itself performs a get() on a user document.
       allow read, write: if isSignedIn() && request.auth.uid == userId;
 
       // Allow admins to read or write other users' profiles.
-      // This part only evaluates if the base case above is false.
       allow read, write: if isSystemAdmin();
     }
   }
