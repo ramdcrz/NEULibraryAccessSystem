@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/use-auth';
 import Header from '@/components/layout/header';
 import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ShieldCheck, Users, BarChart3, History, Search, Calendar as CalendarIcon, TrendingUp, AlertCircle, Info } from 'lucide-react';
+import { ShieldCheck, Users, BarChart3, History, Search, Calendar as CalendarIcon, TrendingUp, AlertCircle, Info, ExternalLink } from 'lucide-react';
 import { collectionGroup, query, orderBy, limit, Timestamp } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -15,6 +15,7 @@ import { format, isWithinInterval, subDays, startOfDay, endOfDay } from 'date-fn
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
@@ -22,40 +23,28 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
-  const [isAuthReady, setIsAuthReady] = useState(false);
 
   // Defensive Auth Check: Wait for the user object and role to be fully loaded
   useEffect(() => {
     if (!loading) {
       if (!user) {
         router.push('/login');
-      } else if (user.role === 'admin') {
-        // Only mark as ready if we are sure the user is an admin
-        // and add a small delay to ensure Firestore Auth is stable
-        const timer = setTimeout(() => setIsAuthReady(true), 500);
-        return () => clearTimeout(timer);
-      } else {
+      } else if (user.role !== 'admin') {
         router.push('/');
       }
     }
   }, [user, loading, router]);
 
-  // Guard the query: NEVER run if auth is not fully confirmed
+  // Guard the query: Only run if we are 100% sure the user is an admin
   const logsQuery = useMemoFirebase(() => {
-    if (!firestore || !isAuthReady || !user || user.role !== 'admin') return null;
+    if (!firestore || loading || !user || user.role !== 'admin') return null;
     
-    // collectionGroup allows querying across all users/userId/visit_logs
-    try {
-      return query(
-        collectionGroup(firestore, 'visit_logs'), 
-        orderBy('timestamp', 'desc'), 
-        limit(300)
-      );
-    } catch (e) {
-      console.error("Query construction error:", e);
-      return null;
-    }
-  }, [firestore, isAuthReady, user?.role]);
+    return query(
+      collectionGroup(firestore, 'visit_logs'), 
+      orderBy('timestamp', 'desc'), 
+      limit(500)
+    );
+  }, [firestore, loading, user?.role]);
 
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection(logsQuery);
 
@@ -112,7 +101,7 @@ export default function AdminDashboard() {
     };
   }, [allLogs]);
 
-  if (loading || !isAuthReady) {
+  if (loading || !user) {
     return <Loading />;
   }
 
@@ -134,23 +123,35 @@ export default function AdminDashboard() {
         {logsError && (
           <Alert variant="destructive" className="glass border-2 border-destructive/20 shadow-lg">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Database Access Error</AlertTitle>
-            <AlertDescription className="mt-2 space-y-4">
-              <p>
-                We encountered a problem retrieving the visitor logs. This is usually caused by a missing <strong>Database Index</strong>.
-              </p>
-              <div className="bg-destructive/10 p-4 rounded-xl border border-destructive/20 text-foreground">
-                <p className="font-bold flex items-center gap-2 mb-2">
-                  <Info className="h-4 w-4" />
-                  Crucial Step to Fix:
+            <AlertTitle className="text-lg font-bold">Database Access Error</AlertTitle>
+            <AlertDescription className="mt-4 space-y-6">
+              <div className="bg-destructive/10 p-6 rounded-2xl border border-destructive/20 text-foreground">
+                <p className="font-bold flex items-center gap-2 mb-4 text-lg">
+                  <Info className="h-5 w-5" />
+                  Crucial Step to Fix this Error:
                 </p>
-                <ol className="list-decimal pl-5 space-y-2 text-sm">
-                  <li>Press <strong>F12</strong> to open your browser Developer Tools.</li>
-                  <li>Click the <strong>Console</strong> tab.</li>
-                  <li>Look for a red error message with a link starting with <code>https://console.firebase.google.com/...</code></li>
-                  <li><strong>Click that link</strong> to automatically create the required index in your Firebase Console.</li>
-                  <li>Wait 3 minutes for it to build, then refresh this page.</li>
-                </ol>
+                <p className="mb-4 leading-relaxed">
+                  Firestore requires a <strong>Composite Index</strong> to sort logs across different users. This index is not created automatically.
+                </p>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <Badge className="mt-1 h-6 w-6 rounded-full flex items-center justify-center p-0 bg-primary">1</Badge>
+                    <p>Press <strong>F12</strong> on your keyboard to open the Browser Console.</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Badge className="mt-1 h-6 w-6 rounded-full flex items-center justify-center p-0 bg-primary">2</Badge>
+                    <p>Look for a red error message containing a link that looks like: <br/> 
+                    <code className="text-xs break-all text-primary/80 mt-2 block">https://console.firebase.google.com/project/.../database/firestore/indices/...</code></p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Badge className="mt-1 h-6 w-6 rounded-full flex items-center justify-center p-0 bg-primary">3</Badge>
+                    <p><strong>Click that link</strong>. It will open the Firebase Console and ask you to create the index.</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Badge className="mt-1 h-6 w-6 rounded-full flex items-center justify-center p-0 bg-primary">4</Badge>
+                    <p>Click <strong>"Create Index"</strong> and wait 3 minutes for it to build. Then, refresh this page.</p>
+                  </div>
+                </div>
               </div>
             </AlertDescription>
           </Alert>
