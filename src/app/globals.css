@@ -62,51 +62,57 @@
 
 .glass {
   @apply backdrop-blur-3xl transition-all duration-300 shadow-none border;
-  background: rgba(255, 255, 255, 0.8);
-  border-color: rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
 .dark .glass {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .gradient-bg {
   background: 
-    radial-gradient(circle at 50% -20%, hsl(var(--primary) / 0.12), transparent 70%),
-    radial-gradient(circle at 0% 100%, hsl(var(--primary) / 0.05), transparent 50%),
-    radial-gradient(circle at 100% 100%, hsl(var(--primary) / 0.05), transparent 50%),
+    radial-gradient(circle at 50% -20%, hsl(var(--primary) / 0.15), transparent 70%),
+    radial-gradient(circle at 0% 100%, hsl(var(--primary) / 0.08), transparent 50%),
+    radial-gradient(circle at 100% 100%, hsl(var(--primary) / 0.08), transparent 50%),
     hsl(var(--background));
 }
 
 .dark .gradient-bg {
   background: 
-    radial-gradient(circle at 50% -20%, hsl(var(--primary) / 0.15), transparent 80%),
-    radial-gradient(circle at 0% 100%, hsl(var(--primary) / 0.08), transparent 60%),
+    radial-gradient(circle at 50% -20%, hsl(var(--primary) / 0.18), transparent 80%),
+    radial-gradient(circle at 0% 100%, hsl(var(--primary) / 0.1), transparent 60%),
     hsl(var(--background));
 }
 
 .hover-glass:hover {
-  @apply border-primary/20;
-  background: rgba(255, 255, 255, 0.9);
+  @apply border-primary/30;
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .dark .hover-glass:hover {
-  background: rgba(255, 255, 255, 0.08);
-  @apply border-primary/40;
+  background: rgba(255, 255, 255, 0.12);
+  @apply border-primary/50;
 }
 
 header, main {
   @apply px-6 md:px-12;
 }
 
-/* Enhanced Light Mode Hover Contrast */
+/* Enhanced Light Mode Hover Contrast and Purple Tint */
+.light .light\:hover\:text-primary:hover {
+  color: hsl(var(--primary)) !important;
+}
+
+.light .light\:hover\:bg-primary\/10:hover {
+  background-color: hsl(var(--primary) / 0.12) !important;
+}
+
 .light .hover\:bg-primary\/\[0\.04\]:hover {
-  background-color: hsl(var(--primary) / 0.1);
+  background-color: hsl(var(--primary) / 0.1) !important;
 }
-.light .hover\:bg-accent\/10:hover {
-  background-color: hsl(var(--primary) / 0.08);
-}
+
 .light .hover\:bg-black\/5:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(0, 0, 0, 0.06) !important;
 }

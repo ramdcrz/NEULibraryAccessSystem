@@ -13,7 +13,7 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      className="rounded-full w-10 h-10 transition-all duration-300 hover:bg-accent/20"
+      className="rounded-full w-10 h-10 transition-all duration-300 light:hover:bg-primary/10 light:hover:text-primary dark:hover:bg-accent/20"
     >
       {theme === 'light' ? (
         <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
