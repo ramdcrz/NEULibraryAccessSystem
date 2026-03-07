@@ -237,14 +237,14 @@ export default function AdminDashboard() {
             <Button 
               onClick={exportToPDF} 
               disabled={isExporting || logsLoading || filteredLogs.length === 0}
-              className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm hover:bg-primary/10 disabled:opacity-50 group"
+              className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border-none purple-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 group"
             >
               {isExporting ? (
-                <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2 text-primary" />
+                <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" />
               ) : (
-                <FileDown className="h-3.5 w-3.5 mr-2 text-primary" />
+                <FileDown className="h-3.5 w-3.5 mr-2" />
               )}
-              <span className="text-purple-gradient">Export Activity</span>
+              Export Activity
             </Button>
           </div>
         </div>
@@ -277,7 +277,7 @@ export default function AdminDashboard() {
                   placeholder="Search by email..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-16 rounded-2xl border-2 bg-black/5 transition-all text-lg font-bold focus:border-primary/30"
+                  className="h-12 rounded-xl border-2 bg-black/5 transition-all text-sm font-bold focus:border-primary/30"
                 />
               </div>
 

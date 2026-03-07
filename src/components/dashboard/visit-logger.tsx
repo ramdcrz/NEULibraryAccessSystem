@@ -151,7 +151,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
               <Library className="h-8 w-8" />
             </div>
             <div>
-              <CardTitle className="text-3xl font-black tracking-tighter text-foreground">Visit Log</CardTitle>
+              <CardTitle className="text-3xl font-black tracking-tighter text-purple-gradient">Visit Log</CardTitle>
               <CardDescription className="text-sm font-medium opacity-60 tracking-tight text-muted-foreground">Identity verification terminal</CardDescription>
             </div>
           </div>
