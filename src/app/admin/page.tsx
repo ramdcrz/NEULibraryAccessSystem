@@ -7,7 +7,7 @@ import Header from '@/components/layout/header';
 import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ShieldCheck, History, Database, AlertCircle } from 'lucide-react';
-import { collectionGroup, query, orderBy, limit } from 'firebase/firestore';
+import { collectionGroup, query, orderBy, limit, Firestore } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -27,18 +27,15 @@ export default function AdminDashboard() {
   }, [user, loading, router]);
 
   /**
-   * We explicitly hardcode 'visit_logs' as a string literal.
-   * This ensures the query target is 'visit_logs' and not the root database.
-   * collectionGroup is used because visit_logs are nested under /users/{userId}.
+   * We use collectionGroup('visit_logs') because logs are nested under /users/{userId}/visit_logs.
+   * A regular collection() call would only look at the top level, which is empty.
    */
   const logsQuery = useMemoFirebase(() => {
     if (!firestore || !user || user.role !== 'admin') return null;
     
-    // Hardcoding the collection group ID as 'visit_logs'
-    const visitLogsGroup = collectionGroup(firestore, 'visit_logs');
-    
+    // Hardcoding 'visit_logs' to ensure it never resolves to the root path
     return query(
-      visitLogsGroup, 
+      collectionGroup(firestore, 'visit_logs'), 
       orderBy('timestamp', 'desc'),
       limit(100)
     );
@@ -77,10 +74,10 @@ export default function AdminDashboard() {
                 </p>
                 <ol className="list-decimal pl-5 space-y-2 text-sm">
                   <li>
-                    <strong>Verify Role:</strong> Ensure your user document at <code>/users/{user.uid}</code> has <code>role: "admin"</code>.
+                    <strong>Index Required:</strong> collectionGroup queries with sorting require a <strong>Composite Index</strong>. Check your browser console (F12) for the link.
                   </li>
                   <li>
-                    <strong>Check Console:</strong> Press <strong>F12</strong> to find the specific error. If you see "Index Required", click the link provided to create the composite index.
+                    <strong>Verify Role:</strong> Ensure your user document at <code>/users/{user.uid}</code> has <code>role: "admin"</code>.
                   </li>
                 </ol>
               </div>
