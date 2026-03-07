@@ -14,6 +14,7 @@ export interface VisitLog {
   userId: string;
   email: string;
   userType: 'faculty' | 'student' | 'employee';
+  college_office: string; // Snapshotted for historical accuracy
   reason: string;
   timestamp: Timestamp;
   entryDate: string; // YYYY-MM-DD

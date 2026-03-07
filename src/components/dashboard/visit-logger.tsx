@@ -29,6 +29,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { addVisitLog } from '@/lib/firebase/firestore';
+import { useAuth } from '@/hooks/use-auth';
 import type { AuthenticatedUser } from '@/contexts/auth-provider';
 import { cn } from '@/lib/utils';
 
@@ -55,12 +56,12 @@ const formSchema = z.object({
   }),
   otherReason: z.string().optional(),
 }).refine((data) => {
-  if (data.reason === 'Others' && (!data.otherReason || data.otherReason.trim() === '')) {
-    return false;
+  if (data.reason === 'Others') {
+    return data.otherReason && data.otherReason.trim().length > 3;
   }
   return true;
 }, {
-  message: "Please specify your reason.",
+  message: "Please specify your reason (minimum 4 characters).",
   path: ["otherReason"],
 });
 
@@ -70,7 +71,9 @@ type VisitLoggerProps = {
 
 export default function VisitLogger({ user }: VisitLoggerProps) {
   const { toast } = useToast();
+  const { signOut } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLogged, setIsLogged] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -92,26 +95,55 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
       }
       
       const entryDate = new Date().toISOString().split('T')[0];
-      const finalReason = data.reason === 'Others' ? data.otherReason! : data.reason;
+      const finalReason = data.reason === 'Others' ? data.otherReason!.trim() : data.reason;
 
+      // Data Snapshotting: Include college_office and userType in the log
       addVisitLog({
         userId: user.uid,
         email: user.email!,
         userType: data.userType.toLowerCase() as any,
+        college_office: user.college_office!,
         reason: finalReason,
         entryDate: entryDate,
       });
 
       toast({
         title: 'Welcome to NEU Library!',
-        description: 'Your visit has been logged successfully. Enjoy your time!',
+        description: 'Your visit has been logged successfully. Signing out for the next user...',
       });
+      
+      setIsLogged(true);
       form.reset();
+
+      // The Kiosk Reset: Auto-logout after 5 seconds
+      setTimeout(() => {
+        signOut();
+      }, 5000);
+
     } catch (error) {
       console.error('Failed to log visit:', error);
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  if (isLogged) {
+    return (
+      <Card className="glass border-2 border-primary/20 shadow-2xl p-8 text-center animate-in zoom-in-95 duration-500">
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <BookMarked className="h-10 w-10" />
+        </div>
+        <CardTitle className="text-3xl font-bold mb-4">Welcome to NEU Library!</CardTitle>
+        <CardDescription className="text-lg">
+          Your visit has been recorded. This terminal will reset in a few seconds...
+        </CardDescription>
+        <div className="mt-8">
+           <Button variant="outline" onClick={() => signOut()}>
+             Logout Now
+           </Button>
+        </div>
+      </Card>
+    );
   }
 
   return (
@@ -217,6 +249,7 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
                           className="h-12 glass border-2 focus:border-primary"
                         />
                       </FormControl>
+                      <FormDescription>Minimum 4 characters required.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
