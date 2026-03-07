@@ -14,6 +14,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import {
   Select,
@@ -24,18 +25,19 @@ import {
 } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { addVisitLog } from '@/lib/firebase/firestore';
 import type { AuthenticatedUser } from '@/contexts/auth-provider';
 import { cn } from '@/lib/utils';
 
-// Sprint 2: Specified Reasons for Visit
 const visitReasons = [
   'Reading',
   'Research',
   'Computer Use',
   'Studying',
+  'Others',
 ];
 
 const userTypes = [
@@ -51,6 +53,15 @@ const formSchema = z.object({
   reason: z.string({
     required_error: 'Please select a reason for your visit.',
   }),
+  otherReason: z.string().optional(),
+}).refine((data) => {
+  if (data.reason === 'Others' && (!data.otherReason || data.otherReason.trim() === '')) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Please specify your reason.",
+  path: ["otherReason"],
 });
 
 type VisitLoggerProps = {
@@ -66,10 +77,12 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
     defaultValues: {
       userType: 'Student',
       reason: '',
+      otherReason: '',
     }
   });
 
   const selectedUserType = form.watch('userType');
+  const selectedReason = form.watch('reason');
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
@@ -79,16 +92,16 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
       }
       
       const entryDate = new Date().toISOString().split('T')[0];
+      const finalReason = data.reason === 'Others' ? data.otherReason! : data.reason;
 
       addVisitLog({
         userId: user.uid,
         email: user.email!,
         userType: data.userType.toLowerCase() as any,
-        reason: data.reason,
+        reason: finalReason,
         entryDate: entryDate,
       });
 
-      // Sprint 2: Specified Success Message
       toast({
         title: 'Welcome to NEU Library!',
         description: 'Your visit has been logged successfully. Enjoy your time!',
@@ -164,30 +177,52 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="reason"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel className="text-lg font-semibold text-foreground">Reason for Visit</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50 focus:ring-primary/20">
-                        <SelectValue placeholder="What brings you to the library today?" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="glass">
-                      {visitReasons.map((reason) => (
-                        <SelectItem key={reason} value={reason} className="py-3 text-base">
-                          {reason}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="reason"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel className="text-lg font-semibold text-foreground">Reason for Visit</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50 focus:ring-primary/20">
+                          <SelectValue placeholder="What brings you to the library today?" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="glass">
+                        {visitReasons.map((reason) => (
+                          <SelectItem key={reason} value={reason} className="py-3 text-base">
+                            {reason}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {selectedReason === 'Others' && (
+                <FormField
+                  control={form.control}
+                  name="otherReason"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                      <FormLabel className="text-sm font-medium">Please specify your reason</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field} 
+                          placeholder="Type your reason here..." 
+                          className="h-12 glass border-2 focus:border-primary"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               )}
-            />
+            </div>
 
             <Button 
               type="submit" 
