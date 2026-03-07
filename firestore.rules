@@ -8,20 +8,7 @@ service cloud.firestore {
      * Core Philosophy:
      * This ruleset implements a strict hierarchical ownership model combined with role-based access control (RBAC).
      * Security is designed around "Authorization Independence," meaning documents contain enough internal 
-     * state (like userId) to be secured without excessive lookups, though admin roles are verified 
-     * via the central user profile.
-     * 
-     * Data Structure:
-     * - /users/{userId}: Top-level user profiles identified by Firebase Auth UID.
-     * - /users/{userId}/visit_logs/{visitLogId}: User-specific subcollections for library entry records.
-     * 
-     * Key Security Decisions:
-     * 1. Ownership: Users have full access to their own profile and visit logs.
-     * 2. Administrative Override: Users with the 'admin' role in their profile can manage all system data.
-     * 3. Blocked Status: Access is globally denied if a user's 'is_blocked' flag is set to true.
-     * 4. Relational Integrity: The rules enforce that the 'userId' inside documents matches the path-based UID.
-     * 5. Denormalization: The 'userId' is duplicated within subcollections to allow for secure collection 
-     *    group queries by admins without path-dependency.
+     * state (like userId) to be secured without excessive lookups.
      */
 
     // --- Helper Functions ---
@@ -40,13 +27,15 @@ service cloud.firestore {
         Handles cases where the user document might not exist yet for new users. */
     function isNotBlocked() {
       let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
-      return !exists(userPath) || get(userPath).data.is_blocked == false;
+      // Defensive check: if doc doesn't exist, they aren't blocked yet.
+      // If it exists, check the is_blocked flag, defaulting to false if the field is missing.
+      return !exists(userPath) || get(userPath).data.get('is_blocked', false) == false;
     }
 
     /** @description Checks if the authenticated user has the 'admin' role. */
     function isAdmin() {
       let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
-      return isSignedIn() && exists(userPath) && get(userPath).data.role == 'admin';
+      return isSignedIn() && exists(userPath) && get(userPath).data.get('role', 'user') == 'admin';
     }
 
     /** @description Combines ownership and existence check for updates and deletes. */
@@ -54,40 +43,32 @@ service cloud.firestore {
       return resource != null && isOwner(userId);
     }
 
-    /** @description Combines admin check and existence check for destructive operations. */
-    function isExistingAdmin() {
-      return resource != null && isAdmin();
-    }
-
     // --- Collection Rules ---
 
     /**
      * @description Rules for user profile documents.
-     * @path /users/{userId}
      */
     match /users/{userId} {
       allow get: if isOwner(userId) || isAdmin();
       allow list: if isAdmin();
-      allow create: if (isOwner(userId) && request.resource.data.id == userId) || isAdmin();
-      allow update: if (isExistingOwner(userId) && request.resource.data.id == resource.data.id) || isExistingAdmin();
-      allow delete: if isExistingAdmin();
+      allow create: if (isOwner(userId) && request.resource.data.get('id', '') == userId) || isAdmin();
+      allow update: if (isExistingOwner(userId) && request.resource.data.get('id', '') == resource.data.get('id', '')) || isAdmin();
+      allow delete: if isAdmin();
     }
 
     /**
      * @description Rules for individual visit log entries nested under a user.
-     * @path /users/{userId}/visit_logs/{visitLogId}
      */
     match /users/{userId}/visit_logs/{visitLogId} {
       allow get: if (isOwner(userId) && isNotBlocked()) || isAdmin();
       allow list: if (isOwner(userId) && isNotBlocked()) || isAdmin();
       allow create: if (isOwner(userId) && isNotBlocked() && request.resource.data.userId == userId) || isAdmin();
-      allow update: if (isExistingOwner(userId) && isNotBlocked() && request.resource.data.userId == resource.data.userId) || isExistingAdmin();
-      allow delete: if (isExistingOwner(userId) && isNotBlocked()) || isExistingAdmin();
+      allow update: if (isExistingOwner(userId) && isNotBlocked() && request.resource.data.userId == resource.data.userId) || isAdmin();
+      allow delete: if (isExistingOwner(userId) && isNotBlocked()) || isAdmin();
     }
 
     /**
      * @description Collection Group rules for visit logs to support administrative reporting.
-     * @path /{path=**}/visit_logs/{visitLogId}
      */
     match /{path=**}/visit_logs/{visitLogId} {
       allow read: if isAdmin();

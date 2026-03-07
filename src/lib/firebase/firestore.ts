@@ -55,14 +55,16 @@ export function addVisitLog(logData: VisitLogPayload) {
   // Path: /users/{userId}/visit_logs/{visitLogId}
   const visitLogsCollection = collection(db, 'users', logData.userId, 'visit_logs');
   
-  addDoc(visitLogsCollection, {
+  const payload = {
     ...logData,
     timestamp: serverTimestamp(),
-  }).catch(async (error) => {
+  };
+
+  addDoc(visitLogsCollection, payload).catch(async (error) => {
     const permissionError = new FirestorePermissionError({
       path: visitLogsCollection.path,
       operation: 'create',
-      requestResourceData: logData,
+      requestResourceData: payload,
     });
     errorEmitter.emit('permission-error', permissionError);
   });
