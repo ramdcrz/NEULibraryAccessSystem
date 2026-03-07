@@ -20,11 +20,11 @@ export async function getUserDoc(uid: string): Promise<UserProfile | null> {
   if (userSnap.exists()) {
     const data = userSnap.data();
     return {
-      id: data.id || uid,
+      id: uid,
       email: data.email,
       role: data.role,
-      collegeOffice: data.collegeOffice,
-      isBlocked: data.isBlocked,
+      college_office: data.college_office,
+      is_blocked: data.is_blocked,
       createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
     } as UserProfile;
   } else {
@@ -52,7 +52,7 @@ export function createUserDoc(uid: string, data: Omit<UserProfile, 'id' | 'creat
 
 // Add a new visit log to Firestore (Non-blocking)
 export function addVisitLog(logData: VisitLogPayload) {
-  // Path corrected to match security rules: /users/{userId}/visit_logs/{visitLogId}
+  // Path: /users/{userId}/visit_logs/{visitLogId}
   const visitLogsCollection = collection(db, 'users', logData.userId, 'visit_logs');
   
   addDoc(visitLogsCollection, {

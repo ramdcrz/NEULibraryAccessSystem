@@ -31,14 +31,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (userDoc) {
           setUser({ ...userDoc, uid: firebaseUser.uid, photoURL: firebaseUser.photoURL });
         } else {
+          // Sprint 1 Logic: Create new user with default values
+          // Restriction check: domain @neu.edu.ph
+          const isInstitutional = firebaseUser.email?.endsWith('@neu.edu.ph');
+          
           const newUserProfileData: Omit<UserProfile, 'id' | 'createdAt'> = {
             email: firebaseUser.email!,
             role: 'user',
-            collegeOffice: null,
-            isBlocked: false,
+            college_office: null,
+            is_blocked: false,
           };
-          // createUserDoc is now non-blocking
+          
           createUserDoc(firebaseUser.uid, newUserProfileData);
+          
           setUser({ 
             ...newUserProfileData, 
             id: firebaseUser.uid,

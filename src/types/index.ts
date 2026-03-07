@@ -4,8 +4,8 @@ export interface UserProfile {
   id: string;
   email: string;
   role: 'admin' | 'user';
-  collegeOffice: string | null;
-  isBlocked: boolean;
+  college_office: string | null;
+  is_blocked: boolean;
   createdAt: Date | Timestamp;
 }
 
