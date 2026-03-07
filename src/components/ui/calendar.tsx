@@ -2,10 +2,11 @@
 
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker } from "react-day-picker"
+import { DayPicker, useDayPicker } from "react-day-picker"
+import { format } from "date-fns"
 
 import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
@@ -22,23 +23,15 @@ function Calendar({
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
-        month_caption: "flex justify-center pt-1 pb-4 relative items-center h-9 gap-3",
-        caption_label: "text-sm font-bold order-2 text-center",
+        month_caption: "hidden", // We use a custom Caption component
+        caption_label: "text-sm font-bold",
         nav: "flex items-center gap-1",
-        button_previous: cn(
-          buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 z-20 order-1 border-2 rounded-full"
-        ),
-        button_next: cn(
-          buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 z-20 order-3 border-2 rounded-full"
-        ),
         month_grid: "w-full border-collapse space-y-1",
         weekdays: "flex w-full mb-2",
         weekday:
           "text-muted-foreground rounded-md w-9 font-black text-[0.7rem] uppercase tracking-tighter flex-1 flex items-center justify-center",
         week: "flex w-full mt-2",
-        day: "h-9 w-9 text-center text-sm p-0 relative flex-1 flex items-center justify-center [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+        day: "h-9 w-9 text-center text-sm p-0 relative flex-1 flex items-center justify-center",
         day_button: cn(
           buttonVariants({ variant: "ghost" }),
           "h-9 w-9 p-0 font-normal aria-selected:opacity-100 mx-auto rounded-full"
@@ -55,10 +48,31 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Chevron: ({ orientation }) => {
-          if (orientation === "left") return <ChevronLeft className="h-4 w-4" />;
-          if (orientation === "right") return <ChevronRight className="h-4 w-4" />;
-          return null;
+        Caption: ({ displayMonth }) => {
+          const { goToMonth, nextMonth, previousMonth } = useDayPicker();
+          return (
+            <div className="flex justify-center items-center h-9 gap-4 mb-4 relative">
+              <Button
+                variant="outline"
+                className="h-7 w-7 p-0 rounded-full border-2 bg-transparent opacity-70 hover:opacity-100"
+                onClick={() => previousMonth && goToMonth(previousMonth)}
+                disabled={!previousMonth}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-sm font-bold min-w-[100px] text-center">
+                {format(displayMonth, "MMMM yyyy")}
+              </span>
+              <Button
+                variant="outline"
+                className="h-7 w-7 p-0 rounded-full border-2 bg-transparent opacity-70 hover:opacity-100"
+                onClick={() => nextMonth && goToMonth(nextMonth)}
+                disabled={!nextMonth}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          );
         },
       }}
       {...props}

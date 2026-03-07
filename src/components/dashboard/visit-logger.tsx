@@ -152,8 +152,8 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
       <CardHeader className="bg-primary/5 pb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-primary/10 text-primary shadow-inner rotate-0 hover:rotate-6 transition-transform">
-              <Library className="h-6 w-6" />
+            <div className="p-2.5 rounded-xl bg-primary/10 text-primary shadow-inner rotate-0 hover:rotate-6 transition-transform group">
+              <Library className="h-6 w-6 transition-transform group-hover:rotate-6" />
             </div>
             <div>
               <CardTitle className="text-xl font-black tracking-tight">Log Library Visit</CardTitle>
@@ -169,20 +169,20 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
       <CardContent className="pt-6 px-6 pb-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="p-4 rounded-xl bg-muted/40 border border-border/40 backdrop-blur-sm transition-all hover:bg-muted/60">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="md:col-span-1 p-4 rounded-xl bg-muted/40 border border-border/40 backdrop-blur-sm transition-all hover:bg-muted/60">
                 <div className="flex items-center gap-2 mb-1 text-muted-foreground">
                   <Info className="h-3 w-3" />
                   <span className="text-[9px] font-black uppercase tracking-tighter">Classification</span>
                 </div>
-                <p className="text-lg font-black text-primary">{user.user_type}</p>
+                <p className="text-base font-black text-primary truncate">{user.user_type}</p>
               </div>
-              <div className="p-4 rounded-xl bg-muted/40 border border-border/40 backdrop-blur-sm transition-all hover:bg-muted/60">
+              <div className="md:col-span-2 p-4 rounded-xl bg-muted/40 border border-border/40 backdrop-blur-sm transition-all hover:bg-muted/60">
                 <div className="flex items-center gap-2 mb-1 text-muted-foreground">
                   <Info className="h-3 w-3" />
                   <span className="text-[9px] font-black uppercase tracking-tighter">Affiliation</span>
                 </div>
-                <p className="text-lg font-black text-primary truncate" title={user.college_office ?? ''}>
+                <p className="text-base font-black text-primary truncate" title={user.college_office ?? ''}>
                   {user.college_office}
                 </p>
               </div>
