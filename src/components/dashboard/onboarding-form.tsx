@@ -119,7 +119,7 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
     <Card className="glass overflow-hidden border-none shadow-xl">
       <CardHeader className="bg-primary/5 pb-3">
         <div className="flex items-center gap-3 mb-1">
-          <div className="p-2 rounded-xl bg-primary/10 text-primary shadow-inner">
+          <div className="p-2 rounded-xl bg-primary/10 text-primary shadow-inner rotate-0 hover:rotate-6 transition-transform">
             <ShieldCheck className="h-6 w-6" />
           </div>
           <div>

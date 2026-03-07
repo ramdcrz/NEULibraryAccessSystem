@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { LoaderCircle, ChevronRight, BookMarked, LogOut, CheckCircle2, Info } from 'lucide-react';
+import { LoaderCircle, ChevronRight, Library, LogOut, CheckCircle2, Info } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -152,8 +152,8 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
       <CardHeader className="bg-primary/5 pb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-primary/10 text-primary shadow-inner">
-              <BookMarked className="h-6 w-6" />
+            <div className="p-2.5 rounded-xl bg-primary/10 text-primary shadow-inner rotate-0 hover:rotate-6 transition-transform">
+              <Library className="h-6 w-6" />
             </div>
             <div>
               <CardTitle className="text-xl font-black tracking-tight">Log Library Visit</CardTitle>

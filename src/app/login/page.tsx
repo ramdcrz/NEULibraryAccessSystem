@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -64,7 +63,7 @@ export default function LoginPage() {
     <main className="flex min-h-screen flex-col items-center justify-center p-6 gradient-bg">
       <Card className="w-full max-w-md glass border-none shadow-[0_32px_64px_-12px_rgba(0,0,0,0.15)] animate-in fade-in zoom-in-95 duration-700">
         <CardHeader className="text-center pb-12 pt-10">
-          <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-primary text-white shadow-2xl shadow-primary/30 rotate-6 transition-transform hover:rotate-0 animate-float">
+          <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-primary text-white shadow-2xl shadow-primary/30 rotate-0 transition-transform hover:rotate-6 animate-float">
             <BookMarked className="h-12 w-12" />
           </div>
           <CardTitle className="text-5xl font-black tracking-tighter text-foreground mb-2">NEU Library</CardTitle>

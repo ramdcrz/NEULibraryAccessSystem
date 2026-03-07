@@ -33,7 +33,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40 flex h-16 items-center gap-4 px-6 md:px-10 transition-all">
       <Link href="/" className="flex items-center gap-3 font-black text-primary animate-in fade-in slide-in-from-left-4 duration-500">
-        <div className="p-2 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 rotate-3 hover:rotate-0 transition-transform">
+        <div className="p-2 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 rotate-0 hover:rotate-6 transition-transform">
           <BookMarked className="h-6 w-6" />
         </div>
         <div className="flex flex-col">
