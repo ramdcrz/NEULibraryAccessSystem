@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/use-auth';
 import Header from '@/components/layout/header';
 import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ShieldCheck, AlertCircle, Database, History } from 'lucide-react';
+import { ShieldCheck, History, Database, AlertCircle } from 'lucide-react';
 import { collectionGroup, query, orderBy } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -26,16 +26,14 @@ export default function AdminDashboard() {
     }
   }, [user, loading, router]);
 
-  // Robust Collection Group Query
+  // Simplified Admin Query: collectionGroup('visit_logs') ordered by timestamp
   const logsQuery = useMemoFirebase(() => {
     // Only attempt the query if we have a valid admin session
     if (!firestore || loading || !user || user.role !== 'admin') return null;
     
-    // Explicitly hardcoding 'visit_logs' as requested to ensure it 
-    // targets the correct collection group across all users.
-    const collectionId = 'visit_logs';
+    // Explicitly hardcoding 'visit_logs' as a string literal to ensure path correctness
     return query(
-      collectionGroup(firestore, collectionId), 
+      collectionGroup(firestore, 'visit_logs'), 
       orderBy('timestamp', 'desc')
     );
   }, [firestore, loading, user?.role, user?.uid]);
@@ -55,31 +53,34 @@ export default function AdminDashboard() {
             <ShieldCheck className="h-4 w-4" />
             Admin Dashboard
           </div>
-          <h1 className="text-4xl font-black tracking-tight">Library Visit Logs</h1>
+          <h1 className="text-4xl font-black tracking-tight">University Visit History</h1>
           <p className="text-muted-foreground text-lg">
-            Real-time feed of all library entries across the university.
+            Real-time administrative view of library access records.
           </p>
         </div>
 
         {logsError && (
           <Alert variant="destructive" className="glass border-2 border-destructive/20 shadow-lg">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle className="text-lg font-bold">Database Connection Error</AlertTitle>
-            <AlertDescription className="mt-4 space-y-6">
-              <div className="bg-destructive/10 p-6 rounded-2xl border border-destructive/20 text-foreground">
-                <p className="font-bold flex items-center gap-2 mb-4 text-lg">
+            <AlertTitle className="text-lg font-bold">Database Access Error</AlertTitle>
+            <AlertDescription className="mt-4 space-y-4">
+              <div className="bg-destructive/10 p-4 rounded-xl text-foreground">
+                <p className="font-bold mb-2 text-lg flex items-center gap-2">
                   <Database className="h-5 w-5" />
-                  Required Troubleshooting:
+                  Troubleshooting Checklist:
                 </p>
-                <ol className="list-decimal pl-5 space-y-4">
+                <ol className="list-decimal pl-5 space-y-2">
                   <li>
-                    <strong>Check the Console:</strong> Press <strong>F12</strong> and look for a red error message.
+                    <strong>Check Role:</strong> Ensure your user document in Firestore has <code>role: "admin"</code>.
                   </li>
                   <li>
-                    <strong>Create Composite Index:</strong> If you see "The query requires an index," <strong>click the unique URL</strong> provided in that message.
+                    <strong>Open Console:</strong> Press <strong>F12</strong> and find the red error message.
                   </li>
                   <li>
-                    <strong>Verify Role:</strong> Ensure your user document in Firestore has <code>role: "admin"</code>.
+                    <strong>Create Index:</strong> Click the unique URL in the error message starting with <code>https://console.firebase.google.com...</code>
+                  </li>
+                  <li>
+                    <strong>Query Scope:</strong> When creating the index, ensure <strong>"Collection Group"</strong> is selected.
                   </li>
                 </ol>
               </div>
@@ -92,7 +93,7 @@ export default function AdminDashboard() {
             <div>
               <CardTitle className="text-xl font-bold flex items-center gap-2">
                 <History className="h-5 w-5 text-primary" />
-                Live Feed
+                Live Visit Logs
               </CardTitle>
               <CardDescription>Recent activity across all departments</CardDescription>
             </div>

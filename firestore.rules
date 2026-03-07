@@ -1,23 +1,20 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
+    
     // Helper: Is the user signed in?
     function isSignedIn() {
       return request.auth != null;
     }
 
     // Helper: Is the requester an admin?
-    // This performs a lookup. We must ensure the rules for the user doc itself
-    // don't call this function to avoid recursion.
+    // CRITICAL: This performs a database lookup.
     function isSystemAdmin() {
-      return isSignedIn() && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
     // 1. COLLECTION GROUP RULE
     // This targets the Admin Dashboard query: collectionGroup(db, 'visit_logs')
-    // It must be at the top level to catch collectionGroup requests.
     match /{path=**}/visit_logs/{logId} {
       allow list: if isSystemAdmin();
       allow get: if isSignedIn() && (resource.data.userId == request.auth.uid || isSystemAdmin());
@@ -33,7 +30,7 @@ service cloud.firestore {
 
       // Secondary rule for admins to manage OTHER users.
       // This call to isSystemAdmin is safe because if the user is checking 
-      // their own doc, the rule above will have already matched.
+      // their own doc, the rule above will have already matched and returned true.
       allow read, write: if isSystemAdmin();
 
       // Rules for nested visit logs (direct path access)
