@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { BookMarked, LoaderCircle, ShieldCheck } from 'lucide-react';
 
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const { user, loading, signInWithGoogle } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
@@ -21,20 +23,23 @@ export default function LoginPage() {
   }, [user, loading, router]);
 
   const handleSignIn = async () => {
+    if (isAuthenticating) return;
+    
+    setIsAuthenticating(true);
     try {
       await signInWithGoogle();
-      router.push('/');
+      // Navigation is handled by the useEffect above
     } catch (error: any) {
-      if (error.code === 'auth/popup-closed-by-user') {
-        return;
-      }
-      
+      // The auth-provider already filters out popup-closed-by-user
+      // but we catch any other real errors here
       console.error('Sign in failed:', error);
       toast({
         variant: "destructive",
         title: "Authentication Error",
-        description: "Failed to verify your Google account. Please try again.",
+        description: error.message || "Failed to verify your Google account. Please try again.",
       });
+    } finally {
+      setIsAuthenticating(false);
     }
   };
   
@@ -70,10 +75,15 @@ export default function LoginPage() {
         <CardContent className="px-10 pb-12">
           <Button
             onClick={handleSignIn}
+            disabled={isAuthenticating}
             className="w-full h-16 text-lg font-black transition-all hover:bg-primary/5 hover:text-primary hover:border-primary/50 border-2 rounded-2xl gap-4 shadow-xl active:scale-95"
             variant="outline"
           >
-            <GoogleIcon />
+            {isAuthenticating ? (
+              <LoaderCircle className="h-6 w-6 animate-spin" />
+            ) : (
+              <GoogleIcon />
+            )}
             <span>Official University Sign In</span>
           </Button>
           

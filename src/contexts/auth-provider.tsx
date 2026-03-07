@@ -122,15 +122,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({
-      hd: 'neu.edu.ph'
+      hd: 'neu.edu.ph',
+      prompt: 'select_account'
     });
     try {
       setLoading(true);
       await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Error during sign in with Google: ", error);
+    } catch (error: any) {
+      // Handle cancellation errors silently without console.error or re-throwing
+      const isCancellation = 
+        error.code === 'auth/popup-closed-by-user' || 
+        error.code === 'auth/cancelled-popup-request';
+        
+      if (!isCancellation) {
+        console.error("Error during sign in with Google: ", error);
+        throw error;
+      }
+    } finally {
       setLoading(false);
-      throw error;
     }
   };
 
