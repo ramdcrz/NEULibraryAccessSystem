@@ -227,7 +227,7 @@ export default function AdminDashboard() {
             <Button
               variant={showFilters ? "secondary" : "outline"}
               onClick={() => setShowFilters(!showFilters)}
-              className="h-14 px-8 rounded-2xl font-black gap-2 transition-all glass border"
+              className="h-14 px-8 rounded-2xl font-black gap-2 transition-all glass"
             >
               <Search className="h-4 w-4" />
               {showFilters ? 'Hide Filters' : 'Filter View'}
@@ -256,8 +256,8 @@ export default function AdminDashboard() {
             { label: 'Verified Reach', val: stats.unique, icon: Users }
           ].map((stat, i) => (
             <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
-                <stat.icon className="h-32 w-32" />
+              <div className="absolute -top-4 -right-4 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-all duration-500">
+                <stat.icon className="h-20 w-20" />
               </div>
               <CardDescription className="text-[11px] font-black uppercase tracking-[0.3em] opacity-50 mb-3">{stat.label}</CardDescription>
               <CardTitle className="text-5xl font-black tracking-tighter">{stat.val}</CardTitle>
@@ -267,7 +267,7 @@ export default function AdminDashboard() {
 
         {/* Filter Controls */}
         {showFilters && (
-          <Card className="glass rounded-[3rem] p-10 border">
+          <Card className="glass rounded-[3rem] p-10">
             <div className="flex flex-col lg:flex-row gap-8 items-end">
               <div className="flex-1 w-full space-y-4">
                 <label className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground px-1 flex items-center gap-2">
@@ -366,7 +366,7 @@ export default function AdminDashboard() {
         )}
 
         {logsError && (
-          <Alert variant="destructive" className="glass rounded-[3rem] p-10 border">
+          <Alert variant="destructive" className="glass rounded-[3rem] p-10">
             <AlertCircle className="h-8 w-8" />
             <AlertTitle className="text-2xl font-black ml-4">Terminal Error</AlertTitle>
             <AlertDescription className="mt-4 text-lg font-bold opacity-80">
