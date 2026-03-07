@@ -56,7 +56,7 @@ export default function Header() {
             <Button 
               variant="ghost" 
               asChild
-              className="flex gap-2 font-black text-[10px] uppercase tracking-widest light-purple-hover dark:hover:bg-white/5 rounded-full px-6 h-10 transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-inner"
+              className="flex gap-2 font-black text-[10px] uppercase tracking-widest h-10 px-6 rounded-full transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-inner light-purple-hover dark:hover:bg-white/5"
             >
               {isAdminPage ? (
                 <Link href="/">
@@ -80,7 +80,7 @@ export default function Header() {
         ) : user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-11 w-11 rounded-full hover:bg-primary/5 transition-all active:scale-90 p-0.5 overflow-hidden border-2 border-primary shadow-sm bg-transparent">
+              <Button variant="ghost" className="relative h-11 w-11 rounded-full p-0.5 overflow-hidden border-2 border-primary shadow-sm bg-transparent transition-all active:scale-90 hover:bg-primary/5">
                 <Avatar className="h-full w-full">
                   <AvatarImage src={user.photoURL ?? ''} alt={user.email ?? ''} />
                   <AvatarFallback className="bg-primary text-white font-bold text-xs">{getInitials(user.email)}</AvatarFallback>

@@ -79,18 +79,18 @@ export default function Home() {
       <Header />
       <main className="flex flex-1 flex-col items-center justify-center gap-12 px-6 md:px-12 py-12 animate-in fade-in slide-in-from-bottom-8 duration-700 relative">
         {!hasLogged && (
-          <div className="w-full max-w-3xl text-center space-y-6">
+          <div className="w-full max-w-4xl text-center space-y-6">
             <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-secondary text-foreground/70 text-[10px] font-bold uppercase tracking-[0.25em] border border-border mb-2">
               <BookCheck className="h-3.5 w-3.5" />
               University Terminal
             </div>
             <h1 className="text-6xl font-extrabold tracking-tight sm:text-7xl md:text-8xl text-foreground">
-              Hello, <span className="text-primary">{getFirstName()}</span>
+              Hello, <span className="text-primary">{getFirstName()}!</span>
             </h1>
-            <p className="mx-auto max-w-[650px] text-xl font-medium text-muted-foreground md:text-2xl leading-relaxed tracking-tight">
+            <p className="mx-auto max-w-4xl text-xl font-medium text-muted-foreground md:text-2xl leading-relaxed tracking-tight">
               {needsOnboarding 
                 ? "Verify your university affiliation to begin recording access logs." 
-                : "Record your visit to help us maintain a safe campus environment."}
+                : "Your official gateway to a smarter, safer university experience."}
             </p>
           </div>
         )}
