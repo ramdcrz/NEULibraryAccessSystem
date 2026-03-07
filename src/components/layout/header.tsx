@@ -31,14 +31,14 @@ export default function Header() {
   const isAdminPage = pathname?.startsWith('/admin');
 
   return (
-    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40 flex h-20 items-center gap-4 px-6 md:px-10 transition-all">
+    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40 flex h-16 items-center gap-4 px-6 md:px-10 transition-all">
       <Link href="/" className="flex items-center gap-3 font-black text-primary animate-in fade-in slide-in-from-left-4 duration-500">
-        <div className="p-2.5 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20 rotate-3 hover:rotate-0 transition-transform">
-          <BookMarked className="h-7 w-7" />
+        <div className="p-2 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 rotate-3 hover:rotate-0 transition-transform">
+          <BookMarked className="h-6 w-6" />
         </div>
         <div className="flex flex-col">
-          <span className="text-xl leading-tight tracking-tighter sm:inline-block">NEU Library</span>
-          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-none">Access System</span>
+          <span className="text-lg leading-tight tracking-tighter sm:inline-block">NEU Library</span>
+          <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground leading-none">Access System</span>
         </div>
       </Link>
 
@@ -47,7 +47,7 @@ export default function Header() {
           <Button 
             variant="ghost" 
             asChild
-            className="hidden md:flex gap-2 font-black text-xs uppercase tracking-widest hover:bg-primary/5 rounded-2xl px-6 h-12"
+            className="hidden md:flex gap-2 font-bold text-[11px] uppercase tracking-widest hover:bg-primary/5 rounded-xl px-4 h-10"
           >
             {isAdminPage ? (
               <Link href="/">
@@ -63,48 +63,48 @@ export default function Header() {
           </Button>
         )}
 
-        <div className="h-8 w-[1px] bg-border/40 hidden md:block" />
+        <div className="h-6 w-[1px] bg-border/40 hidden md:block" />
 
         <ThemeToggle />
         
         {loading ? (
-           <div className="h-11 w-11 animate-pulse rounded-full bg-muted shadow-inner" />
+           <div className="h-10 w-10 animate-pulse rounded-full bg-muted shadow-inner" />
         ) : user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-12 w-12 rounded-full hover:bg-accent/10 transition-all active:scale-95">
-                <Avatar className="h-11 w-11 border-2 border-primary/20 shadow-lg">
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-accent/10 transition-all active:scale-95">
+                <Avatar className="h-9 w-9 border-2 border-primary/20 shadow-md">
                   <AvatarImage src={user.photoURL ?? ''} alt={user.email ?? ''} />
-                  <AvatarFallback className="bg-primary/10 text-primary font-black">{getInitials(user.email)}</AvatarFallback>
+                  <AvatarFallback className="bg-primary/10 text-primary font-black text-xs">{getInitials(user.email)}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-72 glass p-3 rounded-2xl shadow-2xl border-none mt-2" align="end">
-              <DropdownMenuLabel className="font-normal p-4">
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-12 w-12 border-2 border-primary/20">
+            <DropdownMenuContent className="w-64 glass p-2 rounded-xl shadow-2xl border-none mt-2" align="end">
+              <DropdownMenuLabel className="font-normal p-3">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10 border-2 border-primary/20">
                     <AvatarImage src={user.photoURL ?? ''} />
-                    <AvatarFallback className="font-black">{getInitials(user.email)}</AvatarFallback>
+                    <AvatarFallback className="font-black text-xs">{getInitials(user.email)}</AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-black leading-none truncate w-40">
+                  <div className="flex flex-col space-y-0.5">
+                    <p className="text-sm font-bold leading-none truncate w-36">
                       {user.displayName || 'Faculty/Staff'}
                     </p>
-                    <p className="truncate text-[10px] font-bold text-muted-foreground uppercase tracking-tight">
+                    <p className="truncate text-[10px] font-medium text-muted-foreground lowercase">
                       {user.email}
                     </p>
                   </div>
                 </div>
                 {user.user_type && (
-                  <Badge variant="outline" className="mt-4 w-full justify-center py-1.5 rounded-xl border-primary/20 bg-primary/5 text-primary font-black uppercase text-[10px] tracking-widest">
+                  <Badge variant="outline" className="mt-3 w-full justify-center py-1 rounded-lg border-primary/20 bg-primary/5 text-primary font-black uppercase text-[9px] tracking-widest">
                     {user.user_type}
                   </Badge>
                 )}
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="my-2 bg-border/40" />
-              <DropdownMenuItem onClick={signOut} className="rounded-xl cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive py-3 px-4 font-bold transition-colors">
-                <LogOut className="mr-3 h-4 w-4" />
-                <span>Log out of Terminal</span>
+              <DropdownMenuSeparator className="my-1 bg-border/40" />
+              <DropdownMenuItem onClick={signOut} className="rounded-lg cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive py-2.5 px-3 text-sm font-bold transition-colors">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

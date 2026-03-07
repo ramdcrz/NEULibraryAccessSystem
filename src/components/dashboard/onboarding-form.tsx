@@ -86,7 +86,6 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
   const localPart = email.split('@')[0];
   const isBackdoor = email === BACKDOOR_EMAIL;
   
-  // Backdoor email NEVER auto-assigns Student
   const isAutoStudent = !isBackdoor && localPart.includes('.');
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -117,45 +116,45 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
   }
 
   return (
-    <Card className="glass overflow-hidden border-none shadow-2xl">
-      <CardHeader className="bg-primary/5 pb-4">
-        <div className="flex items-center gap-4 mb-2">
-          <div className="p-3 rounded-2xl bg-primary/10 text-primary shadow-inner">
-            <ShieldCheck className="h-7 w-7" />
+    <Card className="glass overflow-hidden border-none shadow-xl">
+      <CardHeader className="bg-primary/5 pb-3">
+        <div className="flex items-center gap-3 mb-1">
+          <div className="p-2 rounded-xl bg-primary/10 text-primary shadow-inner">
+            <ShieldCheck className="h-6 w-6" />
           </div>
           <div>
-            <CardTitle className="text-3xl font-black tracking-tight">Profile Verification</CardTitle>
-            <CardDescription className="text-base">One-time setup required for library access</CardDescription>
+            <CardTitle className="text-xl font-black tracking-tight">Profile Verification</CardTitle>
+            <CardDescription className="text-sm">One-time setup required for access</CardDescription>
           </div>
         </div>
       </CardHeader>
       
-      <CardContent className="pt-6 px-8 pb-8">
+      <CardContent className="pt-5 px-6 pb-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="grid gap-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid gap-6">
               {!isAutoStudent && (
                 <FormField
                   control={form.control}
                   name="user_type"
                   render={({ field }) => (
-                    <FormItem className="space-y-4">
-                      <FormLabel className="text-xl font-black flex items-center gap-3">
-                        <UserCircle className="h-5 w-5 text-primary" />
-                        Identify Classification
+                    <FormItem className="space-y-3">
+                      <FormLabel className="text-base font-bold flex items-center gap-2">
+                        <UserCircle className="h-4 w-4 text-primary" />
+                        Identity Classification
                       </FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="h-16 text-lg border-2 bg-background/50 hover:border-primary transition-all rounded-2xl">
+                          <SelectTrigger className="h-12 text-sm border-2 bg-background/50 hover:border-primary transition-all rounded-xl">
                             <SelectValue placeholder="Staff or Employee?" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="rounded-2xl shadow-2xl">
-                          <SelectItem value="Staff" className="py-4 text-base cursor-pointer">Staff Member</SelectItem>
-                          <SelectItem value="Employee" className="py-4 text-base cursor-pointer">University Employee</SelectItem>
+                        <SelectContent className="rounded-xl shadow-2xl">
+                          <SelectItem value="Staff" className="py-2.5 text-sm cursor-pointer">Staff Member</SelectItem>
+                          <SelectItem value="Employee" className="py-2.5 text-sm cursor-pointer">University Employee</SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormDescription className="text-sm font-medium px-1">
+                      <FormDescription className="text-xs font-medium px-1">
                         Select based on your official appointment status.
                       </FormDescription>
                       <FormMessage />
@@ -168,31 +167,31 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
                 control={form.control}
                 name="college_office"
                 render={({ field }) => (
-                  <FormItem className="space-y-4">
-                    <FormLabel className="text-xl font-black flex items-center gap-3">
-                      <School className="h-5 w-5 text-primary" />
+                  <FormItem className="space-y-3">
+                    <FormLabel className="text-base font-bold flex items-center gap-2">
+                      <School className="h-4 w-4 text-primary" />
                       Academic Affiliation
                     </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger className="h-16 text-lg border-2 bg-background/50 hover:border-primary transition-all rounded-2xl">
+                        <SelectTrigger className="h-12 text-sm border-2 bg-background/50 hover:border-primary transition-all rounded-xl">
                           <SelectValue placeholder="Select your College or Office" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="rounded-2xl shadow-2xl max-h-[400px]">
+                      <SelectContent className="rounded-xl shadow-2xl max-h-[300px]">
                         <SelectGroup>
-                          <SelectLabel className="px-2 py-2 text-xs font-black uppercase tracking-widest text-muted-foreground bg-muted/30">Colleges</SelectLabel>
+                          <SelectLabel className="px-2 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground bg-muted/30">Colleges</SelectLabel>
                           {colleges.map((college) => (
-                            <SelectItem key={college} value={college} className="py-3 text-base cursor-pointer">
+                            <SelectItem key={college} value={college} className="py-2 text-sm cursor-pointer">
                               {college}
                             </SelectItem>
                           ))}
                         </SelectGroup>
                         <Separator className="my-1" />
                         <SelectGroup>
-                          <SelectLabel className="px-2 py-2 text-xs font-black uppercase tracking-widest text-muted-foreground bg-muted/30">University Offices</SelectLabel>
+                          <SelectLabel className="px-2 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground bg-muted/30">University Offices</SelectLabel>
                           {offices.map((office) => (
-                            <SelectItem key={office} value={office} className="py-3 text-base cursor-pointer">
+                            <SelectItem key={office} value={office} className="py-2 text-sm cursor-pointer">
                               {office}
                             </SelectItem>
                           ))}
@@ -209,15 +208,15 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
 
             <Button 
               type="submit" 
-              className="w-full h-20 text-2xl font-black shadow-2xl rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] group" 
+              className="w-full h-14 text-lg font-black shadow-xl rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] group" 
               disabled={isSubmitting}
             >
               {isSubmitting ? (
-                <LoaderCircle className="h-8 w-8 animate-spin" />
+                <LoaderCircle className="h-6 w-6 animate-spin" />
               ) : (
-                <div className="flex items-center justify-center gap-3">
+                <div className="flex items-center justify-center gap-2">
                   Verify & Continue
-                  <ChevronRight className="h-7 w-7 transition-transform group-hover:translate-x-2" />
+                  <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </div>
               )}
             </Button>

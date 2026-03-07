@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -84,7 +83,6 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
       const entryDate = new Date().toISOString().split('T')[0];
       const finalReason = data.reason === 'Others' ? data.otherReason!.trim() : data.reason;
 
-      // Submit with 'uid' to match the strict university schema
       addVisitLog({
         uid: user.uid,
         email: user.email!,
@@ -129,18 +127,18 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
 
   if (isLogged) {
     return (
-      <Card className="glass border-2 border-primary/20 shadow-2xl p-10 text-center animate-in zoom-in-95 duration-500">
-        <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-500/10 text-green-500 animate-float">
-          <CheckCircle2 className="h-12 w-12" />
+      <Card className="glass border-2 border-primary/20 shadow-2xl p-8 text-center animate-in zoom-in-95 duration-500 rounded-3xl">
+        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-green-500/10 text-green-500 animate-float">
+          <CheckCircle2 className="h-10 w-10" />
         </div>
-        <CardTitle className="text-3xl font-black mb-4">Visit Recorded</CardTitle>
-        <CardDescription className="text-lg mb-8">
+        <CardTitle className="text-2xl font-black mb-3">Visit Recorded</CardTitle>
+        <CardDescription className="text-base mb-6">
           Thank you for following university protocols. This terminal will reset shortly...
         </CardDescription>
         <Button 
           variant="outline" 
           onClick={() => signOut()}
-          className="h-12 px-8 text-base font-bold rounded-2xl gap-2 hover:bg-primary hover:text-white transition-all"
+          className="h-11 px-6 text-sm font-bold rounded-xl gap-2 hover:bg-primary hover:text-white transition-all"
         >
           <LogOut className="h-4 w-4" />
           Logout Now
@@ -150,41 +148,41 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
   }
 
   return (
-    <Card className="glass overflow-hidden border-none shadow-2xl">
-      <CardHeader className="bg-primary/5 pb-8">
+    <Card className="glass overflow-hidden border-none shadow-xl rounded-3xl">
+      <CardHeader className="bg-primary/5 pb-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-primary/10 text-primary shadow-inner">
-              <BookMarked className="h-7 w-7" />
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-primary/10 text-primary shadow-inner">
+              <BookMarked className="h-6 w-6" />
             </div>
             <div>
-              <CardTitle className="text-2xl font-black tracking-tight">Log Library Visit</CardTitle>
-              <CardDescription>Confirm your details and purpose of visit</CardDescription>
+              <CardTitle className="text-xl font-black tracking-tight">Log Library Visit</CardTitle>
+              <CardDescription className="text-sm">Confirm details and purpose</CardDescription>
             </div>
           </div>
-          <Badge className="px-5 py-1.5 text-xs font-black uppercase tracking-widest bg-primary text-primary-foreground rounded-full shadow-lg">
+          <Badge className="px-4 py-1 text-[10px] font-black uppercase tracking-widest bg-primary text-primary-foreground rounded-full shadow-md">
             {user.user_type}
           </Badge>
         </div>
       </CardHeader>
       
-      <CardContent className="pt-8 px-8 pb-8">
+      <CardContent className="pt-6 px-6 pb-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-5 rounded-2xl bg-muted/40 border border-border/40 backdrop-blur-sm transition-all hover:bg-muted/60">
-                <div className="flex items-center gap-2 mb-2 text-muted-foreground">
-                  <Info className="h-3.5 w-3.5" />
-                  <span className="text-[10px] font-black uppercase tracking-tighter">Verified Classification</span>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="p-4 rounded-xl bg-muted/40 border border-border/40 backdrop-blur-sm transition-all hover:bg-muted/60">
+                <div className="flex items-center gap-2 mb-1 text-muted-foreground">
+                  <Info className="h-3 w-3" />
+                  <span className="text-[9px] font-black uppercase tracking-tighter">Classification</span>
                 </div>
-                <p className="text-xl font-black text-primary">{user.user_type}</p>
+                <p className="text-lg font-black text-primary">{user.user_type}</p>
               </div>
-              <div className="p-5 rounded-2xl bg-muted/40 border border-border/40 backdrop-blur-sm transition-all hover:bg-muted/60">
-                <div className="flex items-center gap-2 mb-2 text-muted-foreground">
-                  <Info className="h-3.5 w-3.5" />
-                  <span className="text-[10px] font-black uppercase tracking-tighter">Verified Affiliation</span>
+              <div className="p-4 rounded-xl bg-muted/40 border border-border/40 backdrop-blur-sm transition-all hover:bg-muted/60">
+                <div className="flex items-center gap-2 mb-1 text-muted-foreground">
+                  <Info className="h-3 w-3" />
+                  <span className="text-[9px] font-black uppercase tracking-tighter">Affiliation</span>
                 </div>
-                <p className="text-xl font-black text-primary truncate" title={user.college_office ?? ''}>
+                <p className="text-lg font-black text-primary truncate" title={user.college_office ?? ''}>
                   {user.college_office}
                 </p>
               </div>
@@ -196,19 +194,19 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
               control={form.control}
               name="reason"
               render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel className="text-lg font-black tracking-tight flex items-center gap-2">
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-base font-bold tracking-tight flex items-center gap-2">
                     Reason for Visit
                   </FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger className="h-16 text-lg border-2 bg-background/50 transition-all hover:border-primary/50 rounded-2xl">
+                      <SelectTrigger className="h-12 text-sm border-2 bg-background/50 transition-all hover:border-primary/50 rounded-xl">
                         <SelectValue placeholder="Select purpose..." />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="rounded-2xl shadow-2xl">
+                    <SelectContent className="rounded-xl shadow-2xl">
                       {visitReasons.map((reason) => (
-                        <SelectItem key={reason} value={reason} className="py-4 text-base cursor-pointer">
+                        <SelectItem key={reason} value={reason} className="py-2.5 text-sm cursor-pointer">
                           {reason}
                         </SelectItem>
                       ))}
@@ -229,7 +227,7 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
                       <Input 
                         {...field} 
                         placeholder="Please specify your reason here..." 
-                        className="h-14 text-base border-2 bg-background/50 focus:border-primary rounded-2xl"
+                        className="h-12 text-sm border-2 bg-background/50 focus:border-primary rounded-xl"
                       />
                     </FormControl>
                     <FormMessage />
@@ -240,16 +238,16 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
 
             <Button 
               type="submit" 
-              className="w-full h-20 text-2xl font-black shadow-2xl rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] group relative overflow-hidden" 
+              className="w-full h-16 text-xl font-black shadow-xl rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] group relative overflow-hidden" 
               disabled={isSubmitting}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-0 group-hover:opacity-10 transition-opacity" />
               {isSubmitting ? (
-                <LoaderCircle className="h-8 w-8 animate-spin" />
+                <LoaderCircle className="h-6 w-6 animate-spin" />
               ) : (
-                <div className="flex items-center justify-center gap-3">
+                <div className="flex items-center justify-center gap-2">
                   Confirm Entry
-                  <ChevronRight className="h-7 w-7 transition-transform group-hover:translate-x-2" />
+                  <ChevronRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
                 </div>
               )}
             </Button>
