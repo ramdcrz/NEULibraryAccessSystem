@@ -27,7 +27,6 @@ export default function LoginPage() {
     setIsAuthenticating(true);
     try {
       await signInWithGoogle();
-      // Navigation is handled by the useEffect above
     } catch (error: any) {
       console.error('Sign in failed:', error);
       toast({
@@ -59,41 +58,43 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 gradient-bg">
-      <Card className="w-full max-w-md glass border-none animate-in fade-in zoom-in-95 duration-700">
-        <CardHeader className="text-center pb-12 pt-10">
-          <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-primary text-white rotate-0 transition-transform hover:rotate-6 animate-float">
-            <BookMarked className="h-12 w-12" />
-          </div>
-          <CardTitle className="text-5xl font-black tracking-tighter text-foreground mb-2">NEU Library</CardTitle>
-          <CardDescription className="text-muted-foreground text-lg font-medium px-8">
-            Access Management Terminal
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="px-10 pb-12">
-          <Button
-            onClick={handleSignIn}
-            disabled={isAuthenticating}
-            className="w-full h-16 text-lg font-black transition-all hover:bg-primary/5 hover:text-primary hover:border-primary/50 border-2 rounded-2xl gap-4 active:scale-95"
-            variant="outline"
-          >
-            {isAuthenticating ? (
-              <LoaderCircle className="h-6 w-6 animate-spin" />
-            ) : (
-              <GoogleIcon />
-            )}
-            <span>Official University Sign In</span>
-          </Button>
-          
-          <div className="mt-12 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-            <ShieldCheck className="h-3 w-3" />
-            Authorized Personnel & Students Only
-          </div>
-        </CardContent>
-      </Card>
-      
-      <p className="fixed bottom-10 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40 text-center">
-        New Era University • Library Systems
-      </p>
+      <div className="w-full max-w-md flex flex-col items-center gap-12">
+        <Card className="w-full glass border animate-in fade-in zoom-in-95 duration-700">
+          <CardHeader className="text-center pb-12 pt-10 px-10">
+            <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-primary text-white rotate-0 transition-transform hover:rotate-6 animate-float">
+              <BookMarked className="h-12 w-12" />
+            </div>
+            <CardTitle className="text-5xl font-black tracking-tighter text-foreground mb-2">NEU Library</CardTitle>
+            <CardDescription className="text-muted-foreground text-lg font-medium px-4">
+              Access Management Terminal
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-10 pb-12">
+            <Button
+              onClick={handleSignIn}
+              disabled={isAuthenticating}
+              className="w-full h-16 text-lg font-black transition-all hover:bg-primary/5 hover:text-primary hover:border-primary/50 border-2 rounded-2xl gap-4 active:scale-95"
+              variant="outline"
+            >
+              {isAuthenticating ? (
+                <LoaderCircle className="h-6 w-6 animate-spin" />
+              ) : (
+                <GoogleIcon />
+              )}
+              <span>Official University Sign In</span>
+            </Button>
+            
+            <div className="mt-12 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+              <ShieldCheck className="h-3 w-3" />
+              Authorized Personnel & Students Only
+            </div>
+          </CardContent>
+        </Card>
+        
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40 text-center max-w-xs leading-relaxed">
+          New Era University • Library Systems
+        </p>
+      </div>
     </main>
   );
 }

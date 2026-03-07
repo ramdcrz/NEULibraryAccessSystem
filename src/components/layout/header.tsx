@@ -33,7 +33,7 @@ export default function Header() {
   const isAdminPage = pathname?.startsWith('/admin');
 
   return (
-    <header className="sticky top-0 z-[100] w-full bg-background/20 backdrop-blur-3xl border-b border-black/5 dark:border-white/10 flex h-20 items-center gap-4 px-6 md:px-12 transition-all">
+    <header className="sticky top-0 z-[100] w-full bg-background/5 backdrop-blur-3xl border-b border-white/10 dark:border-white/5 flex h-20 items-center gap-4 px-6 md:px-12 transition-all">
       <div className="flex items-center gap-8">
         <Link href="/" className="flex items-center gap-3.5 group transition-opacity hover:opacity-80">
           <div className="p-2 rounded-xl bg-foreground text-background shadow-sm transition-transform group-active:scale-95">
@@ -78,14 +78,14 @@ export default function Header() {
         ) : user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-accent/10 transition-all active:scale-90 p-0 overflow-hidden border border-black/5 dark:border-white/10">
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-accent/10 transition-all active:scale-90 p-0 overflow-hidden border border-white/10">
                 <Avatar className="h-full w-full">
                   <AvatarImage src={user.photoURL ?? ''} alt={user.email ?? ''} />
                   <AvatarFallback className="bg-primary text-white font-bold text-xs">{getInitials(user.email)}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-72 p-2 rounded-[2rem] border-black/5 dark:border-white/10 glass mt-4 overflow-hidden" align="end">
+            <DropdownMenuContent className="w-72 p-2 rounded-[2rem] border glass mt-4 overflow-hidden" align="end">
               <DropdownMenuLabel className="font-normal p-5">
                 <div className="flex items-center gap-4">
                   <Avatar className="h-14 w-14 border border-black/5 dark:border-white/10 shadow-sm">

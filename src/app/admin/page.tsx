@@ -227,7 +227,7 @@ export default function AdminDashboard() {
             <Button
               variant={showFilters ? "secondary" : "outline"}
               onClick={() => setShowFilters(!showFilters)}
-              className="h-14 px-8 rounded-2xl font-black gap-2 transition-all glass border-2"
+              className="h-14 px-8 rounded-2xl font-black gap-2 transition-all glass border"
             >
               <Search className="h-4 w-4" />
               {showFilters ? 'Hide Filters' : 'Filter View'}
@@ -251,11 +251,11 @@ export default function AdminDashboard() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
-            { label: 'Total Visits', val: stats.total, icon: BarChart3, col: 'primary' },
-            { label: 'Today', val: stats.today, icon: Clock, col: 'green-500' },
-            { label: 'Verified Reach', val: stats.unique, icon: Users, col: 'amber-500' }
+            { label: 'Total Visits', val: stats.total, icon: BarChart3 },
+            { label: 'Today', val: stats.today, icon: Clock },
+            { label: 'Verified Reach', val: stats.unique, icon: Users }
           ].map((stat, i) => (
-            <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group">
+            <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group border">
               <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
                 <stat.icon className="h-32 w-32" />
               </div>
@@ -267,7 +267,7 @@ export default function AdminDashboard() {
 
         {/* Filter Controls */}
         {showFilters && (
-          <Card className="glass rounded-[3rem] p-10 animate-in slide-in-from-top-4 duration-500">
+          <Card className="glass rounded-[3rem] p-10 border animate-in slide-in-from-top-4 duration-500">
             <div className="flex flex-col lg:flex-row gap-8 items-end">
               <div className="flex-1 w-full space-y-4">
                 <label className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground px-1 flex items-center gap-2">
@@ -301,7 +301,7 @@ export default function AdminDashboard() {
                         {startDate ? format(startDate, "PPP") : "Select date"}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 rounded-[2rem] border-white/10 glass" align="start">
+                    <PopoverContent className="w-auto p-0 rounded-[2rem] border glass" align="start">
                       <Calendar
                         mode="single"
                         selected={startDate}
@@ -337,7 +337,7 @@ export default function AdminDashboard() {
                         {endDate ? format(endDate, "PPP") : "Select date"}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 rounded-[2rem] border-white/10 glass" align="start">
+                    <PopoverContent className="w-auto p-0 rounded-[2rem] border glass" align="start">
                       <Calendar
                         mode="single"
                         selected={endDate}
@@ -366,7 +366,7 @@ export default function AdminDashboard() {
         )}
 
         {logsError && (
-          <Alert variant="destructive" className="glass rounded-[3rem] p-10">
+          <Alert variant="destructive" className="glass rounded-[3rem] p-10 border">
             <AlertCircle className="h-8 w-8" />
             <AlertTitle className="text-2xl font-black ml-4">Terminal Error</AlertTitle>
             <AlertDescription className="mt-4 text-lg font-bold opacity-80">
@@ -375,7 +375,7 @@ export default function AdminDashboard() {
           </Alert>
         )}
 
-        <Card className="glass overflow-hidden rounded-[3rem]">
+        <Card className="glass overflow-hidden rounded-[3rem] border">
           <CardHeader className="p-10 border-b border-black/5 dark:border-white/10 bg-white/5">
             <div className="flex items-center gap-5">
               <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-white/10">
@@ -426,7 +426,7 @@ export default function AdminDashboard() {
                       const isBlocked = userStatusMap[log.uid] || false;
                       
                       return (
-                        <TableRow key={log.id} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/5 group">
+                        <TableRow key={log.id} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10 group">
                           <TableCell className="pl-10 py-6 whitespace-nowrap font-bold text-muted-foreground/70">
                             {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, h:mm a') : '...'}
                           </TableCell>
