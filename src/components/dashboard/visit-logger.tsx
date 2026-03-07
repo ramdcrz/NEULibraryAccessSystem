@@ -127,7 +127,7 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
 
   if (isLogged) {
     return (
-      <Card className="glass border-none p-12 text-center animate-in zoom-in-95 duration-500 rounded-[3rem]">
+      <Card className="glass p-12 text-center animate-in zoom-in-95 duration-500 rounded-[3rem]">
         <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-green-500/10 text-green-500">
           <CheckCircle2 className="h-12 w-12" />
         </div>
@@ -148,8 +148,8 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
   }
 
   return (
-    <Card className="glass border-none rounded-[3rem] overflow-hidden">
-      <CardHeader className="bg-white/5 pb-10 pt-10 px-10 border-b border-white/10">
+    <Card className="glass rounded-[3rem] overflow-hidden">
+      <CardHeader className="bg-white/5 dark:bg-white/5 pb-10 pt-10 px-10 border-b border-white/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5">
             <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-white/20">
@@ -170,14 +170,14 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-              <div className="md:col-span-1 p-6 rounded-3xl bg-white/5 border border-white/10 flex flex-col items-center justify-center text-center">
+              <div className="md:col-span-1 p-6 rounded-3xl bg-secondary/40 dark:bg-white/5 backdrop-blur-md border border-white/10 flex flex-col items-center justify-center text-center">
                 <div className="flex items-center gap-2 mb-2 text-primary/60">
                   <User className="h-3.5 w-3.5" />
                   <span className="text-[10px] font-black uppercase tracking-widest">ID Class</span>
                 </div>
                 <p className="text-base font-black text-foreground">{user.user_type}</p>
               </div>
-              <div className="md:col-span-3 p-6 rounded-3xl bg-white/5 border border-white/10">
+              <div className="md:col-span-3 p-6 rounded-3xl bg-secondary/40 dark:bg-white/5 backdrop-blur-md border border-white/10">
                 <div className="flex items-center gap-2 mb-2 text-primary/60">
                   <School className="h-3.5 w-3.5" />
                   <span className="text-[10px] font-black uppercase tracking-widest">University Affiliation</span>

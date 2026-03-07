@@ -257,7 +257,7 @@ export default function AdminDashboard() {
             { label: 'Today', val: stats.today, icon: Clock, col: 'green-500' },
             { label: 'Verified Reach', val: stats.unique, icon: Users, col: 'amber-500' }
           ].map((stat, i) => (
-            <Card key={i} className="glass border-white/20 rounded-[3rem] p-8 relative overflow-hidden group">
+            <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
                 <stat.icon className="h-32 w-32" />
               </div>
@@ -368,7 +368,7 @@ export default function AdminDashboard() {
         )}
 
         {logsError && (
-          <Alert variant="destructive" className="glass border-white/20 rounded-[3rem] p-10">
+          <Alert variant="destructive" className="glass rounded-[3rem] p-10">
             <AlertCircle className="h-8 w-8" />
             <AlertTitle className="text-2xl font-black ml-4">Terminal Error</AlertTitle>
             <AlertDescription className="mt-4 text-lg font-bold opacity-80">
