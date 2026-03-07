@@ -52,11 +52,11 @@ export default function AdminDashboard() {
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection(logsQuery);
   const { data: allUsers } = useCollection(usersQuery);
 
-  // Create a reactive lookup map for blocked status
+  // Create a reactive lookup map for blocked status using isBlocked
   const userStatusMap = useMemo(() => {
     const map: Record<string, boolean> = {};
     allUsers?.forEach(u => {
-      map[u.id] = !!u.is_blocked;
+      map[u.id] = !!u.isBlocked;
     });
     return map;
   }, [allUsers]);
@@ -222,7 +222,7 @@ export default function AdminDashboard() {
                                 )}
                               </Button>
                             ) : (
-                              <span className="text-[10px] text-muted-foreground uppercase font-black px-2 py-1 bg-muted rounded-md">Legacy Log</span>
+                              <span className="text-[10px] text-muted-foreground uppercase font-black px-2 party-1 bg-muted rounded-md">Legacy Log</span>
                             )}
                           </TableCell>
                         </TableRow>

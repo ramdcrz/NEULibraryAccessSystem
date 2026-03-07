@@ -29,7 +29,7 @@
           "type": "string",
           "description": "The college or office the user is affiliated with. Can be null."
         },
-        "is_blocked": {
+        "isBlocked": {
           "type": "boolean",
           "description": "Indicates if the user's access to the system is blocked. Defaults to false."
         },
@@ -43,7 +43,7 @@
         "id",
         "email",
         "role",
-        "is_blocked",
+        "isBlocked",
         "createdAt"
       ]
     },

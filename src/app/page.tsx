@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -29,7 +30,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (!loading && user?.is_blocked) {
+    if (!loading && user?.isBlocked) {
       toast({
         variant: "destructive",
         title: "Access Denied",
@@ -46,7 +47,7 @@ export default function Home() {
     return <Loading />;
   }
 
-  if (user.is_blocked) {
+  if (user.isBlocked) {
     return (
       <div className="flex min-h-screen items-center justify-center p-4 gradient-bg">
         <Alert variant="destructive" className="max-w-md glass border-2 rounded-3xl p-8">

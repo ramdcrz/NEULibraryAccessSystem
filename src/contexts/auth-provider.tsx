@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               role: data.role || 'user',
               user_type: data.user_type,
               college_office: data.college_office,
-              is_blocked: !!data.is_blocked,
+              isBlocked: !!data.isBlocked,
               photoURL: firebaseUser.photoURL,
               displayName: firebaseUser.displayName,
               createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
@@ -90,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               role: isTargetAdmin ? 'admin' : 'user',
               user_type: derivedUserType,
               college_office: null,
-              is_blocked: false,
+              isBlocked: false,
               id: firebaseUser.uid,
               createdAt: serverTimestamp(),
             };

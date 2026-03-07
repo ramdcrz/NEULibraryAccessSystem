@@ -7,7 +7,7 @@ export interface UserProfile {
   role: 'admin' | 'user';
   user_type: 'Student' | 'Staff' | 'Employee' | null;
   college_office: string | null;
-  is_blocked: boolean;
+  isBlocked: boolean;
   createdAt: Date | Timestamp;
 }
 

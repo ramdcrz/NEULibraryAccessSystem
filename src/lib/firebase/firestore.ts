@@ -26,7 +26,7 @@ export async function getUserDoc(uid: string): Promise<UserProfile | null> {
       role: data.role,
       user_type: data.user_type,
       college_office: data.college_office,
-      is_blocked: data.is_blocked,
+      isBlocked: data.isBlocked,
       createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
     } as UserProfile;
   } else {
@@ -48,8 +48,7 @@ export function updateUserDoc(uid: string, data: Partial<UserProfile>) {
 }
 
 /**
- * Toggles the blocked status of a user.
- * Fetches the current status first to ensure accurate toggling.
+ * Toggles the blocked status of a user using camelCase field: isBlocked.
  */
 export async function toggleUserBlock(uid: string) {
   if (!uid || typeof uid !== 'string') {
@@ -63,11 +62,11 @@ export async function toggleUserBlock(uid: string) {
     throw new Error('User profile not found in the system.');
   }
 
-  const currentStatus = !!userSnap.data().is_blocked;
+  const currentStatus = !!userSnap.data().isBlocked;
   const newStatus = !currentStatus;
 
   await updateDoc(userRef, {
-    is_blocked: newStatus
+    isBlocked: newStatus
   });
 
   return newStatus;
