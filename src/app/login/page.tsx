@@ -58,8 +58,8 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 gradient-bg">
-      <div className="w-full max-w-md flex flex-col items-center justify-center gap-12">
-        <Card className="w-full glass border border-black/5 dark:border-white/20 animate-in fade-in zoom-in-95 duration-700 shadow-2xl relative overflow-hidden">
+      <div className="w-full max-w-md flex flex-col items-center justify-center gap-12 animate-in fade-in duration-1000 ease-in-out">
+        <Card className="w-full glass border border-black/5 dark:border-white/20 animate-in zoom-in-95 duration-1000 shadow-2xl relative overflow-hidden">
           <CardHeader className="text-center pb-12 pt-10 px-10 relative z-10">
             <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] purple-gradient text-white transition-transform hover:rotate-6 shadow-lg shadow-primary/30">
               <BookMarked className="h-12 w-12" />
