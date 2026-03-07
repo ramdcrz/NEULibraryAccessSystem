@@ -8,7 +8,6 @@ import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { 
   ShieldCheck, 
-  Database, 
   AlertCircle, 
   UserX, 
   UserCheck, 
@@ -20,7 +19,6 @@ import {
   Filter,
   BarChart3,
   Users,
-  CalendarDays,
   Clock
 } from 'lucide-react';
 import { collection, query, orderBy } from 'firebase/firestore';
@@ -36,7 +34,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useToast } from '@/hooks/use-toast';
 import { toggleUserBlock } from '@/lib/firebase/firestore';
 import { cn } from '@/lib/utils';
-import { jsPDF } from 'jspdf';
+import jspdf from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 export default function AdminDashboard() {
@@ -155,7 +153,7 @@ export default function AdminDashboard() {
 
     setIsExporting(true);
     try {
-      const doc = new jsPDF();
+      const doc = new jspdf();
       const currentDate = format(new Date(), 'yyyy-MM-dd');
       
       doc.setFontSize(22);
@@ -257,7 +255,7 @@ export default function AdminDashboard() {
             { label: 'Today', val: stats.today, icon: Clock, col: 'green-500' },
             { label: 'Verified Reach', val: stats.unique, icon: Users, col: 'amber-500' }
           ].map((stat, i) => (
-            <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group">
+            <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group border-none">
               <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
                 <stat.icon className="h-32 w-32" />
               </div>
@@ -439,7 +437,7 @@ export default function AdminDashboard() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant="outline" className="w-28 justify-center rounded-xl py-1 font-black text-[10px] uppercase tracking-widest bg-white/5 border-white/10 text-primary">
+                            <Badge variant="outline" className="w-32 justify-center rounded-xl py-1 font-black text-[10px] uppercase tracking-widest bg-white/5 border-white/10 text-primary">
                               {log.userType}
                             </Badge>
                           </TableCell>

@@ -17,6 +17,7 @@ import { ThemeToggle } from '../theme-toggle';
 import Link from 'next/link';
 import { Badge } from '../ui/badge';
 import LiveClock from './live-clock';
+import { cn } from '@/lib/utils';
 
 export default function Header() {
   const { user, signOut, loading } = useAuth();
@@ -32,7 +33,7 @@ export default function Header() {
   const isAdminPage = pathname?.startsWith('/admin');
 
   return (
-    <header className="sticky top-0 z-[100] w-full bg-background/40 backdrop-blur-3xl border-b border-white/10 flex h-20 items-center gap-4 px-6 md:px-12 transition-all">
+    <header className="sticky top-0 z-[100] w-full bg-background/20 backdrop-blur-3xl border-b border-white/10 flex h-20 items-center gap-4 px-6 md:px-12 transition-all">
       <div className="flex items-center gap-8">
         <Link href="/" className="flex items-center gap-3.5 group transition-opacity hover:opacity-80">
           <div className="p-2 rounded-xl bg-foreground text-background shadow-sm transition-transform group-active:scale-95">

@@ -170,14 +170,14 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-              <div className="md:col-span-1 p-6 rounded-3xl bg-secondary/40 dark:bg-white/5 backdrop-blur-md border border-white/10 flex flex-col items-center justify-center text-center">
+              <div className="md:col-span-1 p-6 rounded-3xl glass border-none flex flex-col items-center justify-center text-center">
                 <div className="flex items-center gap-2 mb-2 text-primary/60">
                   <User className="h-3.5 w-3.5" />
                   <span className="text-[10px] font-black uppercase tracking-widest">ID Class</span>
                 </div>
                 <p className="text-base font-black text-foreground">{user.user_type}</p>
               </div>
-              <div className="md:col-span-3 p-6 rounded-3xl bg-secondary/40 dark:bg-white/5 backdrop-blur-md border border-white/10">
+              <div className="md:col-span-3 p-6 rounded-3xl glass border-none">
                 <div className="flex items-center gap-2 mb-2 text-primary/60">
                   <School className="h-3.5 w-3.5" />
                   <span className="text-[10px] font-black uppercase tracking-widest">University Affiliation</span>
