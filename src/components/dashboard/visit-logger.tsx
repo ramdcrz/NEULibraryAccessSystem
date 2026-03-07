@@ -248,7 +248,6 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
                           className="h-12 glass border-2 focus:border-primary"
                         />
                       </FormControl>
-                      <FormDescription>Please specify your reason (minimum 4 characters).</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
