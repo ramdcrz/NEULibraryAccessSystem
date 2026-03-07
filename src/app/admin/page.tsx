@@ -478,7 +478,7 @@ export default function AdminDashboard() {
                           <TableCell className="font-black text-foreground">{log.email}</TableCell>
                           <TableCell className="text-muted-foreground italic text-xs">{log.college_office}</TableCell>
                           <TableCell>
-                            <Badge variant="outline" className="rounded-lg px-3 py-0.5 font-black text-[9px] uppercase tracking-widest bg-primary/5 text-primary border-primary/10">
+                            <Badge variant="outline" className="w-24 justify-center rounded-lg px-3 py-0.5 font-black text-[9px] uppercase tracking-widest bg-primary/5 text-primary border-primary/10">
                               {log.userType}
                             </Badge>
                           </TableCell>
@@ -491,7 +491,7 @@ export default function AdminDashboard() {
                                 variant="ghost"
                                 size="sm"
                                 className={cn(
-                                  "h-9 px-4 font-black text-[9px] uppercase tracking-widest rounded-lg gap-2 transition-all active:scale-95 border",
+                                  "h-9 w-28 font-black text-[9px] uppercase tracking-widest rounded-lg gap-2 transition-all active:scale-95 border",
                                   isBlocked 
                                     ? "text-green-600 bg-green-500/5 hover:bg-green-500/10 border-green-500/10" 
                                     : "text-destructive bg-destructive/5 hover:bg-destructive/10 border-destructive/10"
