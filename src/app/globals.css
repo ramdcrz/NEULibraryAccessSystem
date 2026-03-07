@@ -62,8 +62,14 @@
 }
 
 .glass {
-  /* Apple Liquid Glass: High transparency, extreme blur, precise white border stroke */
-  @apply bg-white/10 dark:bg-white/5 backdrop-blur-[40px] border border-white/20 dark:border-white/10 shadow-none;
+  /* Apple Liquid Glass: Enhanced for light mode visibility */
+  @apply bg-white/80 dark:bg-white/5 backdrop-blur-[40px] border border-white dark:border-white/20;
+  /* Subtle lift shadow for light mode, removed in dark mode */
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
+}
+
+.dark .glass {
+  @apply shadow-none;
   /* Simulating physical thickness with a very subtle inner glow */
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }

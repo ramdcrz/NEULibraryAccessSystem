@@ -250,7 +250,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Liquid Glass Stats Grid */}
+        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
             { label: 'Total Visits', val: stats.total, icon: BarChart3, col: 'primary' },
