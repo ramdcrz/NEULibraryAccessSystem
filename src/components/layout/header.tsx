@@ -80,8 +80,8 @@ export default function Header() {
         ) : user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="relative p-[3px] rounded-full purple-gradient cursor-pointer active:scale-95 transition-transform group">
-                <div className="relative h-10 w-10 rounded-full p-0.5 overflow-hidden border-2 border-background shadow-sm bg-background transition-all">
+              <div className="flex h-[46px] w-[46px] items-center justify-center rounded-full purple-gradient cursor-pointer active:scale-95 transition-transform group">
+                <div className="relative h-10 w-10 rounded-full p-0.5 overflow-hidden border-2 border-background shadow-sm bg-background transition-all flex items-center justify-center">
                   <Avatar className="h-full w-full">
                     <AvatarImage src={user.photoURL ?? ''} alt={user.email ?? ''} />
                     <AvatarFallback className="purple-gradient text-white font-bold text-xs">{getInitials(user.email)}</AvatarFallback>
