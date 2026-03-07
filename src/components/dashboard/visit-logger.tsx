@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { LoaderCircle, ChevronRight, UserCircle, Briefcase, GraduationCap, BookMarked } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -50,6 +51,15 @@ const formSchema = z.object({
   reason: z.string({
     required_error: 'Please select a reason for your visit.',
   }),
+  otherReason: z.string().optional(),
+}).refine((data) => {
+  if (data.reason === 'Other' && (!data.otherReason || data.otherReason.trim() === '')) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Please specify your reason.",
+  path: ["otherReason"],
 });
 
 type VisitLoggerProps = {
@@ -64,8 +74,12 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       userType: 'Student',
+      reason: '',
+      otherReason: '',
     }
   });
+
+  const selectedReason = form.watch('reason');
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
@@ -75,12 +89,13 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
       }
       
       const entryDate = new Date().toISOString().split('T')[0];
+      const finalReason = data.reason === 'Other' ? data.otherReason! : data.reason;
 
       addVisitLog({
         userId: user.uid,
         email: user.email!,
         userType: data.userType.toLowerCase() as any,
-        reason: data.reason,
+        reason: finalReason,
         entryDate: entryDate,
       });
 
@@ -152,30 +167,53 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="reason"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel className="text-lg font-semibold">Purpose of Visit</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="h-12 text-base glass border-2">
-                        <SelectValue placeholder="Select why you are here" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="glass">
-                      {visitReasons.map((reason) => (
-                        <SelectItem key={reason} value={reason} className="py-3 text-base">
-                          {reason}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="reason"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel className="text-lg font-semibold">Purpose of Visit</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="h-12 text-base glass border-2">
+                          <SelectValue placeholder="Select why you are here" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="glass">
+                        {visitReasons.map((reason) => (
+                          <SelectItem key={reason} value={reason} className="py-3 text-base">
+                            {reason}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {selectedReason === 'Other' && (
+                <FormField
+                  control={form.control}
+                  name="otherReason"
+                  render={({ field }) => (
+                    <FormItem className="animate-in fade-in slide-in-from-top-2 duration-300">
+                      <FormLabel className="text-sm font-medium">Please specify</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="What is the reason for your visit?" 
+                          className="h-12 glass border-2" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               )}
-            />
+            </div>
+
             <Button 
               type="submit" 
               className="w-full h-14 text-lg font-bold shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98]" 
