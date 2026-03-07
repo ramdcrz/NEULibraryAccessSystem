@@ -25,7 +25,7 @@ function Calendar({
         month: "space-y-4",
         month_caption: "flex justify-center pt-1 relative items-center mb-4",
         caption_label: "text-sm font-bold",
-        nav: "flex items-center gap-1",
+        nav: "hidden", // We hide the default nav because we use a custom Caption
         month_grid: "w-full border-collapse space-y-1",
         weekdays: "flex w-full mb-2",
         weekday:
@@ -38,7 +38,7 @@ function Calendar({
         ),
         selected:
           "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground rounded-full",
-        today: "bg-accent text-accent-foreground font-bold rounded-full",
+        today: "bg-accent/20 text-accent-foreground font-bold rounded-full",
         outside:
           "day-outside text-muted-foreground aria-selected:bg-accent/50 aria-selected:text-muted-foreground",
         disabled: "text-muted-foreground opacity-50",
@@ -51,21 +51,21 @@ function Calendar({
         Caption: ({ displayMonth }) => {
           const { goToMonth, nextMonth, previousMonth } = useDayPicker();
           return (
-            <div className="flex justify-center items-center h-9 gap-4 mb-4 relative">
+            <div className="flex justify-center items-center h-10 gap-2 mb-4">
               <Button
                 variant="outline"
-                className="h-7 w-7 p-0 rounded-full border-2 bg-transparent opacity-70 hover:opacity-100"
+                className="h-8 w-8 p-0 rounded-full border-2 border-primary/20 bg-transparent hover:bg-primary/5 hover:border-primary/50 transition-all"
                 onClick={() => previousMonth && goToMonth(previousMonth)}
                 disabled={!previousMonth}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm font-bold min-w-[100px] text-center">
+              <div className="text-sm font-bold min-w-[120px] text-center">
                 {format(displayMonth, "MMMM yyyy")}
-              </span>
+              </div>
               <Button
                 variant="outline"
-                className="h-7 w-7 p-0 rounded-full border-2 bg-transparent opacity-70 hover:opacity-100"
+                className="h-8 w-8 p-0 rounded-full border-2 border-primary/20 bg-transparent hover:bg-primary/5 hover:border-primary/50 transition-all"
                 onClick={() => nextMonth && goToMonth(nextMonth)}
                 disabled={!nextMonth}
               >

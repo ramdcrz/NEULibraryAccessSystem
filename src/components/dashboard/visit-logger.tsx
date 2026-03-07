@@ -128,7 +128,7 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
   if (isLogged) {
     return (
       <Card className="glass border-2 border-primary/20 shadow-2xl p-8 text-center animate-in zoom-in-95 duration-500 rounded-3xl">
-        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-green-500/10 text-green-500 animate-float">
+        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-green-500/10 text-green-500 hover:rotate-6 transition-transform cursor-default">
           <CheckCircle2 className="h-10 w-10" />
         </div>
         <CardTitle className="text-2xl font-black mb-3">Visit Recorded</CardTitle>
@@ -141,7 +141,7 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
           className="h-11 px-6 text-sm font-bold rounded-xl gap-2 hover:bg-primary hover:text-white transition-all"
         >
           <LogOut className="h-4 w-4" />
-          Logout Now
+          Log out
         </Button>
       </Card>
     );
@@ -152,8 +152,8 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
       <CardHeader className="bg-primary/5 pb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-primary/10 text-primary shadow-inner rotate-0 hover:rotate-6 transition-transform group">
-              <Library className="h-6 w-6 transition-transform group-hover:rotate-6" />
+            <div className="p-2.5 rounded-xl bg-primary/10 text-primary shadow-inner transition-transform hover:rotate-6 cursor-default">
+              <Library className="h-6 w-6" />
             </div>
             <div>
               <CardTitle className="text-xl font-black tracking-tight">Log Library Visit</CardTitle>
@@ -169,7 +169,7 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
       <CardContent className="pt-6 px-6 pb-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div className="md:col-span-1 p-4 rounded-xl bg-muted/40 border border-border/40 backdrop-blur-sm transition-all hover:bg-muted/60">
                 <div className="flex items-center gap-2 mb-1 text-muted-foreground">
                   <Info className="h-3 w-3" />
@@ -177,7 +177,7 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
                 </div>
                 <p className="text-base font-black text-primary truncate">{user.user_type}</p>
               </div>
-              <div className="md:col-span-2 p-4 rounded-xl bg-muted/40 border border-border/40 backdrop-blur-sm transition-all hover:bg-muted/60">
+              <div className="md:col-span-3 p-4 rounded-xl bg-muted/40 border border-border/40 backdrop-blur-sm transition-all hover:bg-muted/60">
                 <div className="flex items-center gap-2 mb-1 text-muted-foreground">
                   <Info className="h-3 w-3" />
                   <span className="text-[9px] font-black uppercase tracking-tighter">Affiliation</span>
