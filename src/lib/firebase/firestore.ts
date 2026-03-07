@@ -75,6 +75,28 @@ export function updateUserDoc(uid: string, data: Partial<UserProfile>) {
   });
 }
 
+/**
+ * Toggles the blocked status of a user.
+ * Fetches the current status first to ensure accurate toggling.
+ */
+export async function toggleUserBlock(uid: string) {
+  const userRef = doc(db, 'users', uid);
+  const userSnap = await getDoc(userRef);
+  
+  if (!userSnap.exists()) {
+    throw new Error('User profile not found.');
+  }
+
+  const currentStatus = !!userSnap.data().is_blocked;
+  const newStatus = !currentStatus;
+
+  await updateDoc(userRef, {
+    is_blocked: newStatus
+  });
+
+  return newStatus;
+}
+
 // Add a new visit log to Firestore (Non-blocking)
 export function addVisitLog(logData: VisitLogPayload) {
   const visitLogsCollection = collection(db, 'visit_logs');

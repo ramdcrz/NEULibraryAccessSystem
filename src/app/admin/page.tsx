@@ -1,23 +1,29 @@
+
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import Header from '@/components/layout/header';
 import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ShieldCheck, History, Database, AlertCircle } from 'lucide-react';
+import { ShieldCheck, History, Database, AlertCircle, UserX, UserCheck, LoaderCircle } from 'lucide-react';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { format } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { toggleUserBlock } from '@/lib/firebase/firestore';
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
+  const { toast } = useToast();
   const firestore = useFirestore();
   const router = useRouter();
+  const [blockingUid, setBlockingUid] = useState<string | null>(null);
 
   // Route Guard: Ensure user is an admin
   useEffect(() => {
@@ -28,12 +34,10 @@ export default function AdminDashboard() {
 
   /**
    * Database Logic: Query the flat top-level collection 'visit_logs'.
-   * Path: /visit_logs
    */
   const logsQuery = useMemoFirebase(() => {
     if (!firestore || !user || user.role !== 'admin') return null;
     
-    // Explicitly hardcoding 'visit_logs' as a top-level collection reference
     return query(
       collection(firestore, 'visit_logs'), 
       orderBy('timestamp', 'desc')
@@ -41,6 +45,35 @@ export default function AdminDashboard() {
   }, [firestore, user?.uid, user?.role]);
 
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection(logsQuery);
+
+  const handleToggleBlock = async (uid: string, email: string) => {
+    if (email === user?.email) {
+      toast({
+        variant: "destructive",
+        title: "Action Denied",
+        description: "You cannot block your own administrative account.",
+      });
+      return;
+    }
+
+    setBlockingUid(uid);
+    try {
+      const isNowBlocked = await toggleUserBlock(uid);
+      toast({
+        title: isNowBlocked ? "User Blocked" : "User Restored",
+        description: `${email} has been ${isNowBlocked ? 'denied' : 'granted'} access to the library system.`,
+      });
+    } catch (error: any) {
+      console.error('Failed to toggle block status:', error);
+      toast({
+        variant: "destructive",
+        title: "System Error",
+        description: error.message || "Failed to update user status.",
+      });
+    } finally {
+      setBlockingUid(null);
+    }
+  };
 
   if (loading || !user || user.role !== 'admin') {
     return <Loading />;
@@ -57,7 +90,7 @@ export default function AdminDashboard() {
           </div>
           <h1 className="text-4xl font-black tracking-tight">University Visit History</h1>
           <p className="text-muted-foreground text-lg">
-            Real-time administrative view of library access records.
+            Real-time administrative view of library access records and user management.
           </p>
         </div>
 
@@ -73,13 +106,10 @@ export default function AdminDashboard() {
                 </p>
                 <ol className="list-decimal pl-5 space-y-2 text-sm">
                   <li>
-                    <strong>Security Rules:</strong> Ensure the <code>isSystemAdmin</code> check in <code>firestore.rules</code> is not recursive.
+                    <strong>Index Required:</strong> This view requires a Composite Index on the <code>visit_logs</code> collection.
                   </li>
                   <li>
-                    <strong>Index Required:</strong> If the console (F12) shows a "query requires an index" error, click the link to create it.
-                  </li>
-                  <li>
-                    <strong>Schema Sync:</strong> Confirm that logs are being saved to the top-level <code>/visit_logs</code> collection.
+                    <strong>Check Console:</strong> Press F12 and click the Firebase link to generate the required index.
                   </li>
                 </ol>
               </div>
@@ -117,6 +147,7 @@ export default function AdminDashboard() {
                       <TableHead className="font-bold">Classification</TableHead>
                       <TableHead className="font-bold">College / Office</TableHead>
                       <TableHead className="font-bold">Purpose</TableHead>
+                      <TableHead className="font-bold text-center">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -134,6 +165,24 @@ export default function AdminDashboard() {
                         <TableCell className="max-w-[200px] truncate italic opacity-80">{log.college_office}</TableCell>
                         <TableCell className="max-w-[300px] truncate text-muted-foreground">
                           {log.reason}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-9 px-3 text-destructive hover:bg-destructive/10 hover:text-destructive font-bold rounded-xl gap-2 transition-all active:scale-95"
+                            onClick={() => handleToggleBlock(log.userId, log.email)}
+                            disabled={blockingUid === log.userId}
+                          >
+                            {blockingUid === log.userId ? (
+                              <LoaderCircle className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <>
+                                <UserX className="h-4 w-4" />
+                                Block
+                              </>
+                            )}
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
