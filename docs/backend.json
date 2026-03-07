@@ -22,7 +22,8 @@
         },
         "user_type": {
           "type": "string",
-          "description": "The classification of the user (e.g., 'Student', 'Staff')."
+          "description": "The classification of the user (e.g., 'Student', 'Staff', 'Employee').",
+          "enum": ["Student", "Staff", "Employee"]
         },
         "college_office": {
           "type": "string",
@@ -42,7 +43,6 @@
         "id",
         "email",
         "role",
-        "user_type",
         "is_blocked",
         "createdAt"
       ]
@@ -68,7 +68,7 @@
         },
         "userType": {
           "type": "string",
-          "description": "The classification of the user (e.g., 'Student', 'Staff')."
+          "description": "The classification of the user at the time of visit (e.g., 'Student', 'Staff', 'Employee')."
         },
         "college_office": {
           "type": "string",

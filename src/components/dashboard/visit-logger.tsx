@@ -86,7 +86,7 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
       addVisitLog({
         userId: user.uid,
         email: user.email!,
-        userType: user.user_type,
+        userType: user.user_type as 'Student' | 'Staff' | 'Employee',
         college_office: user.college_office!,
         reason: finalReason,
         entryDate: entryDate,
@@ -160,7 +160,7 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
             <div>
               <CardTitle className="text-2xl font-bold tracking-tight">Log Library Visit</CardTitle>
               <CardDescription className="text-base">
-                Welcome back, {user.user_type}!
+                Welcome, {user.displayName || user.email}
               </CardDescription>
             </div>
           </div>
@@ -172,56 +172,60 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
       <CardContent className="pt-8 px-6 pb-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
+                <p className="text-sm font-medium text-muted-foreground mb-1 uppercase tracking-wider">Classification</p>
+                <p className="text-lg font-bold">{user.user_type}</p>
+              </div>
               <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
                 <p className="text-sm font-medium text-muted-foreground mb-1 uppercase tracking-wider">Affiliation</p>
                 <p className="text-lg font-bold">{user.college_office}</p>
               </div>
+            </div>
 
+            <FormField
+              control={form.control}
+              name="reason"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-lg font-semibold">Reason for Visit</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50">
+                        <SelectValue placeholder="What brings you to the library today?" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="glass">
+                      {visitReasons.map((reason) => (
+                        <SelectItem key={reason} value={reason} className="py-3 text-base">
+                          {reason}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {selectedReason === 'Others' && (
               <FormField
                 control={form.control}
-                name="reason"
+                name="otherReason"
                 render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="text-lg font-semibold">Reason for Visit</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50">
-                          <SelectValue placeholder="What brings you to the library today?" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="glass">
-                        {visitReasons.map((reason) => (
-                          <SelectItem key={reason} value={reason} className="py-3 text-base">
-                            {reason}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  <FormItem className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                    <FormControl>
+                      <Input 
+                        {...field} 
+                        placeholder="Please specify your reason..." 
+                        className="h-12 glass border-2 focus:border-primary"
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
-              {selectedReason === 'Others' && (
-                <FormField
-                  control={form.control}
-                  name="otherReason"
-                  render={({ field }) => (
-                    <FormItem className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                      <FormControl>
-                        <Input 
-                          {...field} 
-                          placeholder="Please specify your reason..." 
-                          className="h-12 glass border-2 focus:border-primary"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-            </div>
+            )}
 
             <Button 
               type="submit" 

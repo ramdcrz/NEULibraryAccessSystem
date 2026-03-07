@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -66,14 +67,14 @@ export default function Home() {
     }
     if (user.email) {
       const prefix = user.email.split('@')[0];
-      // Handles formats like ramiljr.deocariza
       const namePart = prefix.split(/[._]/)[0];
       return namePart.charAt(0).toUpperCase() + namePart.slice(1);
     }
     return 'Guest';
   };
 
-  const needsOnboarding = !user.college_office;
+  // Onboarding is needed if classification (user_type) or affiliation (college_office) is missing
+  const needsOnboarding = !user.college_office || !user.user_type;
 
   return (
     <div className="flex min-h-screen w-full flex-col gradient-bg">
@@ -89,8 +90,8 @@ export default function Home() {
             </h1>
             <p className="mx-auto max-w-[700px] text-lg text-muted-foreground md:text-xl">
               {needsOnboarding 
-                ? "Let's get you set up before you log your visit." 
-                : "Your presence matters. Help us maintain a secure and productive environment by logging your visit."}
+                ? "Let's complete your profile before your first log." 
+                : "Help us maintain a safe campus. Log your library visit below."}
             </p>
           </div>
         )}

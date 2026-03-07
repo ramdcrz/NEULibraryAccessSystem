@@ -39,10 +39,10 @@ export async function getUserDoc(uid: string): Promise<UserProfile | null> {
 export function createUserDoc(uid: string, data: Omit<UserProfile, 'id' | 'createdAt'>) {
   const userRef = doc(db, 'users', uid);
   
-  // Logic to determine user_type based on email format if not provided
   const email = data.email || '';
   const localPart = email.split('@')[0];
-  const derivedUserType = localPart.includes('.') ? 'Student' : 'Staff';
+  const isStudent = localPart.includes('.');
+  const derivedUserType = isStudent ? 'Student' : null;
   const isTargetAdmin = email === 'ramiljr.deocariza@neu.edu.ph';
 
   const payload = {

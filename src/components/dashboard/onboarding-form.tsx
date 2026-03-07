@@ -1,9 +1,10 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { LoaderCircle, ChevronRight, School } from 'lucide-react';
+import { LoaderCircle, ChevronRight, School, UserCircle } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -48,6 +49,9 @@ const formSchema = z.object({
   college_office: z.string({
     required_error: 'Please select your college or office.',
   }),
+  user_type: z.enum(['Student', 'Staff', 'Employee'], {
+    required_error: 'Please select your classification.',
+  }).optional(),
 });
 
 type OnboardingFormProps = {
@@ -58,10 +62,17 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // If email local part doesn't have a dot, user is NOT a Student by default
+  // and must choose between Staff/Employee.
+  const email = user.email || '';
+  const localPart = email.split('@')[0];
+  const isAutoStudent = localPart.includes('.');
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      college_office: '',
+      college_office: user.college_office || '',
+      user_type: user.user_type || (isAutoStudent ? 'Student' : undefined),
     }
   });
 
@@ -70,18 +81,13 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
     try {
       updateUserDoc(user.uid, {
         college_office: data.college_office,
+        user_type: data.user_type as 'Student' | 'Staff' | 'Employee',
       });
 
       toast({
         title: 'Profile Updated',
         description: 'Thank you! You can now log your library visit.',
       });
-      
-      // We don't need to manually refresh state as the user object 
-      // is usually synced or will be updated on the next snapshot.
-      // In this specific architecture, the page will re-render when the 
-      // firestore document updates (if using a listener) or we can 
-      // manually trigger a refresh if needed.
     } catch (error) {
       console.error('Failed to update profile:', error);
     } finally {
@@ -99,39 +105,68 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
           <CardTitle className="text-2xl font-bold tracking-tight">Complete Your Profile</CardTitle>
         </div>
         <CardDescription className="text-base text-muted-foreground/80">
-          We noticed you haven't set your college or office yet. Please select one to continue.
+          Please provide your affiliation and classification details to continue.
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-8 px-6 pb-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="college_office"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel className="text-lg font-semibold text-foreground">College / Office</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50 focus:ring-primary/20">
-                        <SelectValue placeholder="Select your affiliation" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="glass">
-                      {colleges.map((college) => (
-                        <SelectItem key={college} value={college} className="py-3 text-base">
-                          {college}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    This helps us categorize library usage by department.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
+            <div className="grid gap-6">
+              {!isAutoStudent && (
+                <FormField
+                  control={form.control}
+                  name="user_type"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-lg font-semibold text-foreground flex items-center gap-2">
+                        <UserCircle className="h-4 w-4 text-primary" />
+                        Classification
+                      </FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50 focus:ring-primary/20">
+                            <SelectValue placeholder="Are you Staff or Employee?" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="glass">
+                          <SelectItem value="Staff" className="py-3 text-base">Staff</SelectItem>
+                          <SelectItem value="Employee" className="py-3 text-base">Employee</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        Based on your email format, please select your specific role.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               )}
-            />
+
+              <FormField
+                control={form.control}
+                name="college_office"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel className="text-lg font-semibold text-foreground">College / Office</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50 focus:ring-primary/20">
+                          <SelectValue placeholder="Select your affiliation" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="glass">
+                        {colleges.map((college) => (
+                          <SelectItem key={college} value={college} className="py-3 text-base">
+                            {college}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <Button 
               type="submit" 

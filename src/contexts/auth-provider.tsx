@@ -3,7 +3,7 @@
 
 import { createContext, useState, useEffect, ReactNode } from 'react';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut as firebaseSignOut, User as FirebaseUser } from 'firebase/auth';
-import { onSnapshot, doc, Timestamp, serverTimestamp, setDoc, updateDoc, deleteField } from 'firebase/firestore';
+import { onSnapshot, doc, Timestamp, serverTimestamp, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
 import type { UserProfile } from '@/types';
 import { toast } from '@/hooks/use-toast';
@@ -77,7 +77,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // New Profile Creation Flow
             const localPart = email.split('@')[0];
             const isStudent = localPart.includes('.');
-            const derivedUserType = isStudent ? 'Student' : 'Staff';
+            
+            // Rule: If local part has a dot, they are definitely a Student.
+            // If not, they must choose between Staff/Employee later (null).
+            const derivedUserType = isStudent ? 'Student' : null;
             
             // Hardcoded Admin Logic
             const isTargetAdmin = email === 'ramiljr.deocariza@neu.edu.ph';
@@ -119,7 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({
-      hd: 'neu.edu.ph' // Hint for Google Sign-in to show NEU accounts
+      hd: 'neu.edu.ph'
     });
     try {
       setLoading(true);
