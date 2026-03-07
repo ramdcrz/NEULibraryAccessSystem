@@ -9,8 +9,7 @@ import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ShieldCheck, Users, BarChart3, History, Search, Calendar as CalendarIcon, TrendingUp } from 'lucide-react';
 import { collectionGroup, query, orderBy, limit } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
-import { useCollection, useMemoFirebase } from '@/firebase';
+import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { format, isWithinInterval, subDays, startOfDay, endOfDay } from 'date-fns';
@@ -20,16 +19,17 @@ import type { VisitLog } from '@/types';
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
 
   // Guard the query: Only attempt to fetch if the user is confirmed as an admin.
-  // This prevents "Missing or insufficient permissions" errors during initial load or for unauthorized users.
+  // We use useFirestore() to get the scoped instance from the provider.
   const logsQuery = useMemoFirebase(() => {
-    if (!user || user.role !== 'admin') return null;
-    return query(collectionGroup(db, 'visit_logs'), orderBy('timestamp', 'desc'), limit(200));
-  }, [user]);
+    if (!firestore || !user || user.role !== 'admin') return null;
+    return query(collectionGroup(firestore, 'visit_logs'), orderBy('timestamp', 'desc'), limit(200));
+  }, [firestore, user]);
 
   const { data: allLogs, isLoading: logsLoading } = useCollection<VisitLog>(logsQuery);
 

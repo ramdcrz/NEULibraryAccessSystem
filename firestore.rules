@@ -24,14 +24,16 @@ service cloud.firestore {
 
     /** @description Checks if the authenticated user is NOT blocked from the system. */
     function isNotBlocked() {
-      let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
-      return !exists(userPath) || get(userPath).data.get('is_blocked', false) == false;
+      let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid));
+      return userDoc == null || userDoc.data.get('is_blocked', false) == false;
     }
 
-    /** @description Checks if the authenticated user has the 'admin' role. */
+    /** @description Checks if the authenticated user has the 'admin' role. 
+     *  Uses a direct lookup with a default value.
+     */
     function isAdmin() {
-      let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
-      return isSignedIn() && exists(userPath) && get(userPath).data.get('role', 'user') == 'admin';
+      return isSignedIn() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', 'user') == 'admin';
     }
 
     /** @description Combines ownership and existence check for updates and deletes. */
@@ -45,9 +47,10 @@ service cloud.firestore {
      * @description Rules for user profile documents.
      */
     match /users/{userId} {
-      allow get: if isOwner(userId) || isAdmin();
+      // prevent recursion: only call isAdmin() if the request isn't for the current user's own record
+      allow get: if isOwner(userId) || (request.auth.uid != userId && isAdmin());
       allow list: if isAdmin();
-      allow create: if (isOwner(userId) && request.resource.data.get('id', '') == userId) || isAdmin();
+      allow create: if (isOwner(userId) && request.resource.data.get('id', '') == userId);
       allow update: if (isExistingOwner(userId) && request.resource.data.get('id', '') == resource.data.get('id', '')) || isAdmin();
       allow delete: if isAdmin();
     }
