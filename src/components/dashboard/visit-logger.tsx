@@ -1,9 +1,10 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { LoaderCircle, ChevronRight, UserCircle, Briefcase, GraduationCap, BookMarked, LogOut } from 'lucide-react';
+import { LoaderCircle, ChevronRight, BookMarked, LogOut, CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -23,15 +24,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { addVisitLog } from '@/lib/firebase/firestore';
 import { useAuth } from '@/hooks/use-auth';
 import type { AuthenticatedUser } from '@/contexts/auth-provider';
-import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 const visitReasons = [
   'Reading',
@@ -41,16 +40,7 @@ const visitReasons = [
   'Others',
 ];
 
-const userTypes = [
-  { id: 'Student', icon: GraduationCap, label: 'Student' },
-  { id: 'Faculty', icon: UserCircle, label: 'Faculty' },
-  { id: 'Employee', icon: Briefcase, label: 'Employee' },
-] as const;
-
 const formSchema = z.object({
-  userType: z.enum(['Student', 'Faculty', 'Employee'], {
-    required_error: 'Please select your status.',
-  }),
   reason: z.string({
     required_error: 'Please select a reason for your visit.',
   }),
@@ -80,30 +70,23 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      userType: 'Student',
       reason: '',
       otherReason: '',
     }
   });
 
-  const selectedUserType = form.watch('userType');
   const selectedReason = form.watch('reason');
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      if (!user) {
-        throw new Error('User not authenticated');
-      }
-      
       const entryDate = new Date().toISOString().split('T')[0];
       const finalReason = data.reason === 'Others' ? data.otherReason!.trim() : data.reason;
 
-      // Data Snapshotting: Include college_office and userType in the log
       addVisitLog({
         userId: user.uid,
         email: user.email!,
-        userType: data.userType.toLowerCase() as any,
+        userType: user.user_type,
         college_office: user.college_office!,
         reason: finalReason,
         entryDate: entryDate,
@@ -118,18 +101,16 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
         router.push('/admin');
       } else {
         toast({
-          title: 'Thanks for utilizing NEU Library',
-          description: 'Your visit has been logged successfully. Signing out for the next user...',
+          title: 'Visit logged successfully',
+          description: 'Thank you for visiting NEU Library.',
         });
         
         setIsLogged(true);
         onLogSuccess?.();
-        form.reset();
-
-        // The Kiosk Reset: Auto-logout after 5 seconds
+        
         setTimeout(() => {
           signOut();
-        }, 5000);
+        }, 3000);
       }
 
     } catch (error) {
@@ -147,18 +128,18 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
   if (isLogged) {
     return (
       <Card className="glass border-2 border-primary/20 shadow-2xl p-8 text-center animate-in zoom-in-95 duration-500">
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <BookMarked className="h-10 w-10" />
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-500/10 text-green-500">
+          <CheckCircle2 className="h-10 w-10" />
         </div>
-        <CardTitle className="text-3xl font-bold mb-4">Thanks for utilizing NEU Library</CardTitle>
+        <CardTitle className="text-3xl font-bold mb-4">Visit Recorded</CardTitle>
         <CardDescription className="text-lg">
-          Your visit has been recorded. This terminal will reset in a few seconds...
+          Thanks for utilizing the NEU Library! This terminal will reset shortly...
         </CardDescription>
         <div className="mt-8">
            <Button 
             variant="outline" 
             onClick={() => signOut()}
-            className="h-12 px-6 text-base font-bold transition-all hover:bg-primary/5 hover:text-primary hover:border-primary/50 border-2 rounded-2xl gap-2"
+            className="h-12 px-6 text-base font-bold rounded-2xl gap-2"
            >
              <LogOut className="h-4 w-4" />
              Logout Now
@@ -169,78 +150,43 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
   }
 
   return (
-    <Card className="glass overflow-hidden border-2 border-white/10 shadow-2xl transition-all duration-500">
+    <Card className="glass overflow-hidden border-2 border-white/10 shadow-2xl">
       <CardHeader className="bg-primary/5 pb-8 border-b border-white/5">
-        <div className="flex items-center gap-3 mb-2 animate-in fade-in slide-in-from-left-4 duration-500">
-          <div className="p-2 rounded-xl bg-primary/20 text-primary shadow-inner">
-            <BookMarked className="h-6 w-6" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-primary/20 text-primary shadow-inner">
+              <BookMarked className="h-6 w-6" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl font-bold tracking-tight">Log Library Visit</CardTitle>
+              <CardDescription className="text-base">
+                Welcome back, {user.user_type}!
+              </CardDescription>
+            </div>
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight">Log Library Visit</CardTitle>
+          <Badge variant="outline" className="px-4 py-1 text-sm font-bold bg-primary/5 border-primary/20">
+            {user.user_type}
+          </Badge>
         </div>
-        <CardDescription className="text-base text-muted-foreground/80">
-          Affiliated with: <span className="text-primary font-semibold">{user.college_office}</span>
-        </CardDescription>
       </CardHeader>
       <CardContent className="pt-8 px-6 pb-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="userType"
-              render={({ field }) => (
-                <FormItem className="space-y-4">
-                  <FormLabel className="text-lg font-semibold text-foreground">I am a...</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      className="grid grid-cols-1 sm:grid-cols-3 gap-4"
-                    >
-                      {userTypes.map((type) => {
-                        const Icon = type.icon;
-                        const isSelected = selectedUserType === type.id;
-                        const radioId = `user-type-${type.id}`;
-                        return (
-                          <div key={type.id} className="relative group">
-                            <RadioGroupItem 
-                              value={type.id} 
-                              id={radioId}
-                              className="sr-only" 
-                            />
-                            <Label
-                              htmlFor={radioId}
-                              className={cn(
-                                "flex flex-col items-center justify-center gap-3 p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 h-full",
-                                isSelected 
-                                  ? "border-primary bg-primary/10 shadow-lg scale-[1.02] ring-2 ring-primary/20" 
-                                  : "border-border/40 opacity-70 hover:opacity-100 hover:bg-accent/5 hover:border-border/80 hover:scale-[1.01]"
-                              )}
-                            >
-                              <Icon className={cn("h-10 w-10 transition-all duration-300", isSelected ? "text-primary scale-110" : "text-muted-foreground group-hover:text-foreground")} />
-                              <span className={cn("text-base font-bold transition-colors", isSelected ? "text-primary" : "text-muted-foreground group-hover:text-foreground")}>
-                                {type.label}
-                              </span>
-                            </Label>
-                          </div>
-                        );
-                      })}
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <div className="space-y-4">
+              <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
+                <p className="text-sm font-medium text-muted-foreground mb-1 uppercase tracking-wider">Affiliation</p>
+                <p className="text-lg font-bold">{user.college_office}</p>
+              </div>
+
               <FormField
                 control={form.control}
                 name="reason"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-lg font-semibold text-foreground">Reason for Visit</FormLabel>
+                    <FormLabel className="text-lg font-semibold">Reason for Visit</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50 focus:ring-primary/20">
+                        <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50">
                           <SelectValue placeholder="What brings you to the library today?" />
                         </SelectTrigger>
                       </FormControl>
@@ -262,11 +208,11 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
                   control={form.control}
                   name="otherReason"
                   render={({ field }) => (
-                    <FormItem className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <FormItem className="space-y-2 animate-in fade-in slide-in-from-top-2">
                       <FormControl>
                         <Input 
                           {...field} 
-                          placeholder="Type your reason here..." 
+                          placeholder="Please specify your reason..." 
                           className="h-12 glass border-2 focus:border-primary"
                         />
                       </FormControl>
@@ -279,14 +225,14 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
 
             <Button 
               type="submit" 
-              className="w-full h-16 text-xl font-bold shadow-2xl transition-all hover:scale-[1.01] active:scale-[0.99] rounded-2xl group" 
+              className="w-full h-16 text-xl font-bold shadow-2xl rounded-2xl group" 
               disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <LoaderCircle className="mr-2 h-6 w-6 animate-spin" />
               ) : (
                 <>
-                  Log My Visit
+                  Confirm Entry
                   <ChevronRight className="ml-2 h-6 w-6 transition-transform group-hover:translate-x-1" />
                 </>
               )}

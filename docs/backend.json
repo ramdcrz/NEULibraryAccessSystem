@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "User": {
@@ -19,6 +20,10 @@
           "type": "string",
           "description": "The access role of the user within the system. (enum: 'admin', 'user')"
         },
+        "user_type": {
+          "type": "string",
+          "description": "The classification of the user (e.g., 'Student', 'Staff')."
+        },
         "college_office": {
           "type": "string",
           "description": "The college or office the user is affiliated with. Can be null."
@@ -37,6 +42,7 @@
         "id",
         "email",
         "role",
+        "user_type",
         "is_blocked",
         "createdAt"
       ]
@@ -62,7 +68,7 @@
         },
         "userType": {
           "type": "string",
-          "description": "The classification of the user (e.g., 'faculty', 'student', 'employee')."
+          "description": "The classification of the user (e.g., 'Student', 'Staff')."
         },
         "college_office": {
           "type": "string",

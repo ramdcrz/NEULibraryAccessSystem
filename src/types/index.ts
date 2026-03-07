@@ -5,6 +5,7 @@ export interface UserProfile {
   id: string;
   email: string;
   role: 'admin' | 'user';
+  user_type: 'Student' | 'Staff';
   college_office: string | null;
   is_blocked: boolean;
   createdAt: Date | Timestamp;
@@ -14,7 +15,7 @@ export interface VisitLog {
   id: string;
   userId: string;
   email: string;
-  userType: 'faculty' | 'student' | 'employee';
+  userType: 'Student' | 'Staff';
   college_office: string; // Snapshotted for historical accuracy
   reason: string;
   timestamp: Timestamp;

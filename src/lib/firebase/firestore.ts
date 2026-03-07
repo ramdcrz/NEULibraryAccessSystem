@@ -1,3 +1,4 @@
+
 import {
   doc,
   getDoc,
@@ -24,6 +25,7 @@ export async function getUserDoc(uid: string): Promise<UserProfile | null> {
       id: uid,
       email: data.email,
       role: data.role,
+      user_type: data.user_type,
       college_office: data.college_office,
       is_blocked: data.is_blocked,
       createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
@@ -36,8 +38,17 @@ export async function getUserDoc(uid: string): Promise<UserProfile | null> {
 // Create a new user document in Firestore (Non-blocking)
 export function createUserDoc(uid: string, data: Omit<UserProfile, 'id' | 'createdAt'>) {
   const userRef = doc(db, 'users', uid);
+  
+  // Logic to determine user_type based on email format if not provided
+  const email = data.email || '';
+  const localPart = email.split('@')[0];
+  const derivedUserType = localPart.includes('.') ? 'Student' : 'Staff';
+  const isTargetAdmin = email === 'ramiljr.deocariza@neu.edu.ph';
+
   const payload = {
     ...data,
+    user_type: data.user_type || derivedUserType,
+    role: isTargetAdmin ? 'admin' : (data.role || 'user'),
     id: uid,
     createdAt: serverTimestamp(),
   };
@@ -66,10 +77,6 @@ export function updateUserDoc(uid: string, data: Partial<UserProfile>) {
 
 // Add a new visit log to Firestore (Non-blocking)
 export function addVisitLog(logData: VisitLogPayload) {
-  /**
-   * Schema Correction: Using a flat top-level collection.
-   * Path: /visit_logs
-   */
   const visitLogsCollection = collection(db, 'visit_logs');
   
   const payload = {
