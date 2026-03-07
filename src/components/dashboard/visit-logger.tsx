@@ -165,19 +165,25 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
-              <div className="md:col-span-2 p-6 rounded-3xl glass flex flex-col items-start justify-center text-left border border-white/20 hover:bg-white/10 transition-all">
-                <div className="flex items-center gap-2 mb-2 text-primary/60">
+              <div className="md:col-span-2 p-6 rounded-3xl glass flex flex-col items-start justify-center text-left border border-white/20 hover:bg-white/10 transition-all relative overflow-hidden group">
+                <div className="absolute -bottom-8 -right-8 opacity-[0.03] group-hover:opacity-[0.07] transition-all duration-700 rotate-12 group-hover:rotate-6">
+                  <User className="h-32 w-32" />
+                </div>
+                <div className="flex items-center gap-2 mb-2 text-primary/60 relative z-10">
                   <User className="h-3.5 w-3.5" />
                   <span className="text-[10px] font-black uppercase tracking-widest">ID Class</span>
                 </div>
-                <p className="text-lg font-black text-foreground">{user.user_type}</p>
+                <p className="text-lg font-black text-foreground relative z-10">{user.user_type}</p>
               </div>
-              <div className="md:col-span-3 p-6 rounded-3xl glass border border-white/20 hover:bg-white/10 transition-all">
-                <div className="flex items-center gap-2 mb-2 text-primary/60">
+              <div className="md:col-span-3 p-6 rounded-3xl glass border border-white/20 hover:bg-white/10 transition-all relative overflow-hidden group">
+                <div className="absolute -bottom-8 -right-8 opacity-[0.03] group-hover:opacity-[0.07] transition-all duration-700 rotate-12 group-hover:rotate-6">
+                  <School className="h-32 w-32" />
+                </div>
+                <div className="flex items-center gap-2 mb-2 text-primary/60 relative z-10">
                   <School className="h-3.5 w-3.5" />
                   <span className="text-[10px] font-black uppercase tracking-widest">University Affiliation</span>
                 </div>
-                <p className="text-base font-black text-foreground truncate" title={user.college_office ?? ''}>
+                <p className="text-base font-black text-foreground truncate relative z-10" title={user.college_office ?? ''}>
                   {user.college_office}
                 </p>
               </div>

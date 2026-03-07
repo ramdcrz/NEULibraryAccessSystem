@@ -58,9 +58,9 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 gradient-bg">
-      <div className="w-full max-w-md flex flex-col items-center justify-center gap-10">
-        <Card className="w-full glass border border-white/20 animate-in fade-in zoom-in-95 duration-700 shadow-2xl">
-          <CardHeader className="text-center pb-12 pt-10 px-10">
+      <div className="w-full max-w-md flex flex-col items-center justify-center gap-12">
+        <Card className="w-full glass border border-white/20 animate-in fade-in zoom-in-95 duration-700 shadow-2xl relative overflow-hidden">
+          <CardHeader className="text-center pb-12 pt-10 px-10 relative z-10">
             <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-primary text-white transition-transform hover:rotate-6 shadow-lg shadow-primary/30">
               <BookMarked className="h-12 w-12" />
             </div>
@@ -69,7 +69,7 @@ export default function LoginPage() {
               Access Management Terminal
             </CardDescription>
           </CardHeader>
-          <CardContent className="px-10 pb-12">
+          <CardContent className="px-10 pb-12 relative z-10">
             <Button
               onClick={handleSignIn}
               disabled={isAuthenticating}
@@ -91,7 +91,7 @@ export default function LoginPage() {
           </CardContent>
         </Card>
         
-        <p className="text-[11px] font-black uppercase tracking-[0.35em] text-muted-foreground/40 text-center whitespace-nowrap px-4 py-2 rounded-full border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5">
+        <p className="text-[11px] font-black uppercase tracking-[0.35em] text-muted-foreground/40 text-center px-6 py-2 rounded-full border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5">
           New Era University • Library Systems
         </p>
       </div>

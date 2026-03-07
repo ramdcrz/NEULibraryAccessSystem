@@ -43,20 +43,17 @@ export default function AdminDashboard() {
   const firestore = useFirestore();
   const router = useRouter();
   
-  // UI State
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   
-  // Popover control
   const [isStartOpen, setIsStartOpen] = useState(false);
   const [isEndOpen, setIsEndOpen] = useState(false);
 
   const [blockingUid, setBlockingUid] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
 
-  // Route Guard
   useEffect(() => {
     if (!loading && (!user || user.role !== 'admin')) {
       router.push('/');
@@ -79,7 +76,6 @@ export default function AdminDashboard() {
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection(logsQuery);
   const { data: allUsers } = useCollection(usersQuery);
 
-  // Stats calculation
   const stats = useMemo(() => {
     if (!allLogs) return { total: 0, today: 0, unique: 0 };
     const todayStr = format(new Date(), 'yyyy-MM-dd');
@@ -248,7 +244,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
             { label: 'Total Visits', val: stats.total, icon: BarChart3 },
@@ -265,7 +260,6 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* Filter Controls */}
         {showFilters && (
           <Card className="glass rounded-[3rem] p-10 border border-white/20">
             <div className="flex flex-col lg:flex-row gap-8 items-end">

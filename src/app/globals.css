@@ -96,7 +96,14 @@
   @apply border-primary/40;
 }
 
-/* Perfect Horizontal Alignment Sync */
 header, main {
   @apply px-6 md:px-12;
+}
+
+/* Enhanced Light Mode Hover Contrast */
+.light .hover\:bg-primary\/\[0\.04\]:hover {
+  background-color: hsl(var(--primary) / 0.08);
+}
+.light .hover\:bg-accent\/10:hover {
+  background-color: hsl(var(--primary) / 0.05);
 }
