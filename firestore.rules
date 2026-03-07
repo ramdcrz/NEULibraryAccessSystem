@@ -2,37 +2,33 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // --- Core Authorization Helpers ---
+    // Helper: Is the user signed in?
     function isSignedIn() {
       return request.auth != null;
     }
 
-    // BASE CASE: Allow users to read their own profile without any recursion.
-    // This MUST be defined outside or before any admin-check helpers to prevent loops.
+    // BASE RULE: A user can always read/write their own document.
+    // This MUST be the first rule to prevent recursion in admin checks.
     match /users/{userId} {
-      allow read: if isSignedIn() && request.auth.uid == userId;
-      
-      // Allow the owner to write their own data
-      allow write: if isSignedIn() && request.auth.uid == userId;
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
 
-      // Allow Admins to manage profiles (this will call get() which is safe now)
+      // ALLOW admins to manage any user profile.
+      // This lookup will match the base rule above for the admin's own document.
       allow read, write: if isSignedIn() && 
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
 
-      // --- Nested Visit Logs ---
-      match /visit_logs/{visitLogId} {
-        // Owners can read/write their own logs
-        allow read, write: if isSignedIn() && request.auth.uid == userId;
-        // Admins can read/write any log
-        allow read, write: if isSignedIn() && 
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      // Rules for nested visit logs.
+      match /visit_logs/{logId} {
+        allow read, write: if isSignedIn() && (
+          request.auth.uid == userId || 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        );
       }
     }
 
-    // --- Collection Group Rules ---
-    // Matches all 'visit_logs' collections for the Admin Dashboard query.
-    match /{path=**}/visit_logs/{visitLogId} {
-      // Direct admin check for the collection group query
+    // COLLECTION GROUP RULE: For the Admin Analytics dashboard.
+    // Matches all 'visit_logs' collections anywhere in the database.
+    match /{path=**}/visit_logs/{logId} {
       allow read: if isSignedIn() && 
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }

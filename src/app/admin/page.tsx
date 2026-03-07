@@ -1,30 +1,25 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import Header from '@/components/layout/header';
 import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ShieldCheck, Users, BarChart3, History, Search, Calendar as CalendarIcon, TrendingUp, AlertCircle, Info, ExternalLink } from 'lucide-react';
-import { collectionGroup, query, orderBy, limit, Timestamp } from 'firebase/firestore';
+import { ShieldCheck, BarChart3, Info, AlertCircle } from 'lucide-react';
+import { collectionGroup, query, orderBy } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { format, isWithinInterval, subDays, startOfDay, endOfDay } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
   const firestore = useFirestore();
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
 
-  // Defensive Auth Check: Wait for the user object and role to be fully loaded
+  // Route Guard: Ensure user is an admin
   useEffect(() => {
     if (!loading) {
       if (!user) {
@@ -35,71 +30,18 @@ export default function AdminDashboard() {
     }
   }, [user, loading, router]);
 
-  // Guard the query: Only run if we are 100% sure the user is an admin
+  // Simplified Query: Only order by timestamp DESC
   const logsQuery = useMemoFirebase(() => {
     if (!firestore || loading || !user || user.role !== 'admin') return null;
     
+    // We use collectionGroup because visit_logs are nested: /users/{uid}/visit_logs/{id}
     return query(
       collectionGroup(firestore, 'visit_logs'), 
-      orderBy('timestamp', 'desc'), 
-      limit(500)
+      orderBy('timestamp', 'desc')
     );
   }, [firestore, loading, user?.role]);
 
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection(logsQuery);
-
-  const filteredLogs = useMemo(() => {
-    if (!allLogs) return [];
-    
-    return allLogs.filter(log => {
-      const matchesSearch = searchQuery === '' || 
-        log.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (log.college_office && log.college_office.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      let matchesDate = true;
-      if (log.timestamp && dateFilter !== 'all') {
-        const logDate = log.timestamp instanceof Timestamp ? log.timestamp.toDate() : (log.timestamp as any).toDate?.() || new Date(log.timestamp);
-        const now = new Date();
-        
-        if (dateFilter === 'today') {
-          matchesDate = isWithinInterval(logDate, { start: startOfDay(now), end: endOfDay(now) });
-        } else if (dateFilter === 'week') {
-          matchesDate = isWithinInterval(logDate, { start: subDays(now, 7), end: now });
-        } else if (dateFilter === 'month') {
-          matchesDate = isWithinInterval(logDate, { start: subDays(now, 30), end: now });
-        }
-      }
-
-      return matchesSearch && matchesDate;
-    });
-  }, [allLogs, searchQuery, dateFilter]);
-
-  const stats = useMemo(() => {
-    if (!allLogs || allLogs.length === 0) return { today: 0, topCollege: 'N/A', topReason: 'N/A' };
-
-    const todayStr = new Date().toISOString().split('T')[0];
-    const todayLogs = allLogs.filter(l => l.entryDate === todayStr);
-
-    const collegeFreq: Record<string, number> = {};
-    const reasonFreq: Record<string, number> = {};
-
-    allLogs.forEach(log => {
-      if (log.college_office) collegeFreq[log.college_office] = (collegeFreq[log.college_office] || 0) + 1;
-      if (log.reason) reasonFreq[log.reason] = (reasonFreq[log.reason] || 0) + 1;
-    });
-
-    const getTop = (freq: Record<string, number>) => {
-      const entries = Object.entries(freq);
-      if (entries.length === 0) return 'N/A';
-      return entries.sort((a, b) => b[1] - a[1])[0][0];
-    };
-
-    return {
-      today: todayLogs.length,
-      topCollege: getTop(collegeFreq),
-      topReason: getTop(reasonFreq)
-    };
-  }, [allLogs]);
 
   if (loading || !user) {
     return <Loading />;
@@ -116,7 +58,7 @@ export default function AdminDashboard() {
           </div>
           <h1 className="text-4xl font-black tracking-tight">Library Analytics</h1>
           <p className="text-muted-foreground text-lg">
-            Monitor library traffic and analyze visitor trends.
+            Direct database monitor for all visit logs.
           </p>
         </div>
 
@@ -128,121 +70,37 @@ export default function AdminDashboard() {
               <div className="bg-destructive/10 p-6 rounded-2xl border border-destructive/20 text-foreground">
                 <p className="font-bold flex items-center gap-2 mb-4 text-lg">
                   <Info className="h-5 w-5" />
-                  Crucial Step to Fix this Error:
+                  Crucial Step: Check Console (F12)
                 </p>
                 <p className="mb-4 leading-relaxed">
-                  Firestore requires a <strong>Composite Index</strong> to sort logs across different users. This index is not created automatically.
+                  If the error mentions <strong>"Missing or insufficient permissions"</strong>, ensure your account is correctly set to 'admin' in Firestore.
                 </p>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <Badge className="mt-1 h-6 w-6 rounded-full flex items-center justify-center p-0 bg-primary">1</Badge>
-                    <p>Press <strong>F12</strong> on your keyboard to open the Browser Console.</p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Badge className="mt-1 h-6 w-6 rounded-full flex items-center justify-center p-0 bg-primary">2</Badge>
-                    <p>Look for a red error message containing a link that looks like: <br/> 
-                    <code className="text-xs break-all text-primary/80 mt-2 block">https://console.firebase.google.com/project/.../database/firestore/indices/...</code></p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Badge className="mt-1 h-6 w-6 rounded-full flex items-center justify-center p-0 bg-primary">3</Badge>
-                    <p><strong>Click that link</strong>. It will open the Firebase Console and ask you to create the index.</p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Badge className="mt-1 h-6 w-6 rounded-full flex items-center justify-center p-0 bg-primary">4</Badge>
-                    <p>Click <strong>"Create Index"</strong> and wait 3 minutes for it to build. Then, refresh this page.</p>
-                  </div>
-                </div>
+                <p className="mb-4 leading-relaxed">
+                  If the error mentions <strong>"The query requires an index"</strong>, click the link in your browser console (F12) to create it.
+                </p>
               </div>
             </AlertDescription>
           </Alert>
         )}
 
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card className="glass border-2 border-white/10 shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Today's Traffic</CardTitle>
-              <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                <Users className="h-5 w-5" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.today}</div>
-              <p className="text-xs text-muted-foreground mt-1">Visitors logged today</p>
-            </CardContent>
-          </Card>
-
-          <Card className="glass border-2 border-white/10 shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Top College</CardTitle>
-              <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                <TrendingUp className="h-5 w-5" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xl font-bold truncate" title={stats.topCollege}>{stats.topCollege}</div>
-              <p className="text-xs text-muted-foreground mt-1">Most frequent affiliation</p>
-            </CardContent>
-          </Card>
-
-          <Card className="glass border-2 border-white/10 shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Common Reason</CardTitle>
-              <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                <History className="h-5 w-5" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xl font-bold truncate" title={stats.topReason}>{stats.topReason}</div>
-              <p className="text-xs text-muted-foreground mt-1">Primary purpose of visits</p>
-            </CardContent>
-          </Card>
-        </div>
-
         <Card className="glass border-2 border-white/10 shadow-xl overflow-hidden">
           <CardHeader className="border-b border-white/5 bg-white/5">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <CardTitle className="text-xl font-bold">Unified Visitor Logs</CardTitle>
-                <CardDescription>Historical data for all library entries</CardDescription>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                <div className="relative w-full sm:w-64">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    placeholder="Search email or college..." 
-                    className="pl-10 h-10 glass border-2"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-                <Select value={dateFilter} onValueChange={(v: any) => setDateFilter(v)}>
-                  <SelectTrigger className="w-full sm:w-40 h-10 glass border-2">
-                    <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
-                    <SelectValue placeholder="Date Range" />
-                  </SelectTrigger>
-                  <SelectContent className="glass">
-                    <SelectItem value="all">All Time</SelectItem>
-                    <SelectItem value="today">Today</SelectItem>
-                    <SelectItem value="week">Past 7 Days</SelectItem>
-                    <SelectItem value="month">Past 30 Days</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            <CardTitle className="text-xl font-bold">All Logs (Sorted by Date)</CardTitle>
+            <CardDescription>Real-time stream from the entire database</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             {logsLoading ? (
               <div className="p-12 text-center text-muted-foreground flex flex-col items-center gap-4">
                 <Loading />
-                <p className="animate-pulse">Retrieving database logs...</p>
+                <p className="animate-pulse">Connecting to database...</p>
               </div>
-            ) : filteredLogs.length === 0 ? (
+            ) : !allLogs || allLogs.length === 0 ? (
               <div className="p-20 text-center space-y-4">
                 <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center">
                   <BarChart3 className="h-8 w-8 text-muted-foreground opacity-20" />
                 </div>
-                <h3 className="text-xl font-bold">No logs found</h3>
-                <p className="text-muted-foreground">Try adjusting your search or filters.</p>
+                <h3 className="text-xl font-bold">No logs available</h3>
+                <p className="text-muted-foreground">The database currently contains no visitor entries.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -257,26 +115,20 @@ export default function AdminDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredLogs.map((log) => (
+                    {allLogs.map((log) => (
                       <TableRow key={log.id} className="hover:bg-white/5 transition-colors group">
                         <TableCell className="whitespace-nowrap font-medium opacity-80">
                           {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, h:mm a') : '...'}
                         </TableCell>
-                        <TableCell className="max-w-[180px] truncate font-semibold" title={log.email}>
-                          {log.email}
-                        </TableCell>
+                        <TableCell className="font-semibold">{log.email}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className="capitalize bg-primary/5 text-primary border-primary/20">
                             {log.userType}
                           </Badge>
                         </TableCell>
-                        <TableCell className="max-w-[200px] truncate" title={log.college_office}>
-                          {log.college_office}
-                        </TableCell>
-                        <TableCell className="max-w-[250px] leading-tight">
-                          <span className="text-muted-foreground text-sm" title={log.reason}>
-                            {log.reason}
-                          </span>
+                        <TableCell className="max-w-[200px] truncate">{log.college_office}</TableCell>
+                        <TableCell className="max-w-[300px] leading-tight text-muted-foreground text-sm">
+                          {log.reason}
                         </TableCell>
                       </TableRow>
                     ))}
