@@ -2,7 +2,6 @@
 import {
   doc,
   getDoc,
-  setDoc,
   updateDoc,
   addDoc,
   collection,
@@ -35,33 +34,6 @@ export async function getUserDoc(uid: string): Promise<UserProfile | null> {
   }
 }
 
-// Create a new user document in Firestore (Non-blocking)
-export function createUserDoc(uid: string, data: Omit<UserProfile, 'id' | 'createdAt'>) {
-  const userRef = doc(db, 'users', uid);
-  
-  const email = data.email || '';
-  const localPart = email.split('@')[0];
-  const isStudent = localPart.includes('.');
-  const derivedUserType = isStudent ? 'Student' : null;
-  const isTargetAdmin = email === 'ramiljr.deocariza@neu.edu.ph';
-
-  const payload = {
-    ...data,
-    user_type: data.user_type || derivedUserType,
-    role: isTargetAdmin ? 'admin' : (data.role || 'user'),
-    id: uid,
-    createdAt: serverTimestamp(),
-  };
-  
-  setDoc(userRef, payload).catch(async (error) => {
-    errorEmitter.emit('permission-error', new FirestorePermissionError({
-      path: userRef.path,
-      operation: 'create',
-      requestResourceData: payload,
-    }));
-  });
-}
-
 // Update a user document in Firestore (Non-blocking)
 export function updateUserDoc(uid: string, data: Partial<UserProfile>) {
   const userRef = doc(db, 'users', uid);
@@ -81,7 +53,7 @@ export function updateUserDoc(uid: string, data: Partial<UserProfile>) {
  */
 export async function toggleUserBlock(uid: string) {
   if (!uid || typeof uid !== 'string') {
-    throw new Error('A valid User ID is required to toggle block status.');
+    throw new Error('A valid User ID (uid) is required to toggle block status.');
   }
 
   const userRef = doc(db, 'users', uid);

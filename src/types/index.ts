@@ -13,7 +13,7 @@ export interface UserProfile {
 
 export interface VisitLog {
   id: string;
-  userId: string;
+  uid: string;
   email: string;
   userType: 'Student' | 'Staff' | 'Employee';
   college_office: string; // Snapshotted for historical accuracy

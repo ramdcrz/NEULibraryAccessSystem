@@ -57,9 +57,9 @@
           "type": "string",
           "description": "Unique identifier for the VisitLog entity."
         },
-        "userId": {
+        "uid": {
           "type": "string",
-          "description": "Reference to the User who made the visit."
+          "description": "Reference to the User's unique ID who made the visit."
         },
         "email": {
           "type": "string",
@@ -91,7 +91,7 @@
       },
       "required": [
         "id",
-        "userId",
+        "uid",
         "email",
         "userType",
         "college_office",

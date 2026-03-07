@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -16,25 +17,22 @@ service cloud.firestore {
     // 1. VISIT LOGS (FLAT TOP-LEVEL COLLECTION)
     match /visit_logs/{logId} {
       // allow create: Any signed-in user can log their own visit.
-      // We check that the userId field in the document matches the authenticated UID.
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      // Updated to check 'uid' field to match new schema.
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
       
       // allow read, list: Admins can see all logs. Users can see their own logs.
-      // Note: order of evaluation is important to avoid unnecessary get() calls.
       allow read, list: if isSignedIn() && (
-        (resource != null && resource.data.userId == request.auth.uid) || 
+        (resource != null && resource.data.uid == request.auth.uid) || 
         isSystemAdmin()
       );
     }
 
     // 2. USER PROFILE RULES
     match /users/{userId} {
-      // BASE CASE: User reading or writing their own profile.
-      // This MUST come first to break the potential recursion loop when isSystemAdmin() 
-      // is called from other rules, as isSystemAdmin() itself performs a get() on a user document.
+      // Base case for self-access to prevent recursion loops
       allow read, write: if isSignedIn() && request.auth.uid == userId;
-
-      // Allow admins to read or write other users' profiles.
+      
+      // Allow admins to access other user records
       allow read, write: if isSystemAdmin();
     }
   }

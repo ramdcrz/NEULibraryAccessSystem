@@ -51,7 +51,7 @@ export default function AdminDashboard() {
       toast({
         variant: "destructive",
         title: "Missing Data",
-        description: "Cannot identify the user associated with this log entry.",
+        description: "Cannot identify the user (missing uid) associated with this log entry.",
       });
       return;
     }
@@ -176,15 +176,19 @@ export default function AdminDashboard() {
                           {log.reason}
                         </TableCell>
                         <TableCell className="text-center">
-                          {log.userId ? (
+                          {/* 
+                              Check strictly for 'uid' and 'timestamp' as per University protocol.
+                              Rows without these are flagged as Legacy Logs.
+                          */}
+                          {log.uid && log.timestamp ? (
                             <Button
                               variant="ghost"
                               size="sm"
                               className="h-9 px-3 text-destructive hover:bg-destructive/10 hover:text-destructive font-bold rounded-xl gap-2 transition-all active:scale-95"
-                              onClick={() => handleToggleBlock(log.userId, log.email)}
-                              disabled={blockingUid === log.userId}
+                              onClick={() => handleToggleBlock(log.uid, log.email)}
+                              disabled={blockingUid === log.uid}
                             >
-                              {blockingUid === log.userId ? (
+                              {blockingUid === log.uid ? (
                                 <LoaderCircle className="h-4 w-4 animate-spin" />
                               ) : (
                                 <>
@@ -194,7 +198,7 @@ export default function AdminDashboard() {
                               )}
                             </Button>
                           ) : (
-                            <span className="text-[10px] text-muted-foreground uppercase font-black">Legacy Log</span>
+                            <span className="text-[10px] text-muted-foreground uppercase font-black px-2 py-1 bg-muted rounded-md">Legacy Log</span>
                           )}
                         </TableCell>
                       </TableRow>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -83,8 +84,9 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
       const entryDate = new Date().toISOString().split('T')[0];
       const finalReason = data.reason === 'Others' ? data.otherReason!.trim() : data.reason;
 
+      // Submit with 'uid' to match the strict university schema
       addVisitLog({
-        userId: user.uid,
+        uid: user.uid,
         email: user.email!,
         userType: user.user_type as 'Student' | 'Staff' | 'Employee',
         college_office: user.college_office!,
