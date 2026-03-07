@@ -24,7 +24,6 @@ export default function LoginPage() {
       router.push('/');
     } catch (error) {
       console.error('Sign in failed:', error);
-      // Optionally, show a toast notification for the error
     }
   };
   
@@ -37,7 +36,6 @@ export default function LoginPage() {
     </svg>
   );
 
-
   if (loading || user) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -47,24 +45,27 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-2xl">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-            <BookMarked className="h-8 w-8 text-primary" />
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 gradient-bg">
+      <Card className="w-full max-w-md glass border-2 border-white/10 shadow-2xl animate-in fade-in zoom-in-95 duration-500">
+        <CardHeader className="text-center pb-8">
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-inner rotate-3 transition-transform hover:rotate-0">
+            <BookMarked className="h-10 w-10" />
           </div>
-          <CardTitle className="text-3xl font-bold">NEU Library Access</CardTitle>
-          <CardDescription className="text-muted-foreground">Sign in to log your library visit</CardDescription>
+          <CardTitle className="text-4xl font-black tracking-tight text-foreground">NEU Library</CardTitle>
+          <CardDescription className="text-muted-foreground text-lg mt-2">Sign in to log your visit</CardDescription>
         </CardHeader>
         <CardContent>
           <Button
             onClick={handleSignIn}
-            className="w-full h-12 text-lg"
+            className="w-full h-14 text-lg font-bold transition-all hover:bg-primary/5 hover:text-primary hover:border-primary/50 border-2 rounded-2xl gap-3"
             variant="outline"
           >
             <GoogleIcon />
             <span>Sign in with Google</span>
           </Button>
+          <p className="text-center text-xs text-muted-foreground mt-6 opacity-60">
+            New Era University Library Access Management System
+          </p>
         </CardContent>
       </Card>
     </main>
