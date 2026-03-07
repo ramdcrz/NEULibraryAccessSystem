@@ -2,7 +2,7 @@
 
 import { createContext, useState, useEffect, ReactNode } from 'react';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut as firebaseSignOut, User as FirebaseUser } from 'firebase/auth';
-import { onSnapshot, doc, Timestamp, serverTimestamp, setDoc } from 'firebase/firestore';
+import { onSnapshot, doc, Timestamp, serverTimestamp, setDoc, updateDoc, deleteField } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
 import type { UserProfile } from '@/types';
 
@@ -35,6 +35,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         unsubscribeDoc = onSnapshot(userRef, (docSnap) => {
           if (docSnap.exists()) {
             const data = docSnap.data();
+            
+            // Automatic Data Cleanup: Remove legacy camelCase field if it exists
+            if ('collegeOffice' in data) {
+              updateDoc(userRef, {
+                collegeOffice: deleteField()
+              }).catch(err => console.error("Cleanup error:", err));
+            }
+
             setUser({
               id: firebaseUser.uid,
               uid: firebaseUser.uid,
