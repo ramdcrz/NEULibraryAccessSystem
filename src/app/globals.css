@@ -63,7 +63,7 @@
 .glass {
   @apply backdrop-blur-3xl transition-all duration-300 shadow-none border;
   background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
 .dark .glass {
