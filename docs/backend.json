@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "User": {
@@ -57,12 +58,16 @@
         },
         "email": {
           "type": "string",
-          "description": "The email of the user at the time of the visit. Denormalized from User for easier querying and historical accuracy.",
+          "description": "The email of the user at the time of the visit.",
           "format": "email"
         },
         "userType": {
           "type": "string",
           "description": "The classification of the user (e.g., 'faculty', 'student', 'employee')."
+        },
+        "college_office": {
+          "type": "string",
+          "description": "The college or office affiliation at the time of visit (Snapshotted)."
         },
         "reason": {
           "type": "string",
@@ -75,7 +80,7 @@
         },
         "entryDate": {
           "type": "string",
-          "description": "The date of the visit in YYYY-MM-DD format for simplified date-based querying.",
+          "description": "The date of the visit in YYYY-MM-DD format.",
           "format": "date"
         }
       },
@@ -84,6 +89,7 @@
         "userId",
         "email",
         "userType",
+        "college_office",
         "reason",
         "timestamp",
         "entryDate"
@@ -105,7 +111,7 @@
           "schema": {
             "$ref": "#/backend/entities/User"
           },
-          "description": "Stores user profile information. The document ID (`userId`) corresponds to the Firebase Authentication UID. Includes the 'role' field for database access control (DBAC) and 'is_blocked' status. Provides explicit path-based ownership for individual users."
+          "description": "Stores user profile information."
         }
       },
       {
@@ -115,17 +121,7 @@
           "schema": {
             "$ref": "#/backend/entities/VisitLog"
           },
-          "description": "Stores individual visit logs, nested under the owning user's profile. The 'userId' field within each document, along with the hierarchical path, provides denormalized authorization context, enabling authorization independence. This structure supports secure QAPs for listing user-specific visit logs. Includes denormalized 'email' for historical accuracy.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user who owns this visit log. Corresponds to the Firebase Authentication UID."
-            },
-            {
-              "name": "visitLogId",
-              "description": "The unique identifier for a specific visit log entry."
-            }
-          ]
+          "description": "Stores individual visit logs, nested under the owning user's profile."
         }
       }
     ]
