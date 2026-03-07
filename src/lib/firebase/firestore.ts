@@ -20,6 +20,7 @@ export async function getUserDoc(uid: string): Promise<UserProfile | null> {
   if (userSnap.exists()) {
     const data = userSnap.data();
     return {
+      id: data.id || uid,
       email: data.email,
       role: data.role,
       collegeOffice: data.collegeOffice,
@@ -32,16 +33,19 @@ export async function getUserDoc(uid: string): Promise<UserProfile | null> {
 }
 
 // Create a new user document in Firestore (Non-blocking)
-export function createUserDoc(uid: string, data: Omit<UserProfile, 'createdAt'>) {
+export function createUserDoc(uid: string, data: Omit<UserProfile, 'id' | 'createdAt'>) {
   const userRef = doc(db, 'users', uid);
-  setDoc(userRef, {
+  const payload = {
     ...data,
+    id: uid,
     createdAt: serverTimestamp(),
-  }).catch(async (error) => {
+  };
+  
+  setDoc(userRef, payload).catch(async (error) => {
     errorEmitter.emit('permission-error', new FirestorePermissionError({
       path: userRef.path,
       operation: 'create',
-      requestResourceData: data,
+      requestResourceData: payload,
     }));
   });
 }

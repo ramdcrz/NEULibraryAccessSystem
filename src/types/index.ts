@@ -1,6 +1,7 @@
 import type { Timestamp } from 'firebase/firestore';
 
 export interface UserProfile {
+  id: string;
   email: string;
   role: 'admin' | 'user';
   collegeOffice: string | null;

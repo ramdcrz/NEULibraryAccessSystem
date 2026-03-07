@@ -31,16 +31,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (userDoc) {
           setUser({ ...userDoc, uid: firebaseUser.uid, photoURL: firebaseUser.photoURL });
         } else {
-          const newUserProfile: Omit<UserProfile, 'createdAt'> = {
+          const newUserProfileData: Omit<UserProfile, 'id' | 'createdAt'> = {
             email: firebaseUser.email!,
             role: 'user',
             collegeOffice: null,
             isBlocked: false,
           };
           // createUserDoc is now non-blocking
-          createUserDoc(firebaseUser.uid, newUserProfile);
+          createUserDoc(firebaseUser.uid, newUserProfileData);
           setUser({ 
-            ...newUserProfile, 
+            ...newUserProfileData, 
+            id: firebaseUser.uid,
             uid: firebaseUser.uid, 
             photoURL: firebaseUser.photoURL,
             createdAt: new Date() 
