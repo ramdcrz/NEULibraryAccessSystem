@@ -30,19 +30,22 @@ import type { AuthenticatedUser } from '@/contexts/auth-provider';
 import { Separator } from '@/components/ui/separator';
 
 const colleges = [
-  'College of Arts and Sciences',
+  'College of Accountancy',
+  'College of Agriculture',
+  'College of Arts and Science',
   'College of Business Administration',
   'College of Communication',
-  'College of Computer Studies',
+  'College of Informatics and Computing Studies',
   'College of Criminology',
   'College of Education',
   'College of Engineering and Architecture',
-  'College of Law',
-  'College of Medicine',
+  'College of Medical Technology',
+  'College of Midwifery',
+  'College of Music',
   'College of Nursing',
-  'Integrated School',
-  'Graduate School',
-  'Administrative Office',
+  'College of Physical Therapy',
+  'College of Respiratory Therapy',
+  'School of International Relations',
 ];
 
 const formSchema = z.object({
