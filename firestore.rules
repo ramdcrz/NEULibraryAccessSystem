@@ -8,37 +8,33 @@ service cloud.firestore {
     }
 
     // Helper: Is the requester an admin?
-    // We fetch the user document to check the role field.
+    // This helper performs a cross-document lookup.
     function isSystemAdmin() {
       return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // 1. COLLECTION GROUP RULE
-    // This targets collectionGroup(db, 'visit_logs')
-    match /{path=**}/visit_logs/{logId} {
-      // Admins can see everyone's logs. Users can only see their own (via direct path below).
-      allow list: if isSystemAdmin();
-      allow get: if isSignedIn() && (resource.data.userId == request.auth.uid || isSystemAdmin());
+    // 1. VISIT LOGS (FLAT TOP-LEVEL COLLECTION)
+    match /visit_logs/{logId} {
+      // Allow any signed-in user to create their own visit log.
+      // The userId field in the document must match the creator's UID.
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      
+      // Admins can read and list all visit logs for the dashboard.
+      allow read, list: if isSystemAdmin();
+      
+      // Users can read their own specific log entries.
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
 
-    // 2. USER DOCUMENT RULES
+    // 2. USER PROFILE RULES
     match /users/{userId} {
-      // BASE CASE: User reading their own profile.
-      // We check UID ownership FIRST and ALONE to break potential recursion loops.
-      allow read: if isSignedIn() && request.auth.uid == userId;
+      // BASE CASE: User reading or writing their own profile.
+      // We check UID ownership FIRST to break potential recursion loops when isSystemAdmin() is called.
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
 
-      // Allow admins to read other users' profiles.
-      // This only evaluates if the first rule fails.
-      allow read: if isSignedIn() && isSystemAdmin();
-
-      // Write rules
-      allow write: if isSignedIn() && (request.auth.uid == userId || isSystemAdmin());
-
-      // Nested visit logs (Direct path access)
-      match /visit_logs/{logId} {
-        allow read, write: if isSignedIn() && (request.auth.uid == userId || isSystemAdmin());
-        allow create: if isSignedIn() && request.auth.uid == userId;
-      }
+      // Allow admins to read or write other users' profiles.
+      // This part only evaluates if the base case above is false.
+      allow read, write: if isSystemAdmin();
     }
   }
 }
