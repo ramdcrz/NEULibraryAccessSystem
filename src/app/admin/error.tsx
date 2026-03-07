@@ -43,7 +43,7 @@ export default function AdminError({
           
           <div className="text-sm text-muted-foreground bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-200 dark:border-blue-800">
             <p className="font-bold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2">
-              <Info className="h-4 w-4" />
+              <span className="flex items-center justify-center bg-blue-500 text-white rounded-full w-5 h-5 text-[10px] font-black">!</span>
               Critical Troubleshooting Tip:
             </p>
             <p className="mb-2">If you see "Missing or insufficient permissions," it often means the database needs a **Composite Index** to sort logs.</p>
