@@ -94,15 +94,6 @@ export default function Header() {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="my-2" />
-              {isAdmin && (
-                <>
-                  <DropdownMenuItem onClick={() => router.push(isAdminPage ? '/' : '/admin')} className="rounded-md cursor-pointer">
-                    {isAdminPage ? <LayoutDashboard className="mr-2 h-4 w-4" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
-                    <span>{isAdminPage ? 'Visit Logger' : 'Admin Panel'}</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator className="my-2" />
-                </>
-              )}
               <DropdownMenuItem onClick={signOut} className="rounded-md cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
