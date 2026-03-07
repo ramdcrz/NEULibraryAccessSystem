@@ -210,134 +210,100 @@ export default function AdminDashboard() {
   return (
     <div className="flex min-h-screen w-full flex-col gradient-bg">
       <Header />
-      <main className="flex-1 p-6 md:p-12 space-y-10 animate-in fade-in duration-700">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.3em] text-[10px] opacity-60">
+      <main className="flex-1 p-6 md:p-12 space-y-12 animate-in fade-in duration-700">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.4em] text-[10px] opacity-60">
               <ShieldCheck className="h-3.5 w-3.5" />
-              Administrative Terminal
+              Administrative Command
             </div>
-            <h1 className="text-5xl font-black tracking-tighter">
-              Access Analytics
+            <h1 className="text-6xl font-black tracking-tighter">
+              Terminal Analytics
             </h1>
-            <p className="text-muted-foreground text-lg font-medium opacity-80">
-              Real-time campus security monitoring and reporting.
+            <p className="text-muted-foreground text-xl font-bold opacity-70 tracking-tight">
+              Real-time monitoring and security reporting.
             </p>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <Button
               variant={showFilters ? "secondary" : "outline"}
               onClick={() => setShowFilters(!showFilters)}
-              className="h-12 px-6 rounded-2xl font-bold gap-2 transition-all border-2"
+              className="h-14 px-8 rounded-2xl font-black gap-2 transition-all border-2"
             >
               <Search className="h-4 w-4" />
-              {showFilters ? 'Close' : 'Filter'}
+              {showFilters ? 'Hide Filters' : 'Filter View'}
             </Button>
 
             <Button 
               onClick={exportToPDF} 
               disabled={isExporting || logsLoading || filteredLogs.length === 0}
-              className="h-12 px-6 rounded-2xl font-black gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] glow-primary"
+              className="h-14 px-8 rounded-2xl font-black gap-2 bg-primary text-primary-foreground"
             >
               {isExporting ? (
                 <LoaderCircle className="h-4 w-4 animate-spin" />
               ) : (
                 <FileDown className="h-4 w-4" />
               )}
-              Export PDF
+              Export Activity
             </Button>
           </div>
         </div>
 
-        {/* Quick Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="glass border-none rounded-[2rem] overflow-hidden relative group">
-            <div className="absolute -top-4 -right-4 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-              <BarChart3 className="h-24 w-24" />
-            </div>
-            <CardHeader className="pb-2">
-              <CardDescription className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">Total Logs</CardDescription>
-              <CardTitle className="text-4xl font-black">{stats.total}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2 text-[10px] font-bold text-primary/60 tracking-widest uppercase">
-                <Database className="h-3 w-3" />
-                Lifetime entries
+        {/* Liquid Glass Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { label: 'Total Visits', val: stats.total, icon: BarChart3, col: 'primary' },
+            { label: 'Today', val: stats.today, icon: Clock, col: 'green-500' },
+            { label: 'Verified Reach', val: stats.unique, icon: Users, col: 'amber-500' }
+          ].map((stat, i) => (
+            <Card key={i} className="glass border-none rounded-[3rem] p-8 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+                <stat.icon className="h-32 w-32" />
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="glass border-none rounded-[2rem] overflow-hidden relative group">
-            <div className="absolute -top-4 -right-4 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Clock className="h-24 w-24" />
-            </div>
-            <CardHeader className="pb-2">
-              <CardDescription className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">Activity Today</CardDescription>
-              <CardTitle className="text-4xl font-black">{stats.today}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2 text-[10px] font-bold text-green-600/60 tracking-widest uppercase">
-                <CalendarDays className="h-3 w-3" />
-                New registrations
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="glass border-none rounded-[2rem] overflow-hidden relative group">
-            <div className="absolute -top-4 -right-4 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Users className="h-24 w-24" />
-            </div>
-            <CardHeader className="pb-2">
-              <CardDescription className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">Unique Reach</CardDescription>
-              <CardTitle className="text-4xl font-black">{stats.unique}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2 text-[10px] font-bold text-amber-600/60 tracking-widest uppercase">
-                <ShieldCheck className="h-3 w-3" />
-                Verified accounts
-              </div>
-            </CardContent>
-          </Card>
+              <CardDescription className="text-[11px] font-black uppercase tracking-[0.3em] opacity-50 mb-3">{stat.label}</CardDescription>
+              <CardTitle className="text-5xl font-black tracking-tighter">{stat.val}</CardTitle>
+            </Card>
+          ))}
         </div>
 
         {/* Filter Controls */}
         {showFilters && (
-          <Card className="glass border-none rounded-[2.5rem] overflow-hidden animate-in slide-in-from-top-4 duration-500">
-            <CardContent className="p-8">
-              <div className="flex flex-col lg:flex-row gap-6 items-end">
-                <div className="flex-1 w-full space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
-                    <Search className="h-3 w-3" />
-                    Identity Search
-                  </label>
-                  <Input
-                    placeholder="Search by email..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-14 rounded-2xl border-2 bg-background/20 focus:border-primary/50 transition-all text-base font-medium"
-                  />
-                </div>
+          <Card className="glass border-none rounded-[3rem] p-10 animate-in slide-in-from-top-4 duration-500">
+            <div className="flex flex-col lg:flex-row gap-8 items-end">
+              <div className="flex-1 w-full space-y-4">
+                <label className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground px-1 flex items-center gap-2">
+                  <Search className="h-3.5 w-3.5" />
+                  Terminal Identity Search
+                </label>
+                <Input
+                  placeholder="Search by email..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-16 rounded-2xl border-2 bg-white/5 transition-all text-lg font-bold"
+                />
+              </div>
 
-                <div className="w-full lg:w-auto space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
-                    <CalendarIcon className="h-3 w-3" />
-                    From
+              <div className="flex gap-4 w-full lg:w-auto">
+                <div className="space-y-4">
+                  <label className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground px-1 flex items-center gap-2">
+                    <CalendarIcon className="h-3.5 w-3.5" />
+                    Start Date
                   </label>
                   <Popover open={isStartOpen} onOpenChange={setIsStartOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full lg:w-[220px] h-14 justify-start text-left font-bold rounded-2xl border-2 bg-background/20",
+                          "w-full lg:w-[240px] h-16 justify-start text-left font-bold rounded-2xl border-2 bg-white/5",
                           !startDate && "text-muted-foreground"
                         )}
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        <CalendarIcon className="mr-3 h-4 w-4" />
                         {startDate ? format(startDate, "PPP") : "Select date"}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 rounded-3xl border-none glass" align="start">
+                    <PopoverContent className="w-auto p-0 rounded-[2rem] border-white/10 glass" align="start">
                       <Calendar
                         mode="single"
                         selected={startDate}
@@ -348,34 +314,32 @@ export default function AdminDashboard() {
                             setIsEndOpen(true);
                           }
                         }}
-                        disabled={(date) => 
-                          endDate ? isAfter(date, endOfDay(endDate)) : false
-                        }
+                        disabled={(date) => endDate ? isAfter(date, endOfDay(endDate)) : false}
                         initialFocus
                       />
                     </PopoverContent>
                   </Popover>
                 </div>
 
-                <div className="w-full lg:w-auto space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
-                    <CalendarIcon className="h-3 w-3" />
-                    To
+                <div className="space-y-4">
+                  <label className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground px-1 flex items-center gap-2">
+                    <CalendarIcon className="h-3.5 w-3.5" />
+                    End Date
                   </label>
                   <Popover open={isEndOpen} onOpenChange={setIsEndOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full lg:w-[220px] h-14 justify-start text-left font-bold rounded-2xl border-2 bg-background/20",
+                          "w-full lg:w-[240px] h-16 justify-start text-left font-bold rounded-2xl border-2 bg-white/5",
                           !endDate && "text-muted-foreground"
                         )}
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        <CalendarIcon className="mr-3 h-4 w-4" />
                         {endDate ? format(endDate, "PPP") : "Select date"}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 rounded-3xl border-none glass" align="start">
+                    <PopoverContent className="w-auto p-0 rounded-[2rem] border-white/10 glass" align="start">
                       <Calendar
                         mode="single"
                         selected={endDate}
@@ -383,54 +347,49 @@ export default function AdminDashboard() {
                           setEndDate(date);
                           setIsEndOpen(false);
                         }}
-                        disabled={(date) => 
-                          startDate ? isBefore(date, startOfDay(startDate)) : false
-                        }
+                        disabled={(date) => startDate ? isBefore(date, startOfDay(startDate)) : false}
                         initialFocus
                       />
                     </PopoverContent>
                   </Popover>
                 </div>
-
-                <div className="flex gap-2 w-full lg:w-auto">
-                  <Button 
-                    variant="ghost" 
-                    onClick={clearFilters}
-                    disabled={!searchQuery && !startDate && !endDate}
-                    className="h-14 px-6 rounded-2xl font-black gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                  >
-                    <XCircle className="h-4 w-4" />
-                    Reset
-                  </Button>
-                </div>
               </div>
-            </CardContent>
+
+              <Button 
+                variant="ghost" 
+                onClick={clearFilters}
+                className="h-16 px-8 rounded-2xl font-black gap-2 text-destructive hover:bg-destructive/10"
+              >
+                <XCircle className="h-4 w-4" />
+                Clear
+              </Button>
+            </div>
           </Card>
         )}
 
         {logsError && (
-          <Alert variant="destructive" className="glass border-none rounded-3xl p-6">
-            <AlertCircle className="h-6 w-6" />
-            <AlertTitle className="text-xl font-black ml-2">Configuration Required</AlertTitle>
-            <AlertDescription className="mt-4 opacity-90">
-              The database requires a composite index to perform the requested sort and filter operations. Please visit the Firebase Console to create it.
+          <Alert variant="destructive" className="glass border-none rounded-[3rem] p-10">
+            <AlertCircle className="h-8 w-8" />
+            <AlertTitle className="text-2xl font-black ml-4">Terminal Error</AlertTitle>
+            <AlertDescription className="mt-4 text-lg font-bold opacity-80">
+              Database indexing required. Contact system administrator.
             </AlertDescription>
           </Alert>
         )}
 
-        <Card className="glass border-none overflow-hidden rounded-[2.5rem]">
-          <CardHeader className="p-8 border-b border-white/5 bg-white/[0.02]">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-primary/5 text-primary">
-                <Filter className="h-6 w-6" />
+        <Card className="glass border-none overflow-hidden rounded-[3rem]">
+          <CardHeader className="p-10 border-b border-white/10 bg-white/5">
+            <div className="flex items-center gap-5">
+              <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-white/10">
+                <Filter className="h-7 w-7" />
               </div>
               <div>
-                <CardTitle className="text-2xl font-black">
-                  Activity History
+                <CardTitle className="text-3xl font-black tracking-tighter">
+                  Activity Stream
                 </CardTitle>
-                <CardDescription className="text-sm font-medium opacity-60">
+                <CardDescription className="text-sm font-bold opacity-60 mt-1">
                   {searchQuery || startDate || endDate 
-                    ? `Displaying ${filteredLogs.length} filtered results`
+                    ? `Showing ${filteredLogs.length} matching entries`
                     : `System-wide historical logs`}
                 </CardDescription>
               </div>
@@ -438,32 +397,30 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent className="p-0">
             {logsLoading ? (
-              <div className="p-20 flex flex-col items-center justify-center gap-4">
-                <LoaderCircle className="h-10 w-10 animate-spin text-primary opacity-30" />
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Syncing Data...</p>
+              <div className="p-32 flex flex-col items-center justify-center gap-6">
+                <LoaderCircle className="h-12 w-12 animate-spin text-primary/30" />
+                <p className="text-[11px] font-black uppercase tracking-[0.3em] opacity-30">Decrypting Sync...</p>
               </div>
             ) : filteredLogs.length === 0 ? (
-              <div className="p-32 text-center flex flex-col items-center gap-6">
-                <div className="p-6 rounded-full bg-muted/20">
-                  <Search className="h-10 w-10 text-muted-foreground opacity-20" />
+              <div className="p-40 text-center flex flex-col items-center gap-8">
+                <div className="p-8 rounded-full bg-white/5 border border-white/5">
+                  <Search className="h-12 w-12 text-muted-foreground opacity-20" />
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-xl font-black">No Results Found</h3>
-                  <p className="text-muted-foreground font-medium opacity-60">Adjust your filters to see historical data.</p>
+                <div className="space-y-2">
+                  <h3 className="text-3xl font-black tracking-tight">Zero Activity Found</h3>
+                  <p className="text-muted-foreground text-lg font-bold opacity-70">Adjust filters to display terminal data.</p>
                 </div>
-                <Button variant="outline" onClick={clearFilters} className="rounded-xl font-black border-2 h-11 px-6">Clear All Filters</Button>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
-                  <TableHeader className="bg-muted/10">
-                    <TableRow className="hover:bg-transparent border-white/5">
-                      <TableHead className="font-black text-[10px] uppercase tracking-widest h-14 pl-8">Timestamp</TableHead>
-                      <TableHead className="font-black text-[10px] uppercase tracking-widest h-14">Identity</TableHead>
-                      <TableHead className="font-black text-[10px] uppercase tracking-widest h-14">Department</TableHead>
-                      <TableHead className="font-black text-[10px] uppercase tracking-widest h-14">Class</TableHead>
-                      <TableHead className="font-black text-[10px] uppercase tracking-widest h-14">Purpose</TableHead>
-                      <TableHead className="font-black text-[10px] uppercase tracking-widest h-14 text-center pr-8">Actions</TableHead>
+                  <TableHeader className="bg-white/5">
+                    <TableRow className="hover:bg-transparent border-white/10">
+                      <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10">Timestamp</TableHead>
+                      <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16">Verified Identity</TableHead>
+                      <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16">Classification</TableHead>
+                      <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16">Purpose</TableHead>
+                      <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10">Control</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -471,51 +428,50 @@ export default function AdminDashboard() {
                       const isBlocked = userStatusMap[log.uid] || false;
                       
                       return (
-                        <TableRow key={log.id} className="hover:bg-white/[0.02] transition-colors border-white/5 group">
-                          <TableCell className="pl-8 py-5 whitespace-nowrap font-bold text-muted-foreground/60 group-hover:text-foreground transition-colors">
+                        <TableRow key={log.id} className="hover:bg-white/5 transition-colors border-white/5 group">
+                          <TableCell className="pl-10 py-6 whitespace-nowrap font-bold text-muted-foreground/70">
                             {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, h:mm a') : '...'}
                           </TableCell>
-                          <TableCell className="font-black text-foreground">{log.email}</TableCell>
-                          <TableCell className="text-muted-foreground italic text-xs">{log.college_office}</TableCell>
+                          <TableCell className="font-black text-foreground">
+                            <div className="flex flex-col">
+                              <span>{log.email}</span>
+                              <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1">{log.college_office}</span>
+                            </div>
+                          </TableCell>
                           <TableCell>
-                            <Badge variant="outline" className="w-24 justify-center rounded-lg px-3 py-0.5 font-black text-[9px] uppercase tracking-widest bg-primary/5 text-primary border-primary/10">
+                            <Badge variant="outline" className="w-28 justify-center rounded-xl py-1 font-black text-[10px] uppercase tracking-widest bg-white/5 border-white/10 text-primary">
                               {log.userType}
                             </Badge>
                           </TableCell>
-                          <TableCell className="max-w-[180px] truncate font-medium text-foreground/70">
+                          <TableCell className="max-w-[200px] truncate font-bold text-foreground/80">
                             {log.reason}
                           </TableCell>
-                          <TableCell className="text-center pr-8">
-                            {log.uid && log.timestamp ? (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className={cn(
-                                  "h-9 w-28 font-black text-[9px] uppercase tracking-widest rounded-lg gap-2 transition-all active:scale-95 border",
-                                  isBlocked 
-                                    ? "text-green-600 bg-green-500/5 hover:bg-green-500/10 border-green-500/10" 
-                                    : "text-destructive bg-destructive/5 hover:bg-destructive/10 border-destructive/10"
-                                )}
-                                onClick={() => handleToggleBlock(log.uid, log.email)}
-                                disabled={blockingUid === log.uid}
-                              >
-                                {blockingUid === log.uid ? (
-                                  <LoaderCircle className="h-3 w-3 animate-spin" />
-                                ) : isBlocked ? (
-                                  <>
-                                    <UserCheck className="h-3.5 w-3.5" />
-                                    Restore
-                                  </>
-                                ) : (
-                                  <>
-                                    <UserX className="h-3.5 w-3.5" />
-                                    Block
-                                  </>
-                                )}
-                              </Button>
-                            ) : (
-                              <span className="text-[8px] opacity-30 uppercase font-black px-2 py-1 bg-muted/20 rounded">Legacy</span>
-                            )}
+                          <TableCell className="text-center pr-10">
+                            <Button
+                              variant="ghost"
+                              className={cn(
+                                "h-11 w-32 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all border",
+                                isBlocked 
+                                  ? "text-green-600 bg-green-500/5 border-green-500/10" 
+                                  : "text-destructive bg-destructive/5 border-destructive/10"
+                              )}
+                              onClick={() => handleToggleBlock(log.uid, log.email)}
+                              disabled={blockingUid === log.uid}
+                            >
+                              {blockingUid === log.uid ? (
+                                <LoaderCircle className="h-4 w-4 animate-spin" />
+                              ) : isBlocked ? (
+                                <>
+                                  <UserCheck className="h-4 w-4 mr-2" />
+                                  Restore
+                                </>
+                              ) : (
+                                <>
+                                  <UserX className="h-4 w-4 mr-2" />
+                                  Block
+                                </>
+                              )}
+                            </Button>
                           </TableCell>
                         </TableRow>
                       );

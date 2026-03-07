@@ -62,25 +62,23 @@
 }
 
 .glass {
-  @apply bg-card/30 backdrop-blur-2xl border border-white/10 shadow-sm;
+  /* Apple Liquid Glass: High transparency, high blur, ultra-thin border */
+  @apply bg-white/5 dark:bg-black/10 backdrop-blur-[40px] border border-white/20 dark:border-white/5 shadow-none;
 }
 
 .gradient-bg {
+  /* Minimal Liquid Gradient: Atmospheric, low-contrast mesh */
   background: 
-    radial-gradient(circle at 50% -20%, hsl(var(--primary) / 0.05), transparent 70%),
-    radial-gradient(circle at 0% 100%, hsl(var(--primary) / 0.01), transparent 40%),
+    radial-gradient(circle at 50% -10%, hsl(var(--primary) / 0.08), transparent 70%),
+    radial-gradient(circle at 10% 100%, hsl(var(--primary) / 0.04), transparent 40%),
     hsl(var(--background));
 }
 
 .dark .gradient-bg {
   background: 
-    radial-gradient(circle at 50% -20%, hsl(var(--primary) / 0.1), transparent 70%),
-    radial-gradient(circle at 0% 100%, hsl(var(--primary) / 0.03), transparent 40%),
+    radial-gradient(circle at 50% -10%, hsl(var(--primary) / 0.15), transparent 70%),
+    radial-gradient(circle at 10% 100%, hsl(var(--primary) / 0.06), transparent 40%),
     hsl(var(--background));
-}
-
-.glow-primary {
-  @apply hover:shadow-[0_0_20px_rgba(var(--primary),0.1)] transition-all duration-500;
 }
 
 .animate-float {

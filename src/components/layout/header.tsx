@@ -32,29 +32,29 @@ export default function Header() {
   const isAdminPage = pathname?.startsWith('/admin');
 
   return (
-    <header className="sticky top-0 z-[100] w-full bg-background/60 backdrop-blur-2xl border-b border-white/5 flex h-16 items-center gap-4 px-6 md:px-12 transition-all">
+    <header className="sticky top-0 z-[100] w-full bg-background/40 backdrop-blur-3xl border-b border-white/5 flex h-20 items-center gap-4 px-6 md:px-12 transition-all">
       <div className="flex items-center gap-8">
         <Link href="/" className="flex items-center gap-3.5 group transition-opacity hover:opacity-80">
-          <div className="p-1.5 rounded-lg bg-foreground text-background shadow-sm transition-transform group-active:scale-95">
+          <div className="p-2 rounded-xl bg-foreground text-background shadow-sm transition-transform group-active:scale-95">
             <BookMarked className="h-5 w-5" />
           </div>
           <div className="flex flex-col">
-            <span className="text-base font-bold leading-none tracking-tight text-foreground">NEU Library</span>
-            <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground mt-0.5">Terminal</span>
+            <span className="text-lg font-black leading-none tracking-tight text-foreground">NEU Library</span>
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-1">Terminal</span>
           </div>
         </Link>
         
-        <div className="hidden lg:block h-6 w-[1px] bg-border/50" />
+        <div className="hidden lg:block h-8 w-[1px] bg-border/30" />
         
         <LiveClock />
       </div>
 
-      <div className="ml-auto flex items-center gap-4">
+      <div className="ml-auto flex items-center gap-5">
         {isAdmin && (
           <Button 
             variant="ghost" 
             asChild
-            className="hidden md:flex gap-2 font-bold text-[10px] uppercase tracking-widest hover:bg-secondary rounded-full px-5 h-9 transition-all"
+            className="hidden md:flex gap-2 font-black text-[10px] uppercase tracking-widest hover:bg-secondary/50 rounded-full px-6 h-10 transition-all"
           >
             {isAdminPage ? (
               <Link href="/">
@@ -73,44 +73,44 @@ export default function Header() {
         <ThemeToggle />
         
         {loading ? (
-           <div className="h-9 w-9 animate-pulse rounded-full bg-muted shadow-inner" />
+           <div className="h-10 w-10 animate-pulse rounded-full bg-muted shadow-inner" />
         ) : user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-accent/10 transition-all active:scale-90 p-0 overflow-hidden">
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-accent/10 transition-all active:scale-90 p-0 overflow-hidden border border-white/10">
                 <Avatar className="h-full w-full">
                   <AvatarImage src={user.photoURL ?? ''} alt={user.email ?? ''} />
                   <AvatarFallback className="bg-primary text-white font-bold text-xs">{getInitials(user.email)}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-72 p-2 rounded-[1.5rem] shadow-2xl border-white/10 glass mt-3 overflow-hidden" align="end">
-              <DropdownMenuLabel className="font-normal p-4">
+            <DropdownMenuContent className="w-72 p-2 rounded-[2rem] border-white/10 glass mt-4 overflow-hidden" align="end">
+              <DropdownMenuLabel className="font-normal p-5">
                 <div className="flex items-center gap-4">
-                  <Avatar className="h-12 w-12 border border-white/10 shadow-sm">
+                  <Avatar className="h-14 w-14 border border-white/10 shadow-sm">
                     <AvatarImage src={user.photoURL ?? ''} />
                     <AvatarFallback className="font-bold text-xs bg-muted text-foreground">{getInitials(user.email)}</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col space-y-1 overflow-hidden flex-1">
-                    <p className="text-sm font-black leading-none truncate max-w-[180px] tracking-tight text-foreground">
+                    <p className="text-base font-black leading-none truncate tracking-tight text-foreground">
                       {user.displayName || 'Faculty/Staff'}
                     </p>
-                    <p className="truncate text-[9px] font-bold text-muted-foreground uppercase tracking-widest max-w-[180px]">
+                    <p className="truncate text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
                       {user.email}
                     </p>
                   </div>
                 </div>
                 {user.user_type && (
-                  <Badge variant="secondary" className="mt-4 w-full justify-center py-2 rounded-xl text-foreground/70 font-black uppercase text-[8px] tracking-[0.2em] border-none bg-primary/5">
+                  <Badge variant="secondary" className="mt-5 w-full justify-center py-2.5 rounded-2xl text-foreground/70 font-black uppercase text-[8px] tracking-[0.25em] border-none bg-primary/5">
                     Verified {user.user_type}
                   </Badge>
                 )}
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-white/5 mx-2" />
               <div className="p-1">
-                <DropdownMenuItem onClick={signOut} className="rounded-xl cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive py-3 px-3 text-sm font-bold transition-all gap-3">
+                <DropdownMenuItem onClick={signOut} className="rounded-2xl cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive py-4 px-4 text-sm font-bold transition-all gap-3">
                   <LogOut className="h-4 w-4" />
-                  <span className="uppercase tracking-[0.2em] text-[9px] font-black">Log out System</span>
+                  <span className="uppercase tracking-[0.25em] text-[9px] font-black">End Session</span>
                 </DropdownMenuItem>
               </div>
             </DropdownMenuContent>
