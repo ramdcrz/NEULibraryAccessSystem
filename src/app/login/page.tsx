@@ -64,7 +64,7 @@ export default function LoginPage() {
             <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-primary text-white transition-transform hover:rotate-6 shadow-lg shadow-primary/30">
               <BookMarked className="h-12 w-12" />
             </div>
-            <CardTitle className="text-5xl font-black tracking-tighter text-foreground mb-2">NEU Library</CardTitle>
+            <CardTitle className="text-5xl font-black tracking-tighter text-primary mb-2">NEU Library</CardTitle>
             <CardDescription className="text-muted-foreground text-lg font-medium px-4">
               Access Management Terminal
             </CardDescription>
@@ -91,7 +91,7 @@ export default function LoginPage() {
           </CardContent>
         </Card>
         
-        <p className="text-[11px] font-black uppercase tracking-[0.35em] text-muted-foreground/40 text-center px-8 py-3 rounded-full border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 w-full max-w-[320px] whitespace-nowrap">
+        <p className="text-[11px] font-black uppercase tracking-[0.35em] text-muted-foreground/40 text-center px-8 py-3 rounded-full border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 w-full max-w-[400px] whitespace-nowrap">
           New Era University • Library Systems
         </p>
       </div>

@@ -36,11 +36,11 @@ export default function Header() {
     <header className="sticky top-0 z-[100] w-full bg-background/5 backdrop-blur-3xl border-b border-black/5 dark:border-white/10 flex h-20 items-center gap-4 px-6 md:px-12 transition-all">
       <div className="flex items-center gap-8">
         <Link href="/" className="flex items-center gap-3.5 group transition-opacity hover:opacity-80">
-          <div className="p-2 rounded-xl bg-foreground text-background shadow-md transition-transform group-active:scale-95">
+          <div className="p-2 rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/20 transition-transform group-active:scale-95">
             <BookMarked className="h-5 w-5" />
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-black leading-none tracking-tight text-foreground">NEU Library</span>
+            <span className="text-lg font-black leading-none tracking-tight text-primary">NEU Library</span>
             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-1">Terminal</span>
           </div>
         </Link>
@@ -70,7 +70,6 @@ export default function Header() {
                 </Link>
               )}
             </Button>
-            <span className="h-4 w-[1px] bg-black/10 dark:bg-white/10" />
           </div>
         )}
 
@@ -81,7 +80,7 @@ export default function Header() {
         ) : user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-accent/10 transition-all active:scale-90 p-0 overflow-hidden border border-black/5 dark:border-white/10 shadow-sm">
+              <Button variant="ghost" className="relative h-11 w-11 rounded-full hover:bg-primary/5 transition-all active:scale-90 p-0.5 overflow-hidden border-2 border-primary shadow-sm bg-transparent">
                 <Avatar className="h-full w-full">
                   <AvatarImage src={user.photoURL ?? ''} alt={user.email ?? ''} />
                   <AvatarFallback className="bg-primary text-white font-bold text-xs">{getInitials(user.email)}</AvatarFallback>
