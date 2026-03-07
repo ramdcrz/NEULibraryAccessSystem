@@ -20,7 +20,7 @@
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 90%;
+    --border: 0 0% 88%;
     --input: 0 0% 90%;
     --ring: 231 48% 48%;
     --radius: 1.5rem;
@@ -41,7 +41,7 @@
     --accent: 231 48% 55%;
     --accent-foreground: 0 0% 95%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 95%;
+    --destructive-foreground: 0 0% 100%;
     --border: 0 0% 15%;
     --input: 0 0% 15%;
     --ring: 231 48% 55%;
@@ -62,13 +62,13 @@
 
 .glass {
   @apply backdrop-blur-3xl transition-all duration-300 shadow-none border;
-  background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
 .dark .glass {
   background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .gradient-bg {
@@ -96,23 +96,17 @@
   @apply border-primary/50;
 }
 
-header, main {
-  @apply px-6 md:px-12;
-}
-
-/* Enhanced Light Mode Hover Contrast and Purple Tint */
-.light .light\:hover\:text-primary:hover {
+/* Light Mode Hover Contrast and Brand Purple */
+.light .light-purple-hover:hover {
   color: hsl(var(--primary)) !important;
-}
-
-.light .light\:hover\:bg-primary\/10:hover {
-  background-color: hsl(var(--primary) / 0.12) !important;
+  background-color: hsl(var(--primary) / 0.1) !important;
+  border-color: hsl(var(--primary) / 0.2) !important;
 }
 
 .light .hover\:bg-primary\/\[0\.04\]:hover {
-  background-color: hsl(var(--primary) / 0.1) !important;
+  background-color: hsl(var(--primary) / 0.08) !important;
 }
 
-.light .hover\:bg-black\/5:hover {
-  background-color: rgba(0, 0, 0, 0.06) !important;
+header, main {
+  @apply px-6 md:px-12;
 }

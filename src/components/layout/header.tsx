@@ -50,25 +50,28 @@ export default function Header() {
         <LiveClock />
       </div>
 
-      <div className="ml-auto flex items-center gap-5">
+      <div className="ml-auto flex items-center gap-4">
         {isAdmin && (
-          <Button 
-            variant="ghost" 
-            asChild
-            className="hidden md:flex gap-2 font-black text-[10px] uppercase tracking-widest light:hover:text-primary light:hover:bg-primary/10 dark:hover:bg-white/5 rounded-full px-6 h-10 transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-inner"
-          >
-            {isAdminPage ? (
-              <Link href="/">
-                <LayoutDashboard className="h-3.5 w-3.5" />
-                Logger Mode
-              </Link>
-            ) : (
-              <Link href="/admin">
-                <ShieldCheck className="h-3.5 w-3.5" />
-                Admin Panel
-              </Link>
-            )}
-          </Button>
+          <div className="hidden md:flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              asChild
+              className="flex gap-2 font-black text-[10px] uppercase tracking-widest light-purple-hover dark:hover:bg-white/5 rounded-full px-6 h-10 transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-inner"
+            >
+              {isAdminPage ? (
+                <Link href="/">
+                  <LayoutDashboard className="h-3.5 w-3.5" />
+                  Logger Mode
+                </Link>
+              ) : (
+                <Link href="/admin">
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  Admin Panel
+                </Link>
+              )}
+            </Button>
+            <span className="h-4 w-[1px] bg-black/10 dark:bg-white/10" />
+          </div>
         )}
 
         <ThemeToggle />
