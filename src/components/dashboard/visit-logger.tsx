@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { LoaderCircle, ChevronRight, UserCircle, Briefcase, GraduationCap, BookMarked } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -80,6 +80,7 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
   });
 
   const selectedReason = form.watch('reason');
+  const selectedUserType = form.watch('userType');
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
@@ -112,7 +113,7 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
   }
 
   return (
-    <Card className="glass overflow-hidden">
+    <Card className="glass overflow-hidden border-2 border-white/10">
       <CardHeader className="bg-primary/5 pb-8">
         <div className="flex items-center gap-3 mb-2">
           <div className="p-2 rounded-full bg-primary/20 text-primary">
@@ -134,30 +135,29 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                       className="grid grid-cols-1 sm:grid-cols-3 gap-4"
                     >
                       {userTypes.map((type) => {
                         const Icon = type.icon;
-                        const isSelected = field.value === type.id;
+                        const isSelected = selectedUserType === type.id;
                         return (
-                          <FormLabel
+                          <div
                             key={type.id}
+                            onClick={() => field.onChange(type.id)}
                             className={cn(
-                              "flex flex-col items-center justify-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:bg-accent/5",
+                              "group flex flex-col items-center justify-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]",
                               isSelected 
                                 ? "border-primary bg-primary/5 shadow-inner" 
-                                : "border-border/50 opacity-70"
+                                : "border-border/50 opacity-70 hover:opacity-100 hover:bg-accent/5"
                             )}
                           >
-                            <FormControl>
-                              <RadioGroupItem value={type.id} className="sr-only" />
-                            </FormControl>
-                            <Icon className={cn("h-8 w-8", isSelected ? "text-primary" : "text-muted-foreground")} />
-                            <span className={cn("font-semibold", isSelected ? "text-primary" : "text-muted-foreground")}>
+                            <RadioGroupItem value={type.id} className="sr-only" />
+                            <Icon className={cn("h-8 w-8 transition-colors", isSelected ? "text-primary" : "text-muted-foreground group-hover:text-foreground")} />
+                            <span className={cn("font-bold transition-colors", isSelected ? "text-primary" : "text-muted-foreground group-hover:text-foreground")}>
                               {type.id}
                             </span>
-                          </FormLabel>
+                          </div>
                         );
                       })}
                     </RadioGroup>
@@ -176,7 +176,7 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
                     <FormLabel className="text-lg font-semibold">Purpose of Visit</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger className="h-12 text-base glass border-2">
+                        <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50">
                           <SelectValue placeholder="Select why you are here" />
                         </SelectTrigger>
                       </FormControl>
@@ -203,7 +203,7 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
                       <FormControl>
                         <Input 
                           placeholder="What is the reason for your visit?" 
-                          className="h-12 glass border-2" 
+                          className="h-14 glass border-2 focus-visible:ring-primary/20" 
                           {...field} 
                         />
                       </FormControl>
@@ -216,7 +216,7 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
 
             <Button 
               type="submit" 
-              className="w-full h-14 text-lg font-bold shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98]" 
+              className="w-full h-16 text-xl font-bold shadow-xl transition-all hover:scale-[1.01] active:scale-[0.99] rounded-xl" 
               disabled={isSubmitting}
             >
               {isSubmitting ? (
@@ -224,7 +224,7 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
               ) : (
                 <>
                   Log My Visit
-                  <ChevronRight className="ml-2 h-5 w-5" />
+                  <ChevronRight className="ml-2 h-6 w-6" />
                 </>
               )}
             </Button>
