@@ -19,7 +19,9 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -46,6 +48,19 @@ const colleges = [
   'College of Physical Therapy',
   'College of Respiratory Therapy',
   'School of International Relations',
+];
+
+const offices = [
+  'Registrar\'s Office',
+  'Finance Office',
+  'Human Resources Department',
+  'Library Services',
+  'Information Technology Department',
+  'Student Affairs Office',
+  'Guidance and Counseling',
+  'Health Services',
+  'Property and Supply Office',
+  'Security Office',
 ];
 
 const formSchema = z.object({
@@ -103,8 +118,8 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
 
   return (
     <Card className="glass overflow-hidden border-none shadow-2xl">
-      <CardHeader className="bg-primary/5 pb-10">
-        <div className="flex items-center gap-4 mb-3">
+      <CardHeader className="bg-primary/5 pb-4">
+        <div className="flex items-center gap-4 mb-2">
           <div className="p-3 rounded-2xl bg-primary/10 text-primary shadow-inner">
             <ShieldCheck className="h-7 w-7" />
           </div>
@@ -115,7 +130,7 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
         </div>
       </CardHeader>
       
-      <CardContent className="pt-10 px-8 pb-8">
+      <CardContent className="pt-6 px-8 pb-8">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid gap-8">
@@ -165,11 +180,23 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="rounded-2xl shadow-2xl max-h-[400px]">
-                        {colleges.map((college) => (
-                          <SelectItem key={college} value={college} className="py-4 text-base cursor-pointer">
-                            {college}
-                          </SelectItem>
-                        ))}
+                        <SelectGroup>
+                          <SelectLabel className="px-2 py-2 text-xs font-black uppercase tracking-widest text-muted-foreground bg-muted/30">Colleges</SelectLabel>
+                          {colleges.map((college) => (
+                            <SelectItem key={college} value={college} className="py-3 text-base cursor-pointer">
+                              {college}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                        <Separator className="my-1" />
+                        <SelectGroup>
+                          <SelectLabel className="px-2 py-2 text-xs font-black uppercase tracking-widest text-muted-foreground bg-muted/30">University Offices</SelectLabel>
+                          {offices.map((office) => (
+                            <SelectItem key={office} value={office} className="py-3 text-base cursor-pointer">
+                              {office}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
                       </SelectContent>
                     </Select>
                     <FormMessage />
