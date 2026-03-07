@@ -25,7 +25,7 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
 
-  // Guard the query strictly: Wait until user is confirmed admin in the state
+  // Strictly wait until user is confirmed admin to avoid eager permission denials
   const logsQuery = useMemoFirebase(() => {
     if (!firestore || !user || user.role !== 'admin') return null;
     return query(
@@ -119,18 +119,19 @@ export default function AdminDashboard() {
         {logsError && (
           <Alert variant="destructive" className="glass border-2 border-destructive/20 shadow-lg">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Security Policy Denial</AlertTitle>
+            <AlertTitle>Database Access Error</AlertTitle>
             <AlertDescription className="mt-2 space-y-4">
               <p>
-                The database denied your request. This often happens if a <strong>Composite Index</strong> is missing or if your <strong>role</strong> is not yet fully propagated.
+                We couldn't retrieve the logs. This is usually due to one of two things:
               </p>
-              <div className="flex gap-2">
+              <ul className="list-disc pl-5 space-y-1 text-sm">
+                <li><strong>Missing Index:</strong> Check your browser console (F12) for a clickable link to "create a composite index."</li>
+                <li><strong>Role Propagation:</strong> Ensure your user role in Firestore is set exactly to <code>"admin"</code>.</li>
+              </ul>
+              <div className="flex gap-2 pt-2">
                 <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
                   Refresh Page
                 </Button>
-                <p className="text-xs opacity-70 self-center">
-                  Check F12 console for a clickable index creation link.
-                </p>
               </div>
             </AlertDescription>
           </Alert>

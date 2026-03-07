@@ -13,7 +13,9 @@ service cloud.firestore {
     }
 
     // --- Admin Check ---
-    // We use a direct path check to avoid recursion issues in complex queries
+    // This function performs a document lookup. 
+    // IMPORTANT: The rules for the /users/{userId} path must allow reading 
+    // if isOwner(userId) WITHOUT calling isAdmin() to avoid infinite recursion.
     function isAdmin() {
       return isSignedIn() && 
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
@@ -22,8 +24,13 @@ service cloud.firestore {
     // --- Collection Rules ---
 
     match /users/{userId} {
-      // Allow user to manage their own profile, and admins to manage all profiles
-      allow read, write: if isOwner(userId) || isAdmin();
+      // 1. Allow owners to read their own profile UNCONDITIONALLY to break isAdmin recursion.
+      // 2. Allow owners to write their own profile.
+      allow read, write: if isOwner(userId);
+      
+      // 3. Allow admins to read/write any profile. 
+      // When isAdmin() calls get() on the admin's own doc, rule #1 above will satisfy it.
+      allow read, write: if isAdmin();
 
       match /visit_logs/{visitLogId} {
         // Simple ownership or admin check
@@ -32,7 +39,8 @@ service cloud.firestore {
     }
 
     // --- Collection Group Rules ---
-    // This is critical for the Admin Analytics Dashboard
+    // This is critical for the Admin Analytics Dashboard.
+    // It is placed outside nested matches for clarity.
     match /{path=**}/visit_logs/{visitLogId} {
       allow read: if isAdmin();
     }
