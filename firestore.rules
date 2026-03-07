@@ -36,14 +36,17 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    /** @description Checks if the authenticated user is NOT blocked from the system. */
+    /** @description Checks if the authenticated user is NOT blocked from the system. 
+        Handles cases where the user document might not exist yet for new users. */
     function isNotBlocked() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.is_blocked == false;
+      let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
+      return !exists(userPath) || get(userPath).data.is_blocked == false;
     }
 
     /** @description Checks if the authenticated user has the 'admin' role. */
     function isAdmin() {
-      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
+      return isSignedIn() && exists(userPath) && get(userPath).data.role == 'admin';
     }
 
     /** @description Combines ownership and existence check for updates and deletes. */
@@ -61,9 +64,6 @@ service cloud.firestore {
     /**
      * @description Rules for user profile documents.
      * @path /users/{userId}
-     * @allow (get) If the user is the owner or an admin.
-     * @deny (create) If the userId in the document does not match the auth UID.
-     * @principle Enforces document ownership and relational integrity for user profiles.
      */
     match /users/{userId} {
       allow get: if isOwner(userId) || isAdmin();
@@ -76,9 +76,6 @@ service cloud.firestore {
     /**
      * @description Rules for individual visit log entries nested under a user.
      * @path /users/{userId}/visit_logs/{visitLogId}
-     * @allow (list) If the authenticated user is the parent 'userId'.
-     * @deny (update) If the 'userId' field is modified.
-     * @principle Uses path-based authorization to secure subcollections.
      */
     match /users/{userId}/visit_logs/{visitLogId} {
       allow get: if (isOwner(userId) && isNotBlocked()) || isAdmin();
@@ -91,9 +88,6 @@ service cloud.firestore {
     /**
      * @description Collection Group rules for visit logs to support administrative reporting.
      * @path /{path=**}/visit_logs/{visitLogId}
-     * @allow (list) If the user is an admin.
-     * @deny (list) For all non-admin users to prevent data leakage.
-     * @principle Provides a secure path for broad administrative queries across all users.
      */
     match /{path=**}/visit_logs/{visitLogId} {
       allow read: if isAdmin();
