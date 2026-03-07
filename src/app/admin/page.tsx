@@ -7,7 +7,7 @@ import Header from '@/components/layout/header';
 import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ShieldCheck, History, Database, AlertCircle } from 'lucide-react';
-import { collectionGroup, query, orderBy, limit, Firestore } from 'firebase/firestore';
+import { collectionGroup, query, orderBy } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -28,18 +28,17 @@ export default function AdminDashboard() {
 
   /**
    * We use collectionGroup('visit_logs') because logs are nested under /users/{userId}/visit_logs.
-   * A regular collection() call would only look at the top level, which is empty.
+   * Explicitly hardcoding the collection ID string 'visit_logs' as requested.
    */
   const logsQuery = useMemoFirebase(() => {
     if (!firestore || !user || user.role !== 'admin') return null;
     
-    // Hardcoding 'visit_logs' to ensure it never resolves to the root path
+    // Hardcoded string literal to ensure target is never empty or undefined
     return query(
       collectionGroup(firestore, 'visit_logs'), 
-      orderBy('timestamp', 'desc'),
-      limit(100)
+      orderBy('timestamp', 'desc')
     );
-  }, [firestore, user?.role, user?.uid]);
+  }, [firestore, user?.uid, user?.role]);
 
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection(logsQuery);
 
@@ -74,10 +73,10 @@ export default function AdminDashboard() {
                 </p>
                 <ol className="list-decimal pl-5 space-y-2 text-sm">
                   <li>
-                    <strong>Index Required:</strong> collectionGroup queries with sorting require a <strong>Composite Index</strong>. Check your browser console (F12) for the link.
+                    <strong>Security Rules Check:</strong> Ensure that <code>collectionGroup</code> queries are permitted for your user role.
                   </li>
                   <li>
-                    <strong>Verify Role:</strong> Ensure your user document at <code>/users/{user.uid}</code> has <code>role: "admin"</code>.
+                    <strong>Index Required:</strong> If the error mentions a missing index, check your browser console (F12) for the link to create the <strong>Composite Index</strong>.
                   </li>
                 </ol>
               </div>
@@ -92,7 +91,7 @@ export default function AdminDashboard() {
                 <History className="h-5 w-5 text-primary" />
                 Live Visit Logs
               </CardTitle>
-              <CardDescription>Recent activity across all departments (Last 100 logs)</CardDescription>
+              <CardDescription>Recent activity across all departments</CardDescription>
             </div>
           </CardHeader>
           <CardContent className="p-0">

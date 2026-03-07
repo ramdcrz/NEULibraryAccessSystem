@@ -85,11 +85,13 @@ export function useCollection<T = any>(
         setIsLoading(false);
       },
       (error: FirestoreError) => {
-        // This logic extracts the path from either a ref or a query
+        // This logic extracts the path from either a ref or a query.
+        // CollectionGroup queries often have an empty canonical path string, 
+        // which we now append a clearer indicator for to avoid confusion with the root database.
         const path: string =
           memoizedTargetRefOrQuery.type === 'collection'
             ? (memoizedTargetRefOrQuery as CollectionReference).path
-            : (memoizedTargetRefOrQuery as unknown as InternalQuery)._query.path.canonicalString()
+            : (memoizedTargetRefOrQuery as unknown as InternalQuery)._query.path.canonicalString() || '[CollectionGroup]';
 
         const contextualError = new FirestorePermissionError({
           operation: 'list',
