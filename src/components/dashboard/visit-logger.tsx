@@ -122,7 +122,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
 
   if (isLogged) {
     return (
-      <Card className="glass p-12 text-center animate-in zoom-in-95 duration-500 rounded-[3rem] border border-white/20 shadow-2xl">
+      <Card className="glass p-12 text-center animate-in zoom-in-95 duration-500 rounded-[3rem] border border-black/5 dark:border-white/20 shadow-2xl">
         <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-green-500/10 text-green-500 shadow-inner">
           <CheckCircle2 className="h-12 w-12" />
         </div>
@@ -143,11 +143,11 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   }
 
   return (
-    <Card className="glass rounded-[3rem] overflow-hidden border border-white/20 shadow-2xl">
+    <Card className="glass rounded-[3rem] overflow-hidden border border-black/5 dark:border-white/20 shadow-2xl">
       <CardHeader className="bg-white/5 dark:bg-white/5 pb-10 pt-10 px-10 border-b border-black/5 dark:border-white/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5">
-            <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-white/20 shadow-inner">
+            <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-black/5 dark:border-white/20 shadow-inner">
               <Library className="h-8 w-8" />
             </div>
             <div>
@@ -155,7 +155,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
               <CardDescription className="text-sm font-medium opacity-60 tracking-tight text-muted-foreground">Identity verification terminal</CardDescription>
             </div>
           </div>
-          <Badge className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.25em] bg-primary text-primary-foreground rounded-full shadow-lg shadow-primary/20">
+          <Badge className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.25em] bg-primary text-primary-foreground rounded-full shadow-lg shadow-primary/20 border-none">
             {user.user_type}
           </Badge>
         </div>
@@ -165,8 +165,8 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
-              <div className="md:col-span-2 p-6 rounded-3xl glass flex flex-col items-start justify-center text-left border border-white/20 hover:bg-white/10 transition-all relative overflow-hidden group">
-                <div className="absolute -bottom-8 -right-8 opacity-[0.03] group-hover:opacity-[0.07] transition-all duration-700 rotate-12 group-hover:rotate-6">
+              <div className="md:col-span-2 p-6 rounded-3xl glass flex flex-col items-start justify-center text-left border border-black/5 dark:border-white/20 hover:bg-black/5 transition-all relative overflow-hidden group">
+                <div className="absolute -bottom-12 -right-12 opacity-[0.03] group-hover:opacity-[0.07] transition-all duration-700 rotate-12 group-hover:rotate-6">
                   <User className="h-32 w-32" />
                 </div>
                 <div className="flex items-center gap-2 mb-2 text-primary/60 relative z-10">
@@ -175,8 +175,8 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
                 </div>
                 <p className="text-lg font-black text-foreground relative z-10">{user.user_type}</p>
               </div>
-              <div className="md:col-span-3 p-6 rounded-3xl glass border border-white/20 hover:bg-white/10 transition-all relative overflow-hidden group">
-                <div className="absolute -bottom-8 -right-8 opacity-[0.03] group-hover:opacity-[0.07] transition-all duration-700 rotate-12 group-hover:rotate-6">
+              <div className="md:col-span-3 p-6 rounded-3xl glass border border-black/5 dark:border-white/20 hover:bg-black/5 transition-all relative overflow-hidden group">
+                <div className="absolute -bottom-12 -right-12 opacity-[0.03] group-hover:opacity-[0.07] transition-all duration-700 rotate-12 group-hover:rotate-6">
                   <School className="h-32 w-32" />
                 </div>
                 <div className="flex items-center gap-2 mb-2 text-primary/60 relative z-10">
@@ -205,7 +205,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
                         <SelectValue placeholder="Select purpose..." />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="rounded-[2rem] border-white/20 glass shadow-2xl">
+                    <SelectContent className="rounded-[2rem] border-black/5 dark:border-white/20 glass shadow-2xl">
                       {visitReasons.map((reason) => (
                         <SelectItem key={reason} value={reason} className="py-4 px-6 text-base font-bold cursor-pointer rounded-xl hover:bg-primary/5">
                           {reason}

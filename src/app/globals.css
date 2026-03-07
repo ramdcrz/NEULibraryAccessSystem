@@ -62,8 +62,8 @@
 
 .glass {
   @apply backdrop-blur-3xl transition-all duration-300 shadow-none border;
-  background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 .dark .glass {
@@ -87,8 +87,8 @@
 }
 
 .hover-glass:hover {
-  background: rgba(255, 255, 255, 0.95);
   @apply border-primary/20;
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .dark .hover-glass:hover {
@@ -102,8 +102,11 @@ header, main {
 
 /* Enhanced Light Mode Hover Contrast */
 .light .hover\:bg-primary\/\[0\.04\]:hover {
-  background-color: hsl(var(--primary) / 0.08);
+  background-color: hsl(var(--primary) / 0.1);
 }
 .light .hover\:bg-accent\/10:hover {
-  background-color: hsl(var(--primary) / 0.05);
+  background-color: hsl(var(--primary) / 0.08);
+}
+.light .hover\:bg-black\/5:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }

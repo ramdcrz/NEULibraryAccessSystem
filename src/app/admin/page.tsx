@@ -250,8 +250,8 @@ export default function AdminDashboard() {
             { label: 'Today', val: stats.today, icon: Clock },
             { label: 'Verified Reach', val: stats.unique, icon: Users }
           ].map((stat, i) => (
-            <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group border border-white/20">
-              <div className="absolute -bottom-8 -right-8 opacity-[0.03] group-hover:opacity-[0.07] transition-all duration-700 rotate-12 group-hover:rotate-6">
+            <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group border border-black/5 dark:border-white/20">
+              <div className="absolute -bottom-12 -right-12 opacity-[0.03] group-hover:opacity-[0.07] transition-all duration-700 rotate-12 group-hover:rotate-6">
                 <stat.icon className="h-32 w-32" />
               </div>
               <CardDescription className="text-[11px] font-black uppercase tracking-[0.3em] opacity-50 mb-3 relative z-10">{stat.label}</CardDescription>
@@ -261,7 +261,7 @@ export default function AdminDashboard() {
         </div>
 
         {showFilters && (
-          <Card className="glass rounded-[3rem] p-10 border border-white/20">
+          <Card className="glass rounded-[3rem] p-10 border border-black/5 dark:border-white/20">
             <div className="flex flex-col lg:flex-row gap-8 items-end">
               <div className="flex-1 w-full space-y-4">
                 <label className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground px-1 flex items-center gap-2">
@@ -369,7 +369,7 @@ export default function AdminDashboard() {
           </Alert>
         )}
 
-        <Card className="glass overflow-hidden rounded-[3rem] border border-white/20">
+        <Card className="glass overflow-hidden rounded-[3rem] border border-black/5 dark:border-white/20">
           <CardHeader className="p-10 border-b border-black/5 dark:border-white/10 bg-black/5">
             <div className="flex items-center gap-5">
               <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-black/5 dark:border-white/10 shadow-inner">
