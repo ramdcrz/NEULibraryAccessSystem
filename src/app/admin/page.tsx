@@ -6,8 +6,8 @@ import { useAuth } from '@/hooks/use-auth';
 import Header from '@/components/layout/header';
 import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ShieldCheck, Info, AlertCircle } from 'lucide-react';
-import { collectionGroup, query, orderBy } from 'firebase/firestore';
+import { ShieldCheck, Info, AlertCircle, Database } from 'lucide-react';
+import { collectionGroup, query, orderBy, limit } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -26,14 +26,18 @@ export default function AdminDashboard() {
     }
   }, [user, loading, router]);
 
-  // Simplified Query: Fetch all logs across the database ordered by time
+  // Simplified and Robust Query
   const logsQuery = useMemoFirebase(() => {
-    // Only attempt query if we are fully loaded and confirmed as an admin
+    // ONLY attempt query if we are fully loaded and confirmed as an admin
     if (!firestore || loading || !user || user.role !== 'admin') return null;
     
+    // We start with a simple sorted query. 
+    // If this fails with a Permission error, it's a Rule issue.
+    // If it fails with an Index error, it will provide the correct link in F12 console.
     return query(
       collectionGroup(firestore, 'visit_logs'), 
-      orderBy('timestamp', 'desc')
+      orderBy('timestamp', 'desc'),
+      limit(50)
     );
   }, [firestore, loading, user?.role]);
 
@@ -54,7 +58,7 @@ export default function AdminDashboard() {
           </div>
           <h1 className="text-4xl font-black tracking-tight">Visit Monitor</h1>
           <p className="text-muted-foreground text-lg">
-            Direct real-time stream of all library visit entries.
+            Real-time administrative view of all library access logs.
           </p>
         </div>
 
@@ -64,16 +68,24 @@ export default function AdminDashboard() {
             <AlertTitle className="text-lg font-bold">Database Access Error</AlertTitle>
             <AlertDescription className="mt-4 space-y-6">
               <div className="bg-destructive/10 p-6 rounded-2xl border border-destructive/20 text-foreground">
-                <p className="font-bold flex items-center gap-2 mb-4 text-lg text-destructive">
-                  <Info className="h-5 w-5" />
-                  Crucial Step: Check Console (F12)
+                <p className="font-bold flex items-center gap-2 mb-4 text-lg">
+                  <Database className="h-5 w-5" />
+                  Resolution Steps:
                 </p>
-                <p className="mb-4 leading-relaxed">
-                  If you see "Missing or insufficient permissions," ensure your account is correctly set to <strong>role: "admin"</strong> in the Firestore Console.
-                </p>
-                <p className="mb-4 leading-relaxed">
-                  If the error mentions <strong>"The query requires an index"</strong>, click the unique link provided in your browser console (F12) to generate the composite index.
-                </p>
+                <ol className="list-decimal pl-5 space-y-4">
+                  <li>
+                    <strong>Check the Console:</strong> Press <strong>F12</strong> and look for a red error message.
+                  </li>
+                  <li>
+                    <strong>Create Index:</strong> If you see "The query requires an index," <strong>click the link</strong> provided in that console message.
+                  </li>
+                  <li>
+                    <strong>Verify Scope:</strong> When creating the index manually, ensure the <strong>Query Scope</strong> is set to <strong>"Collection Group"</strong> (not just "Collection").
+                  </li>
+                  <li>
+                    <strong>Permissions:</strong> If the error is still "Missing Permissions," double-check that your UID <code>{user.uid}</code> has <code>role: "admin"</code> in the <code>users</code> collection.
+                  </li>
+                </ol>
               </div>
             </AlertDescription>
           </Alert>
@@ -82,17 +94,17 @@ export default function AdminDashboard() {
         <Card className="glass border-2 border-white/10 shadow-xl overflow-hidden">
           <CardHeader className="border-b border-white/5 bg-white/5">
             <CardTitle className="text-xl font-bold">All Logs (Sorted by Date)</CardTitle>
-            <CardDescription>Streaming data from /visit_logs collection group</CardDescription>
+            <CardDescription>Streaming logs from across all user profiles</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             {logsLoading ? (
               <div className="p-12 text-center text-muted-foreground animate-pulse">
-                Establishing database connection...
+                Establishing secure connection...
               </div>
             ) : !allLogs || allLogs.length === 0 ? (
               <div className="p-20 text-center space-y-4">
                 <h3 className="text-xl font-bold">No logs found</h3>
-                <p className="text-muted-foreground">The database is currently empty or the query is pending initialization.</p>
+                <p className="text-muted-foreground">The system is ready, but no visit entries were found in the database.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -103,7 +115,7 @@ export default function AdminDashboard() {
                       <TableHead className="font-bold">Email</TableHead>
                       <TableHead className="font-bold">User Type</TableHead>
                       <TableHead className="font-bold">College / Office</TableHead>
-                      <TableHead className="font-bold">Reason for Visit</TableHead>
+                      <TableHead className="font-bold">Reason</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -119,7 +131,7 @@ export default function AdminDashboard() {
                           </Badge>
                         </TableCell>
                         <TableCell className="max-w-[200px] truncate">{log.college_office}</TableCell>
-                        <TableCell className="max-w-[400px] leading-tight text-muted-foreground text-sm">
+                        <TableCell className="max-w-[300px] truncate text-muted-foreground">
                           {log.reason}
                         </TableCell>
                       </TableRow>

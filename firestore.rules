@@ -7,29 +7,28 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Helper: Get user role
-    // This lookup is protected by the base case ownership rule below
+    // Helper: Get user role (Optimized for non-recursion)
     function isAdmin() {
       return isSignedIn() && 
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // 1. COLLECTION GROUP RULE: Matches all 'visit_logs' collections everywhere.
-    // This is placed here for clear, top-level evaluation.
+    // 1. COLLECTION GROUP RULE
+    // This MUST be top-level and explicitly allow 'list' for the group query to work.
     match /{path=**}/visit_logs/{logId} {
       allow read: if isAdmin();
     }
 
     // 2. USER DOCUMENT RULES
     match /users/{userId} {
-      // BASE RULE: A user can always read/write their own document.
-      // This MUST be evaluated first to break recursion during isAdmin() checks.
+      // BASE RULE: Ownership allows read/write without calling isAdmin()
+      // This breaks the recursion loop during role lookups.
       allow read, write: if isSignedIn() && request.auth.uid == userId;
 
-      // ALLOW admins to manage any user profile.
+      // Allow admins to manage profiles
       allow read, write: if isAdmin();
 
-      // Rules for nested visit logs.
+      // Rules for nested visit logs (for direct access)
       match /visit_logs/{logId} {
         allow read, write: if isSignedIn() && (
           request.auth.uid == userId || isAdmin()
