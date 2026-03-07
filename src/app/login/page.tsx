@@ -58,10 +58,10 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 gradient-bg">
-      <div className="w-full max-w-md flex flex-col items-center justify-center gap-12">
-        <Card className="w-full glass border animate-in fade-in zoom-in-95 duration-700">
+      <div className="w-full max-w-md flex flex-col items-center justify-center gap-10">
+        <Card className="w-full glass border border-white/20 animate-in fade-in zoom-in-95 duration-700 shadow-2xl">
           <CardHeader className="text-center pb-12 pt-10 px-10">
-            <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-primary text-white transition-transform hover:rotate-6">
+            <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-primary text-white transition-transform hover:rotate-6 shadow-lg shadow-primary/30">
               <BookMarked className="h-12 w-12" />
             </div>
             <CardTitle className="text-5xl font-black tracking-tighter text-foreground mb-2">NEU Library</CardTitle>
@@ -73,7 +73,7 @@ export default function LoginPage() {
             <Button
               onClick={handleSignIn}
               disabled={isAuthenticating}
-              className="w-full h-16 text-lg font-black transition-all hover:bg-black/5 hover:border-black/20 border-2 rounded-2xl gap-4 active:scale-95"
+              className="w-full h-16 text-lg font-black transition-all hover:bg-primary/[0.05] hover:border-primary/20 border-2 rounded-2xl gap-4 active:scale-95 shadow-sm"
               variant="outline"
             >
               {isAuthenticating ? (
@@ -81,7 +81,7 @@ export default function LoginPage() {
               ) : (
                 <GoogleIcon />
               )}
-              <span>Official University Sign In</span>
+              <span className="text-foreground">Official University Sign In</span>
             </Button>
             
             <div className="mt-12 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
@@ -91,7 +91,7 @@ export default function LoginPage() {
           </CardContent>
         </Card>
         
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 text-center whitespace-nowrap">
+        <p className="text-[11px] font-black uppercase tracking-[0.35em] text-muted-foreground/40 text-center whitespace-nowrap px-4 py-2 rounded-full border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5">
           New Era University • Library Systems
         </p>
       </div>

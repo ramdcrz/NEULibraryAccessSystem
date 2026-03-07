@@ -227,7 +227,7 @@ export default function AdminDashboard() {
             <Button
               variant={showFilters ? "secondary" : "outline"}
               onClick={() => setShowFilters(!showFilters)}
-              className="h-14 px-8 rounded-2xl font-black gap-2 transition-all glass"
+              className="h-14 px-8 rounded-2xl font-black gap-2 transition-all glass hover:bg-primary/5"
             >
               <Search className="h-4 w-4" />
               {showFilters ? 'Hide Filters' : 'Filter View'}
@@ -236,7 +236,7 @@ export default function AdminDashboard() {
             <Button 
               onClick={exportToPDF} 
               disabled={isExporting || logsLoading || filteredLogs.length === 0}
-              className="h-14 px-8 rounded-2xl font-black gap-2 bg-primary text-primary-foreground"
+              className="h-14 px-8 rounded-2xl font-black gap-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
             >
               {isExporting ? (
                 <LoaderCircle className="h-4 w-4 animate-spin" />
@@ -255,19 +255,19 @@ export default function AdminDashboard() {
             { label: 'Today', val: stats.today, icon: Clock },
             { label: 'Verified Reach', val: stats.unique, icon: Users }
           ].map((stat, i) => (
-            <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group">
-              <div className="absolute -top-4 -right-4 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-all duration-500">
-                <stat.icon className="h-20 w-20" />
+            <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group border border-white/20">
+              <div className="absolute -bottom-8 -right-8 opacity-[0.03] group-hover:opacity-[0.07] transition-all duration-700 rotate-12 group-hover:rotate-6">
+                <stat.icon className="h-32 w-32" />
               </div>
-              <CardDescription className="text-[11px] font-black uppercase tracking-[0.3em] opacity-50 mb-3">{stat.label}</CardDescription>
-              <CardTitle className="text-5xl font-black tracking-tighter">{stat.val}</CardTitle>
+              <CardDescription className="text-[11px] font-black uppercase tracking-[0.3em] opacity-50 mb-3 relative z-10">{stat.label}</CardDescription>
+              <CardTitle className="text-5xl font-black tracking-tighter relative z-10">{stat.val}</CardTitle>
             </Card>
           ))}
         </div>
 
         {/* Filter Controls */}
         {showFilters && (
-          <Card className="glass rounded-[3rem] p-10">
+          <Card className="glass rounded-[3rem] p-10 border border-white/20">
             <div className="flex flex-col lg:flex-row gap-8 items-end">
               <div className="flex-1 w-full space-y-4">
                 <label className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground px-1 flex items-center gap-2">
@@ -301,7 +301,7 @@ export default function AdminDashboard() {
                         {startDate ? format(startDate, "PPP") : "Select date"}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 rounded-[2rem] border glass" align="start">
+                    <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start">
                       <Calendar
                         mode="single"
                         selected={startDate}
@@ -337,7 +337,7 @@ export default function AdminDashboard() {
                         {endDate ? format(endDate, "PPP") : "Select date"}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 rounded-[2rem] border glass" align="start">
+                    <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start">
                       <Calendar
                         mode="single"
                         selected={endDate}
@@ -366,7 +366,7 @@ export default function AdminDashboard() {
         )}
 
         {logsError && (
-          <Alert variant="destructive" className="glass rounded-[3rem] p-10">
+          <Alert variant="destructive" className="glass rounded-[3rem] p-10 border border-destructive/20 shadow-xl">
             <AlertCircle className="h-8 w-8" />
             <AlertTitle className="text-2xl font-black ml-4">Terminal Error</AlertTitle>
             <AlertDescription className="mt-4 text-lg font-bold opacity-80">
@@ -375,10 +375,10 @@ export default function AdminDashboard() {
           </Alert>
         )}
 
-        <Card className="glass overflow-hidden rounded-[3rem]">
+        <Card className="glass overflow-hidden rounded-[3rem] border border-white/20">
           <CardHeader className="p-10 border-b border-black/5 dark:border-white/10 bg-black/5">
             <div className="flex items-center gap-5">
-              <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-black/5 dark:border-white/10">
+              <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-black/5 dark:border-white/10 shadow-inner">
                 <Filter className="h-7 w-7" />
               </div>
               <div>
@@ -405,7 +405,7 @@ export default function AdminDashboard() {
                   <Search className="h-12 w-12 text-muted-foreground opacity-20" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-3xl font-black tracking-tight">Zero Activity Found</h3>
+                  <h3 className="text-3xl font-black tracking-tight text-foreground">Zero Activity Found</h3>
                   <p className="text-muted-foreground text-lg font-bold opacity-70">Adjust filters to display terminal data.</p>
                 </div>
               </div>
@@ -414,11 +414,11 @@ export default function AdminDashboard() {
                 <Table>
                   <TableHeader className="bg-black/5">
                     <TableRow className="hover:bg-transparent border-black/5 dark:border-white/10">
-                      <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10">Timestamp</TableHead>
-                      <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16">Verified Identity</TableHead>
-                      <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16">Classification</TableHead>
-                      <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16">Purpose</TableHead>
-                      <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10">Control</TableHead>
+                      <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10 text-foreground">Timestamp</TableHead>
+                      <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Verified Identity</TableHead>
+                      <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Classification</TableHead>
+                      <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Purpose</TableHead>
+                      <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10 text-foreground">Control</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -426,7 +426,7 @@ export default function AdminDashboard() {
                       const isBlocked = userStatusMap[log.uid] || false;
                       
                       return (
-                        <TableRow key={log.id} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10 group">
+                        <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10 group">
                           <TableCell className="pl-10 py-6 whitespace-nowrap font-bold text-muted-foreground/70">
                             {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, h:mm a') : '...'}
                           </TableCell>
@@ -437,7 +437,7 @@ export default function AdminDashboard() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant="outline" className="w-32 justify-center rounded-xl py-1 font-black text-[10px] uppercase tracking-widest bg-black/5 border-black/5 dark:border-white/10 text-primary">
+                            <Badge variant="outline" className="w-32 justify-center rounded-xl py-1.5 font-black text-[10px] uppercase tracking-widest bg-black/5 border-black/5 dark:border-white/10 text-primary shadow-sm">
                               {log.userType}
                             </Badge>
                           </TableCell>
@@ -448,9 +448,9 @@ export default function AdminDashboard() {
                             <Button
                               variant="ghost"
                               className={cn(
-                                "h-11 w-32 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all border",
+                                "h-11 w-32 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all border shadow-sm",
                                 isBlocked 
-                                  ? "text-green-600 bg-green-500/5 border-green-500/10 hover:bg-green-500/10" 
+                                  ? "text-green-600 bg-green-500/10 border-green-500/20 hover:bg-green-500/20" 
                                   : "text-destructive bg-destructive/5 border-destructive/10 hover:bg-destructive/10"
                               )}
                               onClick={() => handleToggleBlock(log.uid, log.email)}

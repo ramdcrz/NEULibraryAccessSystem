@@ -33,10 +33,10 @@ export default function Header() {
   const isAdminPage = pathname?.startsWith('/admin');
 
   return (
-    <header className="sticky top-0 z-[100] w-full bg-background/5 backdrop-blur-3xl border-b border-black/5 dark:border-white/5 flex h-20 items-center gap-4 px-6 md:px-12 transition-all">
+    <header className="sticky top-0 z-[100] w-full bg-background/5 backdrop-blur-3xl border-b border-black/5 dark:border-white/10 flex h-20 items-center gap-4 px-6 md:px-12 transition-all">
       <div className="flex items-center gap-8">
         <Link href="/" className="flex items-center gap-3.5 group transition-opacity hover:opacity-80">
-          <div className="p-2 rounded-xl bg-foreground text-background shadow-sm transition-transform group-active:scale-95">
+          <div className="p-2 rounded-xl bg-foreground text-background shadow-md transition-transform group-active:scale-95">
             <BookMarked className="h-5 w-5" />
           </div>
           <div className="flex flex-col">
@@ -55,7 +55,7 @@ export default function Header() {
           <Button 
             variant="ghost" 
             asChild
-            className="hidden md:flex gap-2 font-black text-[10px] uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 rounded-full px-6 h-10 transition-all"
+            className="hidden md:flex gap-2 font-black text-[10px] uppercase tracking-widest hover:bg-primary/[0.08] dark:hover:bg-white/5 rounded-full px-6 h-10 transition-all border border-transparent hover:border-primary/10"
           >
             {isAdminPage ? (
               <Link href="/">
@@ -78,14 +78,14 @@ export default function Header() {
         ) : user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-accent/10 transition-all active:scale-90 p-0 overflow-hidden border border-black/5 dark:border-white/10">
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-accent/10 transition-all active:scale-90 p-0 overflow-hidden border border-black/5 dark:border-white/10 shadow-sm">
                 <Avatar className="h-full w-full">
                   <AvatarImage src={user.photoURL ?? ''} alt={user.email ?? ''} />
                   <AvatarFallback className="bg-primary text-white font-bold text-xs">{getInitials(user.email)}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-72 p-2 rounded-[2rem] border glass mt-4 overflow-hidden" align="end">
+            <DropdownMenuContent className="w-72 p-2 rounded-[2rem] border glass mt-4 shadow-2xl overflow-hidden border-white/20" align="end">
               <DropdownMenuLabel className="font-normal p-5">
                 <div className="flex items-center gap-4">
                   <Avatar className="h-14 w-14 border border-black/5 dark:border-white/10 shadow-sm">
@@ -102,7 +102,7 @@ export default function Header() {
                   </div>
                 </div>
                 {user.user_type && (
-                  <Badge variant="secondary" className="mt-5 w-full justify-center py-2.5 rounded-2xl text-foreground/70 font-black uppercase text-[8px] tracking-[0.25em] border-none bg-primary/5">
+                  <Badge variant="secondary" className="mt-5 w-full justify-center py-2.5 rounded-2xl text-foreground/70 font-black uppercase text-[8px] tracking-[0.25em] border-none bg-primary/10">
                     Verified {user.user_type}
                   </Badge>
                 )}
