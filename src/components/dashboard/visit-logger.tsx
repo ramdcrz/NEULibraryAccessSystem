@@ -22,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -31,12 +30,12 @@ import { addVisitLog } from '@/lib/firebase/firestore';
 import type { AuthenticatedUser } from '@/contexts/auth-provider';
 import { cn } from '@/lib/utils';
 
+// Sprint 2: Specified Reasons for Visit
 const visitReasons = [
+  'Reading',
   'Research',
-  'Borrow/Return Books',
-  'Use Computer',
-  'Study',
-  'Other',
+  'Computer Use',
+  'Studying',
 ];
 
 const userTypes = [
@@ -52,15 +51,6 @@ const formSchema = z.object({
   reason: z.string({
     required_error: 'Please select a reason for your visit.',
   }),
-  otherReason: z.string().optional(),
-}).refine((data) => {
-  if (data.reason === 'Other' && (!data.otherReason || data.otherReason.trim() === '')) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Please specify your reason.",
-  path: ["otherReason"],
 });
 
 type VisitLoggerProps = {
@@ -76,11 +66,9 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
     defaultValues: {
       userType: 'Student',
       reason: '',
-      otherReason: '',
     }
   });
 
-  const selectedReason = form.watch('reason');
   const selectedUserType = form.watch('userType');
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
@@ -91,23 +79,23 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
       }
       
       const entryDate = new Date().toISOString().split('T')[0];
-      const finalReason = data.reason === 'Other' ? data.otherReason! : data.reason;
 
       addVisitLog({
         userId: user.uid,
         email: user.email!,
         userType: data.userType.toLowerCase() as any,
-        reason: finalReason,
+        reason: data.reason,
         entryDate: entryDate,
       });
 
+      // Sprint 2: Specified Success Message
       toast({
-        title: 'Success!',
-        description: 'Your visit has been logged. Have a great day!',
+        title: 'Welcome to NEU Library!',
+        description: 'Your visit has been logged successfully. Enjoy your time!',
       });
       form.reset();
     } catch (error) {
-      console.error('Failed to initiate log submission:', error);
+      console.error('Failed to log visit:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -122,7 +110,9 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
           </div>
           <CardTitle className="text-2xl font-bold tracking-tight">Log Library Visit</CardTitle>
         </div>
-        <CardDescription className="text-base text-muted-foreground/80">Quickly record your entry by selecting your role and purpose.</CardDescription>
+        <CardDescription className="text-base text-muted-foreground/80">
+          Affiliated with: <span className="text-primary font-semibold">{user.college_office}</span>
+        </CardDescription>
       </CardHeader>
       <CardContent className="pt-8 px-6 pb-6">
         <Form {...form}>
@@ -174,52 +164,30 @@ export default function VisitLogger({ user }: VisitLoggerProps) {
               )}
             />
 
-            <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="reason"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="text-lg font-semibold text-foreground">Purpose of Visit</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50 focus:ring-primary/20">
-                          <SelectValue placeholder="Select why you are here" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="glass">
-                        {visitReasons.map((reason) => (
-                          <SelectItem key={reason} value={reason} className="py-3 text-base">
-                            {reason}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {selectedReason === 'Other' && (
-                <FormField
-                  control={form.control}
-                  name="otherReason"
-                  render={({ field }) => (
-                    <FormItem className="animate-in fade-in slide-in-from-top-2 duration-300">
-                      <FormLabel className="text-sm font-medium">Please specify</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="What is the reason for your visit?" 
-                          className="h-14 glass border-2 focus-visible:ring-primary/20 transition-all" 
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <FormField
+              control={form.control}
+              name="reason"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-lg font-semibold text-foreground">Reason for Visit</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="h-14 text-base glass border-2 transition-all hover:border-primary/50 focus:ring-primary/20">
+                        <SelectValue placeholder="What brings you to the library today?" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="glass">
+                      {visitReasons.map((reason) => (
+                        <SelectItem key={reason} value={reason} className="py-3 text-base">
+                          {reason}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
 
             <Button 
               type="submit" 

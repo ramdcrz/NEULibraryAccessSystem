@@ -2,6 +2,7 @@ import {
   doc,
   getDoc,
   setDoc,
+  updateDoc,
   addDoc,
   collection,
   serverTimestamp,
@@ -46,6 +47,19 @@ export function createUserDoc(uid: string, data: Omit<UserProfile, 'id' | 'creat
       path: userRef.path,
       operation: 'create',
       requestResourceData: payload,
+    }));
+  });
+}
+
+// Update a user document in Firestore (Non-blocking)
+export function updateUserDoc(uid: string, data: Partial<UserProfile>) {
+  const userRef = doc(db, 'users', uid);
+  
+  updateDoc(userRef, data).catch(async (error) => {
+    errorEmitter.emit('permission-error', new FirestorePermissionError({
+      path: userRef.path,
+      operation: 'update',
+      requestResourceData: data,
     }));
   });
 }
