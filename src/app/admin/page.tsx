@@ -7,7 +7,7 @@ import Header from '@/components/layout/header';
 import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ShieldCheck, Users, BarChart3, History, Search, Calendar as CalendarIcon, TrendingUp, AlertCircle } from 'lucide-react';
-import { collectionGroup, query, orderBy, limit } from 'firebase/firestore';
+import { collectionGroup, query, orderBy, limit, Timestamp } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
@@ -25,14 +25,21 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
 
-  // Strictly wait until user is confirmed admin to avoid eager permission denials
+  // We wait until the user object is fully loaded AND role is 'admin'
+  // before we even define the query. This prevents eager permission denials.
   const logsQuery = useMemoFirebase(() => {
     if (!firestore || !user || user.role !== 'admin') return null;
-    return query(
-      collectionGroup(firestore, 'visit_logs'), 
-      orderBy('timestamp', 'desc'), 
-      limit(200)
-    );
+    
+    try {
+      return query(
+        collectionGroup(firestore, 'visit_logs'), 
+        orderBy('timestamp', 'desc'), 
+        limit(300)
+      );
+    } catch (e) {
+      console.error("Query construction failed:", e);
+      return null;
+    }
   }, [firestore, user?.role, user?.uid]);
 
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection<VisitLog>(logsQuery);
@@ -47,16 +54,17 @@ export default function AdminDashboard() {
     }
   }, [user, loading, router]);
 
-  // Derived filtered data
   const filteredLogs = useMemo(() => {
     if (!allLogs) return [];
     
     return allLogs.filter(log => {
-      const matchesSearch = searchQuery === '' || log.email.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = searchQuery === '' || 
+        log.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (log.college_office && log.college_office.toLowerCase().includes(searchQuery.toLowerCase()));
       
       let matchesDate = true;
-      if (log.timestamp) {
-        const logDate = log.timestamp.toDate();
+      if (log.timestamp && dateFilter !== 'all') {
+        const logDate = log.timestamp instanceof Timestamp ? log.timestamp.toDate() : (log.timestamp as any).toDate?.() || new Date(log.timestamp);
         const now = new Date();
         
         if (dateFilter === 'today') {
@@ -87,7 +95,9 @@ export default function AdminDashboard() {
     });
 
     const getTop = (freq: Record<string, number>) => {
-      return Object.entries(freq).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
+      const entries = Object.entries(freq);
+      if (entries.length === 0) return 'N/A';
+      return entries.sort((a, b) => b[1] - a[1])[0][0];
     };
 
     return {
@@ -112,7 +122,7 @@ export default function AdminDashboard() {
           </div>
           <h1 className="text-4xl font-black tracking-tight">Library Analytics</h1>
           <p className="text-muted-foreground text-lg">
-            Monitor traffic and analyze visitor trends in real-time.
+            Monitor library traffic and analyze visitor trends.
           </p>
         </div>
 
@@ -122,11 +132,14 @@ export default function AdminDashboard() {
             <AlertTitle>Database Access Error</AlertTitle>
             <AlertDescription className="mt-2 space-y-4">
               <p>
-                We couldn't retrieve the logs. This is usually due to one of two things:
+                We encountered a problem retrieving the visitor logs:
               </p>
-              <ul className="list-disc pl-5 space-y-1 text-sm">
-                <li><strong>Missing Index:</strong> Check your browser console (F12) for a clickable link to "create a composite index."</li>
-                <li><strong>Role Propagation:</strong> Ensure your user role in Firestore is set exactly to <code>"admin"</code>.</li>
+              <div className="bg-destructive/10 p-3 rounded-md text-xs font-mono mb-4 overflow-auto">
+                {logsError.message}
+              </div>
+              <ul className="list-disc pl-5 space-y-2 text-sm">
+                <li><strong>Check Composite Index:</strong> Look at your browser console (F12) for a link to "create a composite index." This is required for sorting logs.</li>
+                <li><strong>Role Verification:</strong> Ensure your user document has <code>role: "admin"</code> in the Firestore console.</li>
               </ul>
               <div className="flex gap-2 pt-2">
                 <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
@@ -141,7 +154,7 @@ export default function AdminDashboard() {
           <Card className="glass border-2 border-white/10 shadow-lg">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Today's Traffic</CardTitle>
-              <div className="p-2 rounded-xl bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+              <div className="p-2 rounded-xl bg-primary/10 text-primary">
                 <Users className="h-5 w-5" />
               </div>
             </CardHeader>
@@ -154,26 +167,26 @@ export default function AdminDashboard() {
           <Card className="glass border-2 border-white/10 shadow-lg">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Top College</CardTitle>
-              <div className="p-2 rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
+              <div className="p-2 rounded-xl bg-primary/10 text-primary">
                 <TrendingUp className="h-5 w-5" />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-xl font-bold truncate" title={stats.topCollege}>{stats.topCollege}</div>
-              <p className="text-xs text-muted-foreground mt-1">Highest frequency of visits</p>
+              <p className="text-xs text-muted-foreground mt-1">Most frequent affiliation</p>
             </CardContent>
           </Card>
 
           <Card className="glass border-2 border-white/10 shadow-lg">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Common Reason</CardTitle>
-              <div className="p-2 rounded-xl bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
+              <div className="p-2 rounded-xl bg-primary/10 text-primary">
                 <History className="h-5 w-5" />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-xl font-bold truncate" title={stats.topReason}>{stats.topReason}</div>
-              <p className="text-xs text-muted-foreground mt-1">Most frequent purpose</p>
+              <p className="text-xs text-muted-foreground mt-1">Primary purpose of visits</p>
             </CardContent>
           </Card>
         </div>
@@ -189,7 +202,7 @@ export default function AdminDashboard() {
                 <div className="relative w-full sm:w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input 
-                    placeholder="Search by exact email..." 
+                    placeholder="Search email or college..." 
                     className="pl-10 h-10 glass border-2"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -214,7 +227,7 @@ export default function AdminDashboard() {
             {logsLoading ? (
               <div className="p-12 text-center text-muted-foreground flex flex-col items-center gap-4">
                 <Loading />
-                <p>Retrieving database logs...</p>
+                <p className="animate-pulse">Retrieving database logs...</p>
               </div>
             ) : filteredLogs.length === 0 ? (
               <div className="p-20 text-center space-y-4">
@@ -222,7 +235,7 @@ export default function AdminDashboard() {
                   <BarChart3 className="h-8 w-8 text-muted-foreground opacity-20" />
                 </div>
                 <h3 className="text-xl font-bold">No logs found</h3>
-                <p className="text-muted-foreground">Adjust your search or range filters.</p>
+                <p className="text-muted-foreground">Try adjusting your search or filters.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">

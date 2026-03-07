@@ -2,47 +2,37 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // --- Basic Helpers ---
-
+    // --- Helper Functions ---
     function isSignedIn() {
       return request.auth != null;
     }
 
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    // --- Admin Check ---
-    // This function performs a document lookup. 
-    // IMPORTANT: The rules for the /users/{userId} path must allow reading 
-    // if isOwner(userId) WITHOUT calling isAdmin() to avoid infinite recursion.
-    function isAdmin() {
-      return isSignedIn() && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
-
-    // --- Collection Rules ---
-
+    // --- User Profile Rules ---
     match /users/{userId} {
-      // 1. Allow owners to read their own profile UNCONDITIONALLY to break isAdmin recursion.
-      // 2. Allow owners to write their own profile.
-      allow read, write: if isOwner(userId);
+      // 1. Allow owners to read and write their own profile.
+      // This rule is simple and does NOT call any other functions, preventing recursion.
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
       
-      // 3. Allow admins to read/write any profile. 
-      // When isAdmin() calls get() on the admin's own doc, rule #1 above will satisfy it.
-      allow read, write: if isAdmin();
+      // 2. Allow admins to read/write any profile.
+      // We perform the role check directly here instead of using a helper function.
+      allow read, write: if isSignedIn() && 
+                           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
 
+      // --- Nested Visit Logs ---
       match /visit_logs/{visitLogId} {
-        // Simple ownership or admin check
-        allow read, write: if isOwner(userId) || isAdmin();
+        // Owners can manage their own logs, Admins can manage everything.
+        allow read, write: if (isSignedIn() && request.auth.uid == userId) || 
+                             (isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
       }
     }
 
     // --- Collection Group Rules ---
-    // This is critical for the Admin Analytics Dashboard.
-    // It is placed outside nested matches for clarity.
+    // This is for the Admin Analytics Dashboard. 
+    // It matches all 'visit_logs' collections regardless of where they are nested.
     match /{path=**}/visit_logs/{visitLogId} {
-      allow read: if isAdmin();
+      // Strictly restrict collection group reads to verified admins only.
+      allow read: if isSignedIn() && 
+                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
   }
 }
