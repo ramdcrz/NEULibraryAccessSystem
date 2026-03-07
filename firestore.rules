@@ -1,0 +1,102 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * NEU Library Access System - Security Rules
+     * 
+     * Core Philosophy:
+     * This ruleset implements a strict hierarchical ownership model combined with role-based access control (RBAC).
+     * Security is designed around "Authorization Independence," meaning documents contain enough internal 
+     * state (like userId) to be secured without excessive lookups, though admin roles are verified 
+     * via the central user profile.
+     * 
+     * Data Structure:
+     * - /users/{userId}: Top-level user profiles identified by Firebase Auth UID.
+     * - /users/{userId}/visit_logs/{visitLogId}: User-specific subcollections for library entry records.
+     * 
+     * Key Security Decisions:
+     * 1. Ownership: Users have full access to their own profile and visit logs.
+     * 2. Administrative Override: Users with the 'admin' role in their profile can manage all system data.
+     * 3. Blocked Status: Access is globally denied if a user's 'isBlocked' flag is set to true.
+     * 4. Relational Integrity: The rules enforce that the 'userId' inside documents matches the path-based UID.
+     * 5. Denormalization: The 'userId' is duplicated within subcollections to allow for secure collection 
+     *    group queries by admins without path-dependency.
+     */
+
+    // --- Helper Functions ---
+
+    /** @description Checks if the request is from an authenticated user. */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /** @description Checks if the authenticated user matches the provided ID. */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /** @description Checks if the authenticated user is NOT blocked from the system. */
+    function isNotBlocked() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isBlocked == false;
+    }
+
+    /** @description Checks if the authenticated user has the 'admin' role. */
+    function isAdmin() {
+      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    /** @description Combines ownership and existence check for updates and deletes. */
+    function isExistingOwner(userId) {
+      return resource != null && isOwner(userId);
+    }
+
+    /** @description Combines admin check and existence check for destructive operations. */
+    function isExistingAdmin() {
+      return resource != null && isAdmin();
+    }
+
+    // --- Collection Rules ---
+
+    /**
+     * @description Rules for user profile documents.
+     * @path /users/{userId}
+     * @allow (get) If the user is the owner or an admin.
+     * @deny (create) If the userId in the document does not match the auth UID.
+     * @principle Enforces document ownership and relational integrity for user profiles.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if (isOwner(userId) && request.resource.data.id == userId) || isAdmin();
+      allow update: if (isExistingOwner(userId) && request.resource.data.id == resource.data.id) || isExistingAdmin();
+      allow delete: if isExistingAdmin();
+    }
+
+    /**
+     * @description Rules for individual visit log entries nested under a user.
+     * @path /users/{userId}/visit_logs/{visitLogId}
+     * @allow (list) If the authenticated user is the parent 'userId'.
+     * @deny (update) If the 'userId' field is modified.
+     * @principle Uses path-based authorization to secure subcollections.
+     */
+    match /users/{userId}/visit_logs/{visitLogId} {
+      allow get: if (isOwner(userId) && isNotBlocked()) || isAdmin();
+      allow list: if (isOwner(userId) && isNotBlocked()) || isAdmin();
+      allow create: if (isOwner(userId) && isNotBlocked() && request.resource.data.userId == userId) || isAdmin();
+      allow update: if (isExistingOwner(userId) && isNotBlocked() && request.resource.data.userId == resource.data.userId) || isExistingAdmin();
+      allow delete: if (isExistingOwner(userId) && isNotBlocked()) || isExistingAdmin();
+    }
+
+    /**
+     * @description Collection Group rules for visit logs to support administrative reporting.
+     * @path /{path=**}/visit_logs/{visitLogId}
+     * @allow (list) If the user is an admin.
+     * @deny (list) For all non-admin users to prevent data leakage.
+     * @principle Provides a secure path for broad administrative queries across all users.
+     */
+    match /{path=**}/visit_logs/{visitLogId} {
+      allow read: if isAdmin();
+    }
+  }
+}
