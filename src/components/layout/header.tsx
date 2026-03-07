@@ -60,12 +60,12 @@ export default function Header() {
             >
               {isAdminPage ? (
                 <Link href="/">
-                  <LayoutDashboard className="h-3.5 w-3.5 group-hover:text-primary" />
+                  <LayoutDashboard className="h-3.5 w-3.5 group-hover:text-primary transition-colors" />
                   Logger Mode
                 </Link>
               ) : (
                 <Link href="/admin">
-                  <ShieldCheck className="h-3.5 w-3.5 group-hover:text-primary" />
+                  <ShieldCheck className="h-3.5 w-3.5 group-hover:text-primary transition-colors" />
                   Admin Panel
                 </Link>
               )}

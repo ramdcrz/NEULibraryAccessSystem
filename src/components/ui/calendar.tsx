@@ -2,11 +2,10 @@
 
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker, useDayPicker } from "react-day-picker"
-import { format } from "date-fns"
+import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
@@ -23,11 +22,19 @@ function Calendar({
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
-        month_caption: "flex justify-center pt-1 relative items-center mb-6",
-        caption_label: "text-sm font-bold",
-        nav: "hidden",
+        month_caption: "flex justify-center pt-1 relative items-center mb-4",
+        caption_label: "text-sm font-black tracking-tight",
+        nav: "flex items-center gap-1",
+        button_previous: cn(
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 rounded-full absolute left-1 transition-all"
+        ),
+        button_next: cn(
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 rounded-full absolute right-1 transition-all"
+        ),
         month_grid: "w-full border-collapse space-y-1",
-        weekdays: "flex w-full mb-3",
+        weekdays: "flex w-full mb-2",
         weekday:
           "text-muted-foreground rounded-md w-9 font-black text-[0.65rem] uppercase tracking-widest flex-1 flex items-center justify-center",
         week: "flex w-full mt-1",
@@ -48,31 +55,9 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Caption: ({ displayMonth }) => {
-          const { goToMonth, nextMonth, previousMonth } = useDayPicker();
-          return (
-            <div className="flex justify-center items-center h-10 gap-3 mb-4">
-              <Button
-                variant="outline"
-                className="h-8 w-8 p-0 rounded-full border-2 border-primary/10 bg-transparent hover:bg-primary/5 hover:border-primary/30 transition-all flex items-center justify-center"
-                onClick={() => previousMonth && goToMonth(previousMonth)}
-                disabled={!previousMonth}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <div className="text-sm font-black tracking-tight min-w-[120px] text-center">
-                {format(displayMonth, "MMMM yyyy")}
-              </div>
-              <Button
-                variant="outline"
-                className="h-8 w-8 p-0 rounded-full border-2 border-primary/10 bg-transparent hover:bg-primary/5 hover:border-primary/30 transition-all flex items-center justify-center"
-                onClick={() => nextMonth && goToMonth(nextMonth)}
-                disabled={!nextMonth}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          );
+        Chevron: ({ orientation }) => {
+          if (orientation === 'left') return <ChevronLeft className="h-4 w-4" />;
+          return <ChevronRight className="h-4 w-4" />;
         },
       }}
       {...props}
