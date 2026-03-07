@@ -17,6 +17,14 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    /** @description Checks if the authenticated user has the 'admin' role. 
+     *  Performs a direct lookup on the users collection.
+     */
+    function isAdmin() {
+      return isSignedIn() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
     /** @description Checks if the authenticated user matches the provided ID. */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
@@ -28,42 +36,32 @@ service cloud.firestore {
       return userDoc == null || userDoc.data.get('is_blocked', false) == false;
     }
 
-    /** @description Checks if the authenticated user has the 'admin' role. 
-     *  Uses a direct lookup with a default value.
-     */
-    function isAdmin() {
-      return isSignedIn() && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', 'user') == 'admin';
-    }
-
-    /** @description Combines ownership and existence check for updates and deletes. */
-    function isExistingOwner(userId) {
-      return resource != null && isOwner(userId);
-    }
-
     // --- Collection Rules ---
 
     /**
      * @description Rules for user profile documents.
      */
     match /users/{userId} {
-      // prevent recursion: only call isAdmin() if the request isn't for the current user's own record
-      allow get: if isOwner(userId) || (request.auth.uid != userId && isAdmin());
+      // Essential: Always allow a user to read their own profile for AuthProvider initialization
+      allow get: if isOwner(userId) || isAdmin();
+      
+      // Admin only operations
       allow list: if isAdmin();
-      allow create: if (isOwner(userId) && request.resource.data.get('id', '') == userId);
-      allow update: if (isExistingOwner(userId) && request.resource.data.get('id', '') == resource.data.get('id', '')) || isAdmin();
       allow delete: if isAdmin();
-    }
+      
+      // Creation and updates
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
 
-    /**
-     * @description Rules for individual visit log entries nested under a user.
-     */
-    match /users/{userId}/visit_logs/{visitLogId} {
-      allow get: if (isOwner(userId) && isNotBlocked()) || isAdmin();
-      allow list: if (isOwner(userId) && isNotBlocked()) || isAdmin();
-      allow create: if (isOwner(userId) && isNotBlocked() && request.resource.data.userId == userId) || isAdmin();
-      allow update: if (isExistingOwner(userId) && isNotBlocked() && request.resource.data.userId == resource.data.userId) || isAdmin();
-      allow delete: if (isExistingOwner(userId) && isNotBlocked()) || isAdmin();
+      /**
+       * @description Rules for individual visit log entries nested under a user.
+       */
+      match /visit_logs/{visitLogId} {
+        allow read: if (isOwner(userId) && isNotBlocked()) || isAdmin();
+        allow create: if (isOwner(userId) && isNotBlocked() && request.resource.data.userId == userId) || isAdmin();
+        allow update: if (isOwner(userId) && isNotBlocked() && request.resource.data.userId == resource.data.userId) || isAdmin();
+        allow delete: if (isOwner(userId) && isNotBlocked()) || isAdmin();
+      }
     }
 
     /**

@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/use-auth';
 import Header from '@/components/layout/header';
 import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ShieldCheck, Users, BarChart3, History, Search, Calendar as CalendarIcon, TrendingUp } from 'lucide-react';
+import { ShieldCheck, Users, BarChart3, History, Search, Calendar as CalendarIcon, TrendingUp, AlertCircle } from 'lucide-react';
 import { collectionGroup, query, orderBy, limit } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { format, isWithinInterval, subDays, startOfDay, endOfDay } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import type { VisitLog } from '@/types';
 
 export default function AdminDashboard() {
@@ -25,13 +26,13 @@ export default function AdminDashboard() {
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
 
   // Guard the query: Only attempt to fetch if the user is confirmed as an admin.
-  // We use useFirestore() to get the scoped instance from the provider.
   const logsQuery = useMemoFirebase(() => {
+    // CRITICAL: Ensure firestore, user, and the admin role are fully resolved before querying.
     if (!firestore || !user || user.role !== 'admin') return null;
     return query(collectionGroup(firestore, 'visit_logs'), orderBy('timestamp', 'desc'), limit(200));
   }, [firestore, user]);
 
-  const { data: allLogs, isLoading: logsLoading } = useCollection<VisitLog>(logsQuery);
+  const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection<VisitLog>(logsQuery);
 
   useEffect(() => {
     if (!loading) {
@@ -115,6 +116,18 @@ export default function AdminDashboard() {
             Monitor traffic and analyze visitor trends in real-time.
           </p>
         </div>
+
+        {logsError && (
+          <Alert variant="destructive" className="glass border-2 border-destructive/20 shadow-lg">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Database Error</AlertTitle>
+            <AlertDescription>
+              {logsError.message.includes('permission') 
+                ? "You do not have administrative permissions to view these logs. Please check your account role in the console."
+                : "Failed to retrieve logs. If this is your first time, you may need to generate a composite index via the link in your browser console (F12)."}
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Analytics Header Cards */}
         <div className="grid gap-4 md:grid-cols-3">
