@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -45,7 +44,7 @@ export default function GlobalError({
         <CardFooter className="flex flex-col sm:flex-row gap-3">
           <Button 
             onClick={() => reset()} 
-            className="w-full sm:flex-1 gap-2"
+            className="w-full sm:flex-1 h-12 text-sm font-black rounded-full"
             variant="default"
           >
             <RotateCcw className="h-4 w-4" />
@@ -53,7 +52,7 @@ export default function GlobalError({
           </Button>
           <Button 
             asChild
-            className="w-full sm:flex-1 gap-2"
+            className="w-full sm:flex-1 h-12 text-sm font-black rounded-full"
             variant="outline"
           >
             <Link href="/">

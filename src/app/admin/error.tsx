@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ShieldAlert, RotateCcw, LayoutDashboard, Info } from 'lucide-react';
+import { ShieldAlert, RotateCcw, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminError({
@@ -57,7 +57,7 @@ export default function AdminError({
         <CardFooter className="flex flex-col sm:flex-row gap-3">
           <Button 
             onClick={() => reset()} 
-            className="w-full sm:flex-1 h-12 text-base font-bold rounded-xl"
+            className="w-full sm:flex-1 h-12 text-sm font-black rounded-full"
           >
             <RotateCcw className="mr-2 h-4 w-4" />
             Reload Dashboard
@@ -65,7 +65,7 @@ export default function AdminError({
           <Button 
             asChild
             variant="outline"
-            className="w-full sm:flex-1 h-12 text-base font-bold rounded-xl"
+            className="w-full sm:flex-1 h-12 text-sm font-black rounded-full"
           >
             <Link href="/">
               <LayoutDashboard className="mr-2 h-4 w-4" />

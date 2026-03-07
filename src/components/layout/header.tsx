@@ -21,7 +21,6 @@ import { cn } from '@/lib/utils';
 
 export default function Header() {
   const { user, signOut, loading } = useAuth();
-  const router = useRouter();
   const pathname = usePathname();
 
   const getInitials = (email: string | null | undefined) => {
@@ -56,7 +55,10 @@ export default function Header() {
             <Button 
               variant="ghost" 
               asChild
-              className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm hover:bg-primary/10 hover:text-primary dark:hover:bg-white/10 group"
+              className={cn(
+                "h-10 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm group",
+                "hover:bg-primary/10 hover:text-primary dark:hover:bg-white/10"
+              )}
             >
               {isAdminPage ? (
                 <Link href="/">
@@ -80,7 +82,7 @@ export default function Header() {
         ) : user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="flex h-[42px] w-[42px] items-center justify-center rounded-full purple-gradient cursor-pointer active:scale-95 transition-transform group">
+              <div className="flex h-[42px] w-[42px] items-center justify-center rounded-full purple-gradient cursor-pointer active:scale-95 transition-transform group shadow-md shadow-primary/10">
                 <div className="relative h-[38px] w-[38px] rounded-full overflow-hidden border-2 border-background bg-background flex items-center justify-center shadow-sm">
                   <Avatar className="h-full w-full">
                     <AvatarImage src={user.photoURL ?? ''} alt={user.email ?? ''} />

@@ -224,7 +224,7 @@ export default function AdminDashboard() {
               variant="ghost"
               onClick={() => setShowFilters(!showFilters)}
               className={cn(
-                "h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all border shadow-sm",
+                "h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border shadow-sm",
                 showFilters 
                   ? "bg-primary/10 text-primary border-primary/20" 
                   : "border-black/5 dark:border-white/10 bg-white/5 hover:bg-primary/10 hover:text-primary"
@@ -237,14 +237,14 @@ export default function AdminDashboard() {
             <Button 
               onClick={exportToPDF} 
               disabled={isExporting || logsLoading || filteredLogs.length === 0}
-              className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm hover:bg-primary/10 hover:text-primary disabled:opacity-50"
+              className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm hover:bg-primary/10 disabled:opacity-50 group"
             >
               {isExporting ? (
-                <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" />
+                <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2 text-primary" />
               ) : (
-                <FileDown className="h-3.5 w-3.5 mr-2" />
+                <FileDown className="h-3.5 w-3.5 mr-2 text-primary" />
               )}
-              Export Activity
+              <span className="text-purple-gradient">Export Activity</span>
             </Button>
           </div>
         </div>
@@ -355,7 +355,7 @@ export default function AdminDashboard() {
               <Button 
                 variant="ghost" 
                 onClick={clearFilters}
-                className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all border border-destructive/10 text-destructive bg-destructive/5 hover:bg-destructive/10 shadow-sm"
+                className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border border-destructive/30 text-destructive bg-destructive/5 hover:bg-destructive/10 shadow-sm"
               >
                 <XCircle className="h-3.5 w-3.5 mr-2" />
                 Clear
@@ -447,7 +447,7 @@ export default function AdminDashboard() {
                             <Button
                               variant="ghost"
                               className={cn(
-                                "h-11 w-32 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all border shadow-sm",
+                                "h-11 w-32 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border shadow-sm",
                                 isBlocked 
                                   ? "text-green-600 bg-green-500/10 border-green-500/20 hover:bg-green-500/20" 
                                   : "text-destructive bg-destructive/5 border-destructive/10 hover:bg-destructive/10"

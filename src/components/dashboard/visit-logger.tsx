@@ -133,7 +133,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
         <Button 
           variant="ghost" 
           onClick={() => signOut()}
-          className="h-11 px-8 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm hover:bg-primary/10 hover:text-primary mx-auto"
+          className="h-11 px-8 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm hover:bg-primary/10 hover:text-primary mx-auto"
         >
           <LogOut className="h-4 w-4 mr-2" />
           End Session
@@ -239,7 +239,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
 
             <Button 
               type="submit" 
-              className="w-full h-20 font-black uppercase tracking-[0.25em] text-[10px] rounded-3xl transition-all hover:scale-[1.01] active:scale-[0.99] group purple-gradient text-white shadow-lg shadow-primary/20 border-none" 
+              className="w-full h-20 font-black uppercase tracking-[0.25em] text-sm rounded-3xl transition-all hover:scale-[1.01] active:scale-[0.99] group purple-gradient text-white shadow-lg shadow-primary/20 border-none" 
               disabled={isSubmitting}
             >
               {isSubmitting ? (
