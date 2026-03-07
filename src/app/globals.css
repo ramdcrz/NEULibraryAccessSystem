@@ -62,7 +62,7 @@
 }
 
 .glass {
-  /* Apple Liquid Glass: High transparency, high blur, precise white border */
+  /* Apple Liquid Glass: High transparency, extreme blur, precise white border stroke */
   @apply bg-white/10 dark:bg-white/5 backdrop-blur-[40px] border border-white/20 dark:border-white/10 shadow-none;
   /* Simulating physical thickness with a very subtle inner glow */
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
