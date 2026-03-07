@@ -58,10 +58,10 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 gradient-bg">
-      <div className="w-full max-w-md flex flex-col items-center justify-center gap-12 py-12 min-h-screen">
+      <div className="w-full max-w-md flex flex-col items-center justify-center gap-10">
         <Card className="w-full glass border animate-in fade-in zoom-in-95 duration-700">
           <CardHeader className="text-center pb-12 pt-10 px-10">
-            <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-primary text-white transition-transform hover:rotate-6 animate-float">
+            <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-primary text-white transition-transform hover:rotate-6">
               <BookMarked className="h-12 w-12" />
             </div>
             <CardTitle className="text-5xl font-black tracking-tighter text-foreground mb-2">NEU Library</CardTitle>
@@ -91,11 +91,9 @@ export default function LoginPage() {
           </CardContent>
         </Card>
         
-        <div className="w-full flex justify-center">
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 text-center whitespace-nowrap">
-            New Era University • Library Systems
-          </p>
-        </div>
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 text-center whitespace-nowrap">
+          New Era University • Library Systems
+        </p>
       </div>
     </main>
   );

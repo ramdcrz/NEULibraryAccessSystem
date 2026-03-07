@@ -169,13 +169,13 @@ export default function VisitLogger({ user, onLogSuccess }: VisitLoggerProps) {
       <CardContent className="pt-10 px-10 pb-12">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-              <div className="md:col-span-1 p-6 rounded-3xl glass flex flex-col items-center justify-center text-center">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
+              <div className="md:col-span-2 p-6 rounded-3xl glass flex flex-col items-start justify-center text-left">
                 <div className="flex items-center gap-2 mb-2 text-primary/60">
                   <User className="h-3.5 w-3.5" />
                   <span className="text-[10px] font-black uppercase tracking-widest">ID Class</span>
                 </div>
-                <p className="text-base font-black text-foreground">{user.user_type}</p>
+                <p className="text-lg font-black text-foreground">{user.user_type}</p>
               </div>
               <div className="md:col-span-3 p-6 rounded-3xl glass">
                 <div className="flex items-center gap-2 mb-2 text-primary/60">

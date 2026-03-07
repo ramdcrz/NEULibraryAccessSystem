@@ -208,7 +208,7 @@ export default function AdminDashboard() {
   return (
     <div className="flex min-h-screen w-full flex-col gradient-bg">
       <Header />
-      <main className="flex-1 px-6 md:px-12 py-12 space-y-12 animate-in fade-in duration-700">
+      <main className="flex-1 px-6 md:px-12 py-12 space-y-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.4em] text-[10px] opacity-60">
@@ -267,7 +267,7 @@ export default function AdminDashboard() {
 
         {/* Filter Controls */}
         {showFilters && (
-          <Card className="glass rounded-[3rem] p-10 border animate-in slide-in-from-top-4 duration-500">
+          <Card className="glass rounded-[3rem] p-10 border">
             <div className="flex flex-col lg:flex-row gap-8 items-end">
               <div className="flex-1 w-full space-y-4">
                 <label className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground px-1 flex items-center gap-2">

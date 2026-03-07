@@ -63,7 +63,7 @@
 .glass {
   @apply backdrop-blur-3xl border transition-all duration-300 shadow-none;
   background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 .dark .glass {
@@ -86,13 +86,10 @@
     hsl(var(--background));
 }
 
-.animate-float {
-  animation: float 12s ease-in-out infinite;
+.hover-glass:hover {
+  background: rgba(255, 255, 255, 0.95);
 }
 
-@keyframes float {
-  0% { transform: translateY(0px) rotate(0deg); }
-  33% { transform: translateY(-8px) rotate(2deg); }
-  66% { transform: translateY(4px) rotate(-1deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
+.dark .hover-glass:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
