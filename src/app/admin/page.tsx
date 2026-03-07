@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/use-auth';
 import Header from '@/components/layout/header';
 import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ShieldCheck, Users, BarChart3, History, Search, Calendar as CalendarIcon, TrendingUp, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Users, BarChart3, History, Search, Calendar as CalendarIcon, TrendingUp, AlertCircle, Info } from 'lucide-react';
 import { collectionGroup, query, orderBy, limit, Timestamp } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -25,12 +25,12 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
 
-  // We wait until the user object is fully loaded AND role is 'admin'
-  // before we even define the query. This prevents eager permission denials.
+  // Guard the query: only run if user is confirmed as admin
   const logsQuery = useMemoFirebase(() => {
     if (!firestore || !user || user.role !== 'admin') return null;
     
     try {
+      // collectionGroup allows querying across all users/userId/visit_logs
       return query(
         collectionGroup(firestore, 'visit_logs'), 
         orderBy('timestamp', 'desc'), 
@@ -132,19 +132,20 @@ export default function AdminDashboard() {
             <AlertTitle>Database Access Error</AlertTitle>
             <AlertDescription className="mt-2 space-y-4">
               <p>
-                We encountered a problem retrieving the visitor logs:
+                We encountered a problem retrieving the visitor logs. This usually happens if a required index is missing or if permissions are strictly denied.
               </p>
-              <div className="bg-destructive/10 p-3 rounded-md text-xs font-mono mb-4 overflow-auto">
-                {logsError.message}
-              </div>
-              <ul className="list-disc pl-5 space-y-2 text-sm">
-                <li><strong>Check Composite Index:</strong> Look at your browser console (F12) for a link to "create a composite index." This is required for sorting logs.</li>
-                <li><strong>Role Verification:</strong> Ensure your user document has <code>role: "admin"</code> in the Firestore console.</li>
-              </ul>
-              <div className="flex gap-2 pt-2">
-                <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
-                  Refresh Page
-                </Button>
+              <div className="bg-destructive/10 p-4 rounded-xl border border-destructive/20">
+                <p className="font-bold flex items-center gap-2 mb-2">
+                  <Info className="h-4 w-4" />
+                  Important Troubleshooting Step:
+                </p>
+                <ol className="list-decimal pl-5 space-y-2 text-sm">
+                  <li>Press <strong>F12</strong> to open your browser Developer Tools.</li>
+                  <li>Click the <strong>Console</strong> tab.</li>
+                  <li>Look for a red error message with a link that starts with <code>https://console.firebase.google.com/...</code></li>
+                  <li><strong>Click that link</strong> to automatically create the "Composite Index" required for this dashboard.</li>
+                  <li>Wait 2-3 minutes for the index to build, then refresh this page.</li>
+                </ol>
               </div>
             </AlertDescription>
           </Alert>

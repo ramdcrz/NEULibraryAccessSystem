@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ShieldAlert, RotateCcw, LayoutDashboard } from 'lucide-react';
+import { ShieldAlert, RotateCcw, LayoutDashboard, Info } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminError({
@@ -41,12 +40,19 @@ export default function AdminError({
               {error.message}
             </code>
           </div>
-          {isPermissionError && (
-            <div className="text-sm text-muted-foreground bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-200 dark:border-blue-800">
-              <p className="font-bold text-blue-700 dark:text-blue-300 mb-1">💡 Troubleshooting Tip:</p>
-              <p>Check the browser console (F12). If you see a link to "create a composite index," click it to enable cross-user sorting for these logs.</p>
-            </div>
-          )}
+          
+          <div className="text-sm text-muted-foreground bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-200 dark:border-blue-800">
+            <p className="font-bold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2">
+              <Info className="h-4 w-4" />
+              Critical Troubleshooting Tip:
+            </p>
+            <p className="mb-2">If you see "Missing or insufficient permissions," it often means the database needs a **Composite Index** to sort logs.</p>
+            <ol className="list-decimal pl-5 space-y-1">
+              <li>Open the browser console (<strong>F12</strong>).</li>
+              <li>Click the red error link starting with <code>https://console.firebase.google.com...</code></li>
+              <li>Click <strong>"Create Index"</strong> in the Firebase Console and wait 3 minutes.</li>
+            </ol>
+          </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row gap-3">
           <Button 

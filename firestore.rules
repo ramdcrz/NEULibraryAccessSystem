@@ -10,11 +10,10 @@ service cloud.firestore {
     // --- User Profile Rules ---
     match /users/{userId} {
       // 1. Allow owners to read and write their own profile.
-      // This rule is simple and does NOT call any other functions, preventing recursion.
       allow read, write: if isSignedIn() && request.auth.uid == userId;
       
       // 2. Allow admins to read/write any profile.
-      // We perform the role check directly here instead of using a helper function.
+      // Explicitly check the role in the user's document.
       allow read, write: if isSignedIn() && 
                            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
 
@@ -27,10 +26,9 @@ service cloud.firestore {
     }
 
     // --- Collection Group Rules ---
-    // This is for the Admin Analytics Dashboard. 
-    // It matches all 'visit_logs' collections regardless of where they are nested.
+    // Matches all 'visit_logs' collections across all users.
     match /{path=**}/visit_logs/{visitLogId} {
-      // Strictly restrict collection group reads to verified admins only.
+      // Access to ALL logs is restricted strictly to administrators.
       allow read: if isSignedIn() && 
                      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
