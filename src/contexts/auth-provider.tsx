@@ -1,10 +1,9 @@
-
 'use client';
 
 import { createContext, useState, useEffect, ReactNode } from 'react';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut as firebaseSignOut, User as FirebaseUser } from 'firebase/auth';
 import { onSnapshot, doc, Timestamp, serverTimestamp, setDoc } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase/config';
+import { useAuth, useFirestore } from '@/firebase';
 import type { UserProfile } from '@/types';
 import { toast } from '@/hooks/use-toast';
 
@@ -24,6 +23,8 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const auth = useAuth();
+  const db = useFirestore();
   const [user, setUser] = useState<AuthenticatedUser | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -37,6 +38,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    if (!auth || !db) return;
+
     let unsubscribeDoc: (() => void) | null = null;
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
@@ -117,7 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       unsubscribeAuth();
       if (unsubscribeDoc) unsubscribeDoc();
     };
-  }, []);
+  }, [auth, db]);
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
@@ -129,13 +132,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       await signInWithPopup(auth, provider);
     } catch (error: any) {
-      // Handle cancellation errors silently without console.error or re-throwing
+      // Handle cancellation errors silently
       const isCancellation = 
         error.code === 'auth/popup-closed-by-user' || 
         error.code === 'auth/cancelled-popup-request';
         
       if (!isCancellation) {
-        console.error("Error during sign in with Google: ", error);
         throw error;
       }
     } finally {

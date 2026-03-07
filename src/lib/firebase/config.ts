@@ -1,12 +1,7 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { firebaseConfig } from '@/firebase/config';
+import { initializeFirebase } from '@/firebase';
 
-// Initialize Firebase using the configuration object from the standard studio location
-// to avoid "invalid API key" errors caused by missing environment variables.
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const db = getFirestore(app);
+// Unify initialization to use the centralized logic in src/firebase/index.ts
+// This prevents multiple Firebase instances from conflicting in different tabs.
+const { firebaseApp, auth, firestore: db } = initializeFirebase();
 
-export { app, auth, db };
+export { firebaseApp as app, auth, db };
