@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import Header from '@/components/layout/header';
@@ -17,6 +17,7 @@ import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { toggleUserBlock } from '@/lib/firebase/firestore';
+import { cn } from '@/lib/utils';
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
@@ -33,18 +34,32 @@ export default function AdminDashboard() {
   }, [user, loading, router]);
 
   /**
-   * Database Logic: Query the flat top-level collection 'visit_logs'.
+   * Database Logic: Query visit logs and users to get status mapping.
    */
   const logsQuery = useMemoFirebase(() => {
     if (!firestore || !user || user.role !== 'admin') return null;
-    
     return query(
       collection(firestore, 'visit_logs'), 
       orderBy('timestamp', 'desc')
     );
   }, [firestore, user?.uid, user?.role]);
 
+  const usersQuery = useMemoFirebase(() => {
+    if (!firestore || !user || user.role !== 'admin') return null;
+    return collection(firestore, 'users');
+  }, [firestore, user?.uid, user?.role]);
+
   const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection(logsQuery);
+  const { data: allUsers } = useCollection(usersQuery);
+
+  // Create a reactive lookup map for blocked status
+  const userStatusMap = useMemo(() => {
+    const map: Record<string, boolean> = {};
+    allUsers?.forEach(u => {
+      map[u.id] = !!u.is_blocked;
+    });
+    return map;
+  }, [allUsers]);
 
   const handleToggleBlock = async (uid: string, email: string) => {
     if (!uid) {
@@ -160,49 +175,59 @@ export default function AdminDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {allLogs.map((log) => (
-                      <TableRow key={log.id} className="hover:bg-white/5 transition-colors group">
-                        <TableCell className="whitespace-nowrap font-medium opacity-80">
-                          {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, h:mm a') : 'Pending...'}
-                        </TableCell>
-                        <TableCell className="font-semibold">{log.email}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="capitalize bg-primary/5 text-primary border-primary/20 font-bold px-3">
-                            {log.userType}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="max-w-[200px] truncate italic opacity-80">{log.college_office}</TableCell>
-                        <TableCell className="max-w-[300px] truncate text-muted-foreground">
-                          {log.reason}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {/* 
-                              Check strictly for 'uid' and 'timestamp' as per University protocol.
-                              Rows without these are flagged as Legacy Logs.
-                          */}
-                          {log.uid && log.timestamp ? (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-9 px-3 text-destructive hover:bg-destructive/10 hover:text-destructive font-bold rounded-xl gap-2 transition-all active:scale-95"
-                              onClick={() => handleToggleBlock(log.uid, log.email)}
-                              disabled={blockingUid === log.uid}
-                            >
-                              {blockingUid === log.uid ? (
-                                <LoaderCircle className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <>
-                                  <UserX className="h-4 w-4" />
-                                  Block
-                                </>
-                              )}
-                            </Button>
-                          ) : (
-                            <span className="text-[10px] text-muted-foreground uppercase font-black px-2 py-1 bg-muted rounded-md">Legacy Log</span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {allLogs.map((log) => {
+                      const isBlocked = userStatusMap[log.uid] || false;
+                      
+                      return (
+                        <TableRow key={log.id} className="hover:bg-white/5 transition-colors group">
+                          <TableCell className="whitespace-nowrap font-medium opacity-80">
+                            {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, h:mm a') : 'Pending...'}
+                          </TableCell>
+                          <TableCell className="font-semibold">{log.email}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="capitalize bg-primary/5 text-primary border-primary/20 font-bold px-3">
+                              {log.userType}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="max-w-[200px] truncate italic opacity-80">{log.college_office}</TableCell>
+                          <TableCell className="max-w-[300px] truncate text-muted-foreground">
+                            {log.reason}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {log.uid && log.timestamp ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className={cn(
+                                  "h-9 px-4 font-bold rounded-xl gap-2 transition-all active:scale-95 border border-transparent",
+                                  isBlocked 
+                                    ? "text-green-600 hover:bg-green-500/10 hover:text-green-600 hover:border-green-500/20" 
+                                    : "text-destructive hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20"
+                                )}
+                                onClick={() => handleToggleBlock(log.uid, log.email)}
+                                disabled={blockingUid === log.uid}
+                              >
+                                {blockingUid === log.uid ? (
+                                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                                ) : isBlocked ? (
+                                  <>
+                                    <UserCheck className="h-4 w-4" />
+                                    Unblock
+                                  </>
+                                ) : (
+                                  <>
+                                    <UserX className="h-4 w-4" />
+                                    Block
+                                  </>
+                                )}
+                              </Button>
+                            ) : (
+                              <span className="text-[10px] text-muted-foreground uppercase font-black px-2 py-1 bg-muted rounded-md">Legacy Log</span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </div>
