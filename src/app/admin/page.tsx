@@ -255,7 +255,7 @@ export default function AdminDashboard() {
             { label: 'Today', val: stats.today, icon: Clock },
             { label: 'Verified Reach', val: stats.unique, icon: Users }
           ].map((stat, i) => (
-            <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group border">
+            <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
                 <stat.icon className="h-32 w-32" />
               </div>
@@ -278,7 +278,7 @@ export default function AdminDashboard() {
                   placeholder="Search by email..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-16 rounded-2xl border-2 bg-white/5 transition-all text-lg font-bold"
+                  className="h-16 rounded-2xl border-2 bg-black/5 transition-all text-lg font-bold focus:border-primary/30"
                 />
               </div>
 
@@ -293,7 +293,7 @@ export default function AdminDashboard() {
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full lg:w-[240px] h-16 justify-start text-left font-bold rounded-2xl border-2 bg-white/5",
+                          "w-full lg:w-[240px] h-16 justify-start text-left font-bold rounded-2xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
                           !startDate && "text-muted-foreground"
                         )}
                       >
@@ -329,7 +329,7 @@ export default function AdminDashboard() {
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full lg:w-[240px] h-16 justify-start text-left font-bold rounded-2xl border-2 bg-white/5",
+                          "w-full lg:w-[240px] h-16 justify-start text-left font-bold rounded-2xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
                           !endDate && "text-muted-foreground"
                         )}
                       >
@@ -375,10 +375,10 @@ export default function AdminDashboard() {
           </Alert>
         )}
 
-        <Card className="glass overflow-hidden rounded-[3rem] border">
-          <CardHeader className="p-10 border-b border-black/5 dark:border-white/10 bg-white/5">
+        <Card className="glass overflow-hidden rounded-[3rem]">
+          <CardHeader className="p-10 border-b border-black/5 dark:border-white/10 bg-black/5">
             <div className="flex items-center gap-5">
-              <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-white/10">
+              <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-black/5 dark:border-white/10">
                 <Filter className="h-7 w-7" />
               </div>
               <div>
@@ -401,7 +401,7 @@ export default function AdminDashboard() {
               </div>
             ) : filteredLogs.length === 0 ? (
               <div className="p-40 text-center flex flex-col items-center gap-8">
-                <div className="p-8 rounded-full bg-white/5 border border-white/5">
+                <div className="p-8 rounded-full bg-black/5 border border-black/5">
                   <Search className="h-12 w-12 text-muted-foreground opacity-20" />
                 </div>
                 <div className="space-y-2">
@@ -412,7 +412,7 @@ export default function AdminDashboard() {
             ) : (
               <div className="overflow-x-auto">
                 <Table>
-                  <TableHeader className="bg-white/5">
+                  <TableHeader className="bg-black/5">
                     <TableRow className="hover:bg-transparent border-black/5 dark:border-white/10">
                       <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10">Timestamp</TableHead>
                       <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16">Verified Identity</TableHead>
@@ -426,7 +426,7 @@ export default function AdminDashboard() {
                       const isBlocked = userStatusMap[log.uid] || false;
                       
                       return (
-                        <TableRow key={log.id} className="hover:bg-primary/5 dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10 group">
+                        <TableRow key={log.id} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10 group">
                           <TableCell className="pl-10 py-6 whitespace-nowrap font-bold text-muted-foreground/70">
                             {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, h:mm a') : '...'}
                           </TableCell>
@@ -437,7 +437,7 @@ export default function AdminDashboard() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant="outline" className="w-32 justify-center rounded-xl py-1 font-black text-[10px] uppercase tracking-widest bg-white/5 border-white/10 text-primary">
+                            <Badge variant="outline" className="w-32 justify-center rounded-xl py-1 font-black text-[10px] uppercase tracking-widest bg-black/5 border-black/5 dark:border-white/10 text-primary">
                               {log.userType}
                             </Badge>
                           </TableCell>
