@@ -275,7 +275,7 @@ export default function AdminDashboard() {
                 className={cn(
                   "rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2",
                   "text-muted-foreground bg-transparent", // Inactive
-                  "data-[state=active]:blue-gradient data-[state=active]:!text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20" // Unified Active State
+                  "data-[state=active]:blue-gradient data-[state=active]:text-black dark:data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20" // Unified Active State
                 )}
               >
                 <PieChartIcon className="h-3.5 w-3.5" />
@@ -286,7 +286,7 @@ export default function AdminDashboard() {
                 className={cn(
                   "rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2",
                   "text-muted-foreground bg-transparent", // Inactive
-                  "data-[state=active]:blue-gradient data-[state=active]:!text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20" // Unified Active State
+                  "data-[state=active]:blue-gradient data-[state=active]:text-black dark:data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20" // Unified Active State
                 )}
               >
                 <Activity className="h-3.5 w-3.5" />
@@ -580,7 +580,7 @@ export default function AdminDashboard() {
                                     </Badge>
                                   ) : (
                                     <Badge variant="secondary" className="rounded-2xl font-black text-[10px] py-1.5 px-4 opacity-40 w-32 flex justify-center">
-                                      IN PROGRESS
+                                      Active
                                     </Badge>
                                   )}
                                 </div>
