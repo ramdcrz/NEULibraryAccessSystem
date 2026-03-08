@@ -217,14 +217,14 @@ export default function AdminDashboard() {
 
       autoTable(doc, {
         startY: 45,
-        head: [['Entry', 'Exit', 'Status', 'Email', 'User Type', 'Duration', 'Purpose']],
+        head: [['Timeline', 'Status', 'Identity', 'Duration', 'Purpose']],
         body: tableRows,
         theme: 'grid',
         headStyles: { fillColor: [37, 99, 235], textColor: 255, fontSize: 8, fontStyle: 'bold' },
         styles: { fontSize: 7, cellPadding: 2 }
       });
 
-      doc.save(`NEULibrary_Visit_Logs_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+      doc.save(`NEULibrary_Logs_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
       toast({ title: "Report Generated", description: "PDF report downloaded." });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Export Error", description: "Failed to generate PDF." });
@@ -238,15 +238,16 @@ export default function AdminDashboard() {
   }
 
   const getStatusBadge = (status: string) => {
+    const baseClasses = "rounded-2xl border font-black text-[9px] px-3 py-1.5 flex gap-1.5 items-center justify-center w-32 mx-auto";
     switch(status) {
       case 'active':
-        return <Badge className="rounded-2xl bg-blue-500/10 text-blue-600 border-blue-500/20 font-black text-[9px] px-3 py-1 flex gap-1.5 items-center justify-center"><Clock className="h-2.5 w-2.5" /> ACTIVE</Badge>;
+        return <Badge className={cn(baseClasses, "bg-blue-500/10 text-blue-600 border-blue-500/20")}><Clock className="h-2.5 w-2.5" /> ACTIVE</Badge>;
       case 'completed':
-        return <Badge className="rounded-2xl bg-green-500/10 text-green-600 border-green-500/20 font-black text-[9px] px-3 py-1 flex gap-1.5 items-center justify-center"><CheckCircle2 className="h-2.5 w-2.5" /> COMPLETED</Badge>;
+        return <Badge className={cn(baseClasses, "bg-green-500/10 text-green-600 border-green-500/20")}><CheckCircle2 className="h-2.5 w-2.5" /> COMPLETED</Badge>;
       case 'auto-closed':
-        return <Badge className="rounded-2xl bg-amber-500/10 text-amber-600 border-amber-500/20 font-black text-[9px] px-3 py-1 flex gap-1.5 items-center justify-center"><AlertCircle className="h-2.5 w-2.5" /> AUTO-CLOSED</Badge>;
+        return <Badge className={cn(baseClasses, "bg-amber-500/10 text-amber-600 border-amber-500/20")}><AlertCircle className="h-2.5 w-2.5" /> AUTO-CLOSED</Badge>;
       default:
-        return <Badge variant="outline" className="rounded-2xl font-black text-[9px] px-3 py-1 flex justify-center">UNKNOWN</Badge>;
+        return <Badge variant="outline" className={cn(baseClasses, "opacity-40")}>UNKNOWN</Badge>;
     }
   };
 
@@ -331,7 +332,7 @@ export default function AdminDashboard() {
                       tickFormatter={(val) => val.toUpperCase()}
                     />
                     <YAxis hide />
-                    <ChartTooltip cursor={{ fill: 'hsl(var(--primary) / 0.05)' }} content={<ChartTooltipContent gap={6} />} />
+                    <ChartTooltip cursor={{ fill: 'hsl(var(--primary) / 0.03)' }} content={<ChartTooltipContent gap={6} />} />
                     <Bar dataKey="value" fill="var(--color-value)" radius={[10, 10, 0, 0]} barSize={60} />
                   </BarChart>
                 </ChartContainer>
@@ -512,8 +513,8 @@ export default function AdminDashboard() {
                 ) : (
                   <div className="overflow-x-auto">
                     <Table>
-                      <TableHeader className="bg-black/5">
-                        <TableRow className="hover:bg-transparent border-black/5 dark:border-white/10">
+                      <TableHeader className="border-b border-black/5 dark:border-white/10">
+                        <TableRow className="hover:bg-transparent border-none">
                           <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10 text-foreground">Timeline</TableHead>
                           <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground text-center">Status</TableHead>
                           <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Verified Identity</TableHead>
@@ -525,7 +526,6 @@ export default function AdminDashboard() {
                       <TableBody>
                         {filteredLogs.map((log) => {
                           const isBlocked = userStatusMap[log.uid] || false;
-                          const isActive = !log.exitTimestamp;
                           return (
                             <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10">
                               <TableCell className="pl-10 py-6 whitespace-nowrap">
