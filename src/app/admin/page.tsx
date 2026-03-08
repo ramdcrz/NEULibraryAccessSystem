@@ -269,17 +269,27 @@ export default function AdminDashboard() {
           </div>
           
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            <TabsList className="h-12 p-1 glass border border-black/5 dark:border-white/10 rounded-full w-full sm:w-[320px] grid grid-cols-2 bg-transparent">
+            <TabsList className="h-12 p-1 glass border border-black/5 dark:border-white/10 rounded-full w-full sm:w-[280px] grid grid-cols-2 bg-transparent">
               <TabsTrigger 
                 value="analytics" 
-                className="rounded-full font-black text-[9px] uppercase tracking-widest data-[state=active]:blue-gradient data-[state=active]:!text-white transition-all h-full gap-2"
+                className={cn(
+                  "rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2",
+                  "text-muted-foreground bg-transparent", // Inactive
+                  "data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm", // Light Active
+                  "dark:data-[state=active]:blue-gradient dark:data-[state=active]:text-white dark:data-[state=active]:shadow-none" // Dark Active
+                )}
               >
                 <PieChartIcon className="h-3.5 w-3.5" />
                 Analytics
               </TabsTrigger>
               <TabsTrigger 
                 value="activity" 
-                className="rounded-full font-black text-[9px] uppercase tracking-widest data-[state=active]:blue-gradient data-[state=active]:!text-white transition-all h-full gap-2"
+                className={cn(
+                  "rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2",
+                  "text-muted-foreground bg-transparent", // Inactive
+                  "data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm", // Light Active
+                  "dark:data-[state=active]:blue-gradient dark:data-[state=active]:text-white dark:data-[state=active]:shadow-none" // Dark Active
+                )}
               >
                 <Activity className="h-3.5 w-3.5" />
                 Activity
@@ -289,7 +299,7 @@ export default function AdminDashboard() {
             <Button 
               onClick={exportToPDF} 
               disabled={isExporting || logsLoading || filteredLogs.length === 0}
-              className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 w-full sm:w-auto min-w-[160px]"
+              className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 w-full sm:w-auto"
             >
               {isExporting ? <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" /> : <FileDown className="h-3.5 w-3.5 mr-2" />}
               Export Activity
