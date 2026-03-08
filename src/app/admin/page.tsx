@@ -18,7 +18,8 @@ import {
   Filter,
   BarChart3,
   Users,
-  Clock
+  Clock,
+  LayoutDashboard
 } from 'lucide-react';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
@@ -35,6 +36,18 @@ import { toggleUserBlock } from '@/lib/firebase/firestore';
 import { cn } from '@/lib/utils';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  PieChart, 
+  Pie, 
+  Cell, 
+  ResponsiveContainer 
+} from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
@@ -86,6 +99,38 @@ export default function AdminDashboard() {
       unique: uniqueUids.size
     };
   }, [allLogs]);
+
+  const chartData = useMemo(() => {
+    if (!allLogs) return { userType: [], college: [] };
+    
+    const userTypeCounts: Record<string, number> = { Student: 0, Staff: 0, Employee: 0 };
+    const collegeCounts: Record<string, number> = {};
+
+    allLogs.forEach(log => {
+      if (userTypeCounts[log.userType] !== undefined) userTypeCounts[log.userType]++;
+      const college = log.college_office || 'Unknown';
+      collegeCounts[college] = (collegeCounts[college] || 0) + 1;
+    });
+
+    const collegeData = Object.entries(collegeCounts)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+
+    const COLORS = ['hsl(var(--primary))', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'];
+
+    return {
+      userType: Object.entries(userTypeCounts).map(([name, value]) => ({ name, value })),
+      college: collegeData.map((d, i) => ({ ...d, fill: COLORS[i % COLORS.length] }))
+    };
+  }, [allLogs]);
+
+  const chartConfig = {
+    value: {
+      label: "Visits",
+      color: "hsl(var(--primary))",
+    },
+  } satisfies ChartConfig;
 
   const userStatusMap = useMemo(() => {
     const map: Record<string, boolean> = {};
@@ -149,28 +194,15 @@ export default function AdminDashboard() {
     setIsExporting(true);
     try {
       const doc = new jsPDF();
-      
       doc.setFontSize(22);
       doc.setTextColor(37, 99, 235);
       doc.text('NEU Library Access System', 14, 22);
-      
       doc.setFontSize(14);
       doc.setTextColor(0);
       doc.text('University Visit Activity Report', 14, 32);
       
-      let filterSummary = 'Applied Filters: ';
-      const filterParts = [];
-      if (searchQuery) filterParts.push(`Search: "${searchQuery}"`);
-      if (startDate) filterParts.push(`From: ${format(startDate, 'PP')}`);
-      if (endDate) filterParts.push(`To: ${format(endDate, 'PP')}`);
-      filterSummary += filterParts.length > 0 ? filterParts.join(' | ') : 'None (Full History)';
-      
-      doc.setFontSize(8);
-      doc.setTextColor(100);
-      doc.text(filterSummary, 14, 40);
-      
       const tableRows = filteredLogs.map(log => [
-        log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy h:mm a') : 'Pending...',
+        log.timestamp ? format(log.timestamp.toDate(), 'PP p') : 'Pending...',
         log.email,
         log.userType,
         log.college_office,
@@ -205,10 +237,10 @@ export default function AdminDashboard() {
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.4em] text-[10px] opacity-60">
             <ShieldCheck className="h-3.5 w-3.5" />
-            Administrative Command
+            Administrative Terminal
           </div>
           <h1 className="text-6xl font-black tracking-tighter">
-            Terminal Analytics
+            System <span className="text-blue-gradient">Analytics</span>
           </h1>
           <p className="text-muted-foreground text-xl font-bold opacity-70 tracking-tight">
             Real-time monitoring and security reporting.
@@ -226,20 +258,16 @@ export default function AdminDashboard() {
                 : "border-black/5 dark:border-white/10 bg-white/5 hover:bg-primary/10 hover:text-primary"
             )}
           >
-            <Search className="h-3.5 w-3.5 mr-2" />
+            <Filter className="h-3.5 w-3.5 mr-2" />
             {showFilters ? 'Hide Filters' : 'Filter View'}
           </Button>
 
           <Button 
             onClick={exportToPDF} 
             disabled={isExporting || logsLoading || filteredLogs.length === 0}
-            className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border-none blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 group"
+            className="h-11 px-8 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
           >
-            {isExporting ? (
-              <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" />
-            ) : (
-              <FileDown className="h-3.5 w-3.5 mr-2" />
-            )}
+            {isExporting ? <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" /> : <FileDown className="h-3.5 w-3.5 mr-2" />}
             Export Activity
           </Button>
         </div>
@@ -259,6 +287,60 @@ export default function AdminDashboard() {
             <CardTitle className="text-5xl font-black tracking-tighter relative z-10">{stat.val}</CardTitle>
           </Card>
         ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Card className="glass rounded-[3rem] p-10 border border-black/5 dark:border-white/18">
+          <CardHeader className="p-0 mb-10">
+            <CardTitle className="text-2xl font-black tracking-tight">Classification Distribution</CardTitle>
+            <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Visits by User Type</CardDescription>
+          </CardHeader>
+          <CardContent className="p-0 h-[300px] w-full">
+            <ChartContainer config={chartConfig} className="h-full w-full">
+              <BarChart data={chartData.userType}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.1} />
+                <XAxis 
+                  dataKey="name" 
+                  tickLine={false} 
+                  axisLine={false} 
+                  tick={{ fontSize: 10, fontWeight: 900 }}
+                  tickFormatter={(val) => val.toUpperCase()}
+                />
+                <YAxis hide />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="value" fill="var(--color-value)" radius={[10, 10, 0, 0]} />
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+
+        <Card className="glass rounded-[3rem] p-10 border border-black/5 dark:border-white/18">
+          <CardHeader className="p-0 mb-10">
+            <CardTitle className="text-2xl font-black tracking-tight">Top Affiliations</CardTitle>
+            <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Most active colleges & offices</CardDescription>
+          </CardHeader>
+          <CardContent className="p-0 h-[300px] w-full">
+            <ChartContainer config={chartConfig} className="h-full w-full">
+              <PieChart>
+                <Pie
+                  data={chartData.college}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  stroke="none"
+                  paddingAngle={5}
+                >
+                  {chartData.college.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Pie>
+                <ChartTooltip content={<ChartTooltipContent />} />
+              </PieChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
       </div>
 
       {showFilters && (
@@ -303,11 +385,7 @@ export default function AdminDashboard() {
                       onSelect={(date) => {
                         setStartDate(date);
                         setIsStartOpen(false);
-                        if (!endDate || (date && isBefore(endDate, date))) {
-                          setIsEndOpen(true);
-                        }
                       }}
-                      disabled={(date) => endDate ? isAfter(date, endOfDay(endDate)) : false}
                       initialFocus
                     />
                   </PopoverContent>
@@ -340,7 +418,6 @@ export default function AdminDashboard() {
                         setEndDate(date);
                         setIsEndOpen(false);
                       }}
-                      disabled={(date) => startDate ? isBefore(date, startOfDay(startDate)) : false}
                       initialFocus
                     />
                   </PopoverContent>
@@ -351,23 +428,13 @@ export default function AdminDashboard() {
             <Button 
               variant="ghost" 
               onClick={clearFilters}
-              className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border border-destructive/30 text-destructive bg-destructive/5 hover:bg-destructive hover:text-white shadow-sm"
+              className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border border-destructive/30 text-destructive bg-destructive/5 hover:bg-destructive hover:text-white"
             >
               <XCircle className="h-3.5 w-3.5 mr-2" />
               Clear
             </Button>
           </div>
         </Card>
-      )}
-
-      {logsError && (
-        <Alert variant="destructive" className="glass rounded-[3rem] p-10 border border-destructive/20 shadow-xl">
-          <AlertCircle className="h-8 w-8" />
-          <AlertTitle className="text-2xl font-black ml-4">Terminal Error</AlertTitle>
-          <AlertDescription className="mt-4 text-lg font-bold opacity-80">
-            Database indexing required. Contact system administrator.
-          </AlertDescription>
-        </Alert>
       )}
 
       <Card className="glass overflow-hidden rounded-[3rem] border border-black/5 dark:border-white/18">
@@ -381,9 +448,7 @@ export default function AdminDashboard() {
                 Activity Stream
               </CardTitle>
               <CardDescription className="text-sm font-bold opacity-60 mt-1">
-                {searchQuery || startDate || endDate 
-                  ? `Showing ${filteredLogs.length} matching entries`
-                  : `System-wide historical logs`}
+                {filteredLogs.length} matching entries found in terminal
               </CardDescription>
             </div>
           </div>
@@ -392,16 +457,14 @@ export default function AdminDashboard() {
           {logsLoading ? (
             <div className="p-32 flex flex-col items-center justify-center gap-6">
               <LoaderCircle className="h-12 w-12 animate-spin text-primary/30" />
-              <p className="text-[11px] font-black uppercase tracking-[0.3em] opacity-30">Decrypting Sync...</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.3em] opacity-30">Syncing logs...</p>
             </div>
           ) : filteredLogs.length === 0 ? (
             <div className="p-40 text-center flex flex-col items-center gap-8">
-              <div className="p-8 rounded-full bg-black/5 border border-black/5">
-                <Search className="h-12 w-12 text-muted-foreground opacity-20" />
-              </div>
+              <Search className="h-12 w-12 text-muted-foreground opacity-20" />
               <div className="space-y-2">
-                <h3 className="text-3xl font-black tracking-tight text-foreground">Zero Activity Found</h3>
-                <p className="text-muted-foreground text-lg font-bold opacity-70">Adjust filters to display terminal data.</p>
+                <h3 className="text-2xl font-black tracking-tight">No Activity Detected</h3>
+                <p className="text-muted-foreground font-bold">Adjust filters to display terminal data.</p>
               </div>
             </div>
           ) : (
@@ -419,11 +482,10 @@ export default function AdminDashboard() {
                 <TableBody>
                   {filteredLogs.map((log) => {
                     const isBlocked = userStatusMap[log.uid] || false;
-                    
                     return (
-                      <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10 group">
+                      <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10">
                         <TableCell className="pl-10 py-6 whitespace-nowrap font-bold text-muted-foreground/70">
-                          {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, h:mm a') : '...'}
+                          {log.timestamp ? format(log.timestamp.toDate(), 'PP p') : '...'}
                         </TableCell>
                         <TableCell className="font-black text-foreground">
                           <div className="flex flex-col">
@@ -432,7 +494,7 @@ export default function AdminDashboard() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="w-32 justify-center rounded-xl py-1.5 font-black text-[10px] uppercase tracking-widest bg-black/5 border-black/5 dark:border-white/10 text-primary shadow-sm">
+                          <Badge variant="outline" className="w-32 justify-center rounded-xl py-1.5 font-black text-[10px] uppercase tracking-widest bg-black/5 border-black/5 text-primary">
                             {log.userType}
                           </Badge>
                         </TableCell>
@@ -454,15 +516,9 @@ export default function AdminDashboard() {
                             {blockingUid === log.uid ? (
                               <LoaderCircle className="h-4 w-4 animate-spin" />
                             ) : isBlocked ? (
-                              <>
-                                <UserCheck className="h-3.5 w-3.5 mr-2" />
-                                Restore
-                              </>
+                              <><UserCheck className="h-3.5 w-3.5 mr-2" />Restore</>
                             ) : (
-                              <>
-                                <UserX className="h-3.5 w-3.5 mr-2" />
-                                Block
-                              </>
+                              <><UserX className="h-3.5 w-3.5 mr-2" />Block</>
                             )}
                           </Button>
                         </TableCell>
