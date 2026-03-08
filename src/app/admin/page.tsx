@@ -48,9 +48,10 @@ import {
   PieChart, 
   Pie, 
   Cell, 
-  ResponsiveContainer 
+  ResponsiveContainer,
+  LabelList
 } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, type ChartConfig } from '@/components/ui/chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function AdminDashboard() {
@@ -274,8 +275,8 @@ export default function AdminDashboard() {
                 value="analytics" 
                 className={cn(
                   "rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2",
-                  "text-muted-foreground bg-transparent", // Inactive
-                  "data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 data-[state=active]:ring-2 data-[state=active]:ring-primary/20" // Unified Active State: Blue Text & Blue Logo
+                  "text-muted-foreground bg-transparent", 
+                  "data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 data-[state=active]:ring-2 data-[state=active]:ring-primary/20" 
                 )}
               >
                 <PieChartIcon className="h-3.5 w-3.5" />
@@ -285,8 +286,8 @@ export default function AdminDashboard() {
                 value="activity" 
                 className={cn(
                   "rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2",
-                  "text-muted-foreground bg-transparent", // Inactive
-                  "data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 data-[state=active]:ring-2 data-[state=active]:ring-primary/20" // Unified Active State: Blue Text & Blue Logo
+                  "text-muted-foreground bg-transparent", 
+                  "data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 data-[state=active]:ring-2 data-[state=active]:ring-primary/20" 
                 )}
               >
                 <Activity className="h-3.5 w-3.5" />
@@ -330,7 +331,7 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent className="p-0 h-[400px] w-full">
                 <ChartContainer config={chartConfig} className="h-full w-full">
-                  <BarChart data={chartData.userType} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                  <BarChart data={chartData.userType} margin={{ top: 30, right: 0, left: 0, bottom: 0 }}>
                     <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.1} />
                     <XAxis 
                       dataKey="name" 
@@ -339,7 +340,7 @@ export default function AdminDashboard() {
                       tick={{ fontSize: 10, fontWeight: 900 }}
                       tickFormatter={(val) => val.toUpperCase()}
                     />
-                    <YAxis hide />
+                    <YAxis hide domain={[0, 'auto']} />
                     <ChartTooltip cursor={{ fill: 'transparent' }} content={<ChartTooltipContent gap={6} />} />
                     <Bar 
                       dataKey="value" 
@@ -347,6 +348,12 @@ export default function AdminDashboard() {
                       radius={[10, 10, 0, 0]} 
                       barSize={60}
                     >
+                      <LabelList 
+                        dataKey="value" 
+                        position="top" 
+                        offset={10} 
+                        className="fill-foreground font-black text-[10px]"
+                      />
                       {chartData.userType.map((entry, index) => (
                         <Cell 
                           key={`cell-${index}`} 
@@ -364,27 +371,33 @@ export default function AdminDashboard() {
                 <CardTitle className="text-2xl font-black tracking-tight">Top Affiliations</CardTitle>
                 <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Most active colleges & offices</CardDescription>
               </CardHeader>
-              <CardContent className="p-0 h-[400px] w-full">
-                <ChartContainer config={chartConfig} className="h-full w-full">
-                  <PieChart>
-                    <Pie
-                      data={chartData.college}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={150}
-                      innerRadius={60}
-                      stroke="none"
-                      paddingAngle={0}
-                    >
-                      {chartData.college.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} className="hover:opacity-80 transition-opacity" />
-                      ))}
-                    </Pie>
-                    <ChartTooltip content={<ChartTooltipContent gap={6} />} />
-                  </PieChart>
-                </ChartContainer>
+              <CardContent className="p-0 h-[400px] w-full flex flex-col">
+                <div className="flex-1">
+                  <ChartContainer config={chartConfig} className="h-full w-full">
+                    <PieChart>
+                      <Pie
+                        data={chartData.college}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={130}
+                        innerRadius={60}
+                        stroke="none"
+                        paddingAngle={2}
+                      >
+                        {chartData.college.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} className="hover:opacity-80 transition-opacity" />
+                        ))}
+                      </Pie>
+                      <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                      <ChartLegend 
+                        content={<ChartLegendContent nameKey="name" />} 
+                        verticalAlign="bottom" 
+                      />
+                    </PieChart>
+                  </ChartContainer>
+                </div>
               </CardContent>
             </Card>
           </div>
