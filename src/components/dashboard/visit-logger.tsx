@@ -122,7 +122,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
 
   if (isLogged) {
     return (
-      <Card className="glass p-12 text-center animate-in zoom-in-95 duration-500 rounded-[3rem] border border-black/5 dark:border-white/20 shadow-2xl">
+      <Card className="glass p-12 text-center animate-in zoom-in-95 duration-500 rounded-[3rem] border border-black/5 dark:border-white/20 shadow-2xl shadow-primary/10">
         <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-green-500/10 text-green-500 shadow-inner">
           <CheckCircle2 className="h-12 w-12" />
         </div>
@@ -143,7 +143,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   }
 
   return (
-    <Card className="glass rounded-[3rem] overflow-hidden border border-black/5 dark:border-white/20 shadow-2xl">
+    <Card className="glass rounded-[3rem] overflow-hidden border border-black/5 dark:border-white/20 shadow-2xl shadow-primary/10">
       <CardHeader className="bg-white/5 dark:bg-white/5 pb-10 pt-10 px-10 border-b border-black/5 dark:border-white/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5">
@@ -151,8 +151,10 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
               <Library className="h-8 w-8" />
             </div>
             <div>
-              <CardTitle className="text-3xl font-black tracking-tighter text-blue-gradient">Visit Log</CardTitle>
-              <CardDescription className="text-sm font-medium opacity-60 tracking-tight text-muted-foreground">Identity verification terminal</CardDescription>
+              <CardTitle className="leading-none">
+                <span className="text-3xl font-black tracking-tighter text-blue-gradient">Visit Log</span>
+              </CardTitle>
+              <CardDescription className="text-sm font-medium opacity-60 tracking-tight text-muted-foreground mt-1">Identity verification terminal</CardDescription>
             </div>
           </div>
           <Badge className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.25em] blue-gradient text-white rounded-full shadow-lg shadow-primary/20 border-none">

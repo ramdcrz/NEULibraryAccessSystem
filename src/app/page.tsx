@@ -18,27 +18,25 @@ export default function Home() {
 
   // Kiosk Idle Timeout (20 Seconds)
   useEffect(() => {
-    // Only apply timeout to standard users who haven't finished logging their visit
     if (!user || user.role === 'admin' || hasLogged) return;
 
     let timeoutId: number;
 
     const handleTimeout = () => {
-      // Redirect with a flag before signing out to trigger the notification
       router.push('/login?timeout=true');
       signOut();
     };
 
     const resetTimer = () => {
       if (timeoutId) window.clearTimeout(timeoutId);
-      timeoutId = window.setTimeout(handleTimeout, 20000); // 20 seconds of inactivity
+      timeoutId = window.setTimeout(handleTimeout, 20000); 
     };
 
     const handleActivity = () => resetTimer();
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
     
     events.forEach(event => document.addEventListener(event, handleActivity));
-    resetTimer(); // Start the initial timer
+    resetTimer(); 
 
     return () => {
       if (timeoutId) window.clearTimeout(timeoutId);
@@ -108,7 +106,7 @@ export default function Home() {
               University Terminal
             </div>
             <h1 className="text-6xl font-extrabold tracking-tight sm:text-7xl md:text-8xl text-foreground">
-              Hello, <span className="blue-gradient bg-clip-text text-transparent">{getFirstName()}!</span>
+              Hello, <span className="text-blue-gradient">{getFirstName()}!</span>
             </h1>
             <p className="mx-auto max-w-4xl text-xl font-medium text-muted-foreground md:text-2xl leading-relaxed tracking-tight">
               {needsOnboarding 

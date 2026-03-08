@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 function LoginContent() {
   const { user, loading, signInWithGoogle } = useAuth();
@@ -26,7 +27,6 @@ function LoginContent() {
   useEffect(() => {
     const isTimeout = searchParams.get('timeout') === 'true';
     if (isTimeout) {
-      // Small delay to ensure the UI has settled
       const timer = setTimeout(() => {
         toast({
           variant: "default",
@@ -41,7 +41,6 @@ function LoginContent() {
           duration: 5000,
         });
         
-        // Clean up the URL
         const params = new URLSearchParams(searchParams.toString());
         params.delete('timeout');
         router.replace(params.toString() ? `/login?${params.toString()}` : '/login');
@@ -87,13 +86,15 @@ function LoginContent() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 animate-in fade-in duration-1000">
-      <div className="w-full max-w-md flex flex-col items-center justify-center gap-12 animate-in fade-in duration-1000 ease-in-out">
+      <div className="w-full max-w-md flex flex-col items-center justify-center gap-12">
         <Card className="w-full glass border border-black/5 dark:border-white/20 animate-in zoom-in-95 duration-1000 shadow-2xl shadow-primary/20 relative overflow-hidden">
           <CardHeader className="text-center pb-12 pt-24 px-10 relative z-10">
             <div className="mx-auto mb-10 flex h-24 w-24 items-center justify-center rounded-[2.5rem] blue-gradient text-white animate-bounce shadow-xl shadow-primary/30">
               <BookMarked className="h-12 w-12" />
             </div>
-            <CardTitle className="text-5xl font-black tracking-tighter blue-gradient bg-clip-text text-transparent mb-2">NEU Library</CardTitle>
+            <CardTitle className="mb-2">
+              <span className="text-5xl font-black tracking-tighter text-blue-gradient">NEU Library</span>
+            </CardTitle>
             <CardDescription className="text-muted-foreground text-lg font-medium px-4">
               Access Management Terminal
             </CardDescription>
@@ -106,7 +107,7 @@ function LoginContent() {
               variant="outline"
             >
               <GoogleIcon />
-              <span className="text-sm font-black uppercase tracking-widest blue-gradient bg-clip-text text-transparent">
+              <span className="text-sm font-black uppercase tracking-widest text-blue-gradient">
                 Official University Sign In
               </span>
             </Button>
@@ -118,7 +119,7 @@ function LoginContent() {
           </CardContent>
         </Card>
         
-        <p className="text-[11px] font-black uppercase tracking-[0.35em] text-muted-foreground/60 text-center px-8 py-3 rounded-full glass w-full max-w-[450px] whitespace-nowrap shadow-sm">
+        <p className="text-[11px] font-black uppercase tracking-[0.35em] text-muted-foreground/60 text-center px-8 py-3 rounded-full glass w-full max-w-[450px] shadow-sm">
           New Era University • Library Systems
         </p>
       </div>
