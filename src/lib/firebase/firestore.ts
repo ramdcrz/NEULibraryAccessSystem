@@ -11,7 +11,7 @@ import {
 import { db } from './config';
 import type { UserProfile, VisitLogPayload } from '@/types';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 
 // Fetch a user document from Firestore
 export async function getUserDoc(uid: string): Promise<UserProfile | null> {
@@ -26,7 +26,7 @@ export async function getUserDoc(uid: string): Promise<UserProfile | null> {
       role: data.role,
       user_type: data.user_type,
       college_office: data.college_office,
-      isBlocked: data.isBlocked,
+      isBlocked: !!data.isBlocked,
       createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
     } as UserProfile;
   } else {
@@ -43,12 +43,12 @@ export function updateUserDoc(uid: string, data: Partial<UserProfile>) {
       path: userRef.path,
       operation: 'update',
       requestResourceData: data,
-    }));
+    } satisfies SecurityRuleContext));
   });
 }
 
 /**
- * Toggles the blocked status of a user using camelCase field: isBlocked.
+ * Toggles the blocked status of a user.
  */
 export async function toggleUserBlock(uid: string) {
   if (!uid || typeof uid !== 'string') {
@@ -82,23 +82,30 @@ export function addVisitLog(logData: VisitLogPayload) {
   };
 
   addDoc(visitLogsCollection, payload).catch(async (error) => {
-    const permissionError = new FirestorePermissionError({
-      path: visitLogsCollection.path,
-      operation: 'create',
-      requestResourceData: payload,
-    });
-    errorEmitter.emit('permission-error', permissionError);
+    // Only emit the specialized permission error if it's truly a permission issue.
+    if (error.code === 'permission-denied') {
+      const permissionError = new FirestorePermissionError({
+        path: visitLogsCollection.path,
+        operation: 'create',
+        requestResourceData: payload,
+      } satisfies SecurityRuleContext);
+      errorEmitter.emit('permission-error', permissionError);
+    } else {
+      // For other errors (like missing index), we let the console log show the fix link.
+      console.error("Firestore AddDoc Error:", error);
+    }
   });
 }
 
 /**
  * Checks out a user from an existing visit log and calculates duration.
  */
-export function checkOutVisitLog(logId: string, entryTimestamp: Timestamp) {
+export function checkOutVisitLog(logId: string, entryTimestamp: Timestamp | null) {
   const logRef = doc(db, 'visit_logs', logId);
   
   // Calculate duration locally for immediate display (approximate)
-  const entryDate = entryTimestamp.toDate();
+  // If entryTimestamp is pending (null), we default to 1 minute stay.
+  const entryDate = entryTimestamp ? entryTimestamp.toDate() : new Date();
   const exitDate = new Date();
   const durationMs = exitDate.getTime() - entryDate.getTime();
   const durationMinutes = Math.max(1, Math.round(durationMs / (1000 * 60)));
@@ -109,10 +116,14 @@ export function checkOutVisitLog(logId: string, entryTimestamp: Timestamp) {
   };
 
   updateDoc(logRef, updateData).catch(async (error) => {
-    errorEmitter.emit('permission-error', new FirestorePermissionError({
-      path: logRef.path,
-      operation: 'update',
-      requestResourceData: updateData,
-    }));
+    if (error.code === 'permission-denied') {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: logRef.path,
+        operation: 'update',
+        requestResourceData: updateData,
+      } satisfies SecurityRuleContext));
+    } else {
+      console.error("Firestore UpdateDoc Error:", error);
+    }
   });
 }

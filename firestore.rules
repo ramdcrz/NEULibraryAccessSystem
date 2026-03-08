@@ -9,34 +9,39 @@ service cloud.firestore {
     }
 
     // Helper: Is the requester an admin?
-    // This helper performs a cross-document lookup to the users collection.
+    // Optimized to use .get() with a default value for safety.
     function isSystemAdmin() {
       return isSignedIn() && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', 'user') == 'admin';
     }
 
     // 1. VISIT LOGS
     match /visit_logs/{logId} {
-      // Create: Any signed-in user can log their own visit.
+      // Create: Any signed-in user can record their own entry.
+      // We check that the UID in the data matches the authenticated user.
       allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
       
-      // Update: Users can update (check-out) their own logs. Admins can manage all.
+      // Update: Users can finalize (check-out) their own logs. Admins have full override.
       allow update: if isSignedIn() && (
         resource.data.uid == request.auth.uid || 
         isSystemAdmin()
       );
       
-      // Read/List: Admins can see all logs. Users can see their own logs (must use filtered query).
+      // Read/List: Users can see their own history. Admins can see everything.
+      // Note: Non-admins MUST use a filtered query: .where('uid', '==', user.uid)
       allow read, list: if isSignedIn() && (
         isSystemAdmin() || 
         resource.data.uid == request.auth.uid
       );
+      
+      // Delete: Restricted to system administrators.
+      allow delete: if isSystemAdmin();
     }
 
-    // 2. USER PROFILE RULES
+    // 2. USER PROFILES
     match /users/{userId} {
-      // Users can read/write their own profile. Admins can access all.
+      // Create/Read/Update: Users manage their own profile. Admins can manage all.
+      // userId is the document ID, which corresponds to request.auth.uid.
       allow read, write: if isSignedIn() && (
         request.auth.uid == userId || 
         isSystemAdmin()
