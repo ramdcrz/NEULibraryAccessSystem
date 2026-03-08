@@ -4,7 +4,38 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { LoaderCircle, ChevronRight, Library, LogOut, CheckCircle2, User, School, Clock, MoveRight, AlertCircle } from 'lucide-react';
+import { 
+  LoaderCircle, 
+  ChevronRight, 
+  Library, 
+  LogOut, 
+  CheckCircle2, 
+  User, 
+  School, 
+  Clock, 
+  MoveRight, 
+  AlertCircle,
+  GraduationCap,
+  UserCog,
+  Briefcase,
+  BookMarked,
+  Calculator,
+  Sprout,
+  Palette,
+  BarChart,
+  MessageSquare,
+  Cpu,
+  Shield,
+  BookOpen,
+  PencilRuler,
+  Microscope,
+  Baby,
+  Music,
+  Stethoscope,
+  Activity,
+  Wind,
+  Globe
+} from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -35,6 +66,7 @@ import { Separator } from '@/components/ui/separator';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { collection, query, where, orderBy, limit } from 'firebase/firestore';
 import { format, isSameDay, differenceInHours } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 const visitReasons = [
   'Reading',
@@ -59,6 +91,42 @@ const formSchema = z.object({
   path: ["otherReason"],
 });
 
+// Icon Mapping Helpers
+function getUserTypeIcon(type: string | null | undefined) {
+  switch (type) {
+    case 'Student': return GraduationCap;
+    case 'Staff': return UserCog;
+    case 'Employee': return Briefcase;
+    default: return User;
+  }
+}
+
+function getAffiliationIcon(name: string | null | undefined) {
+  if (!name) return School;
+  
+  const iconMap: Record<string, any> = {
+    'College of Accountancy': Calculator,
+    'College of Agriculture': Sprout,
+    'College of Arts and Science': Palette,
+    'College of Business Administration': BarChart,
+    'College of Communication': MessageSquare,
+    'College of Informatics and Computing Studies': Cpu,
+    'College of Criminology': Shield,
+    'College of Education': BookOpen,
+    'College of Engineering and Architecture': PencilRuler,
+    'College of Medical Technology': Microscope,
+    'College of Midwifery': Baby,
+    'College of Music': Music,
+    'College of Nursing': Stethoscope,
+    'College of Physical Therapy': Activity,
+    'College of Respiratory Therapy': Wind,
+    'School of International Relations': Globe,
+  };
+
+  // If it's a college, return the specific icon, otherwise return the school logo for offices
+  return iconMap[name] || BookMarked;
+}
+
 export default function VisitLogger({ user, onLogSuccess }: { user: AuthenticatedUser; onLogSuccess?: () => void }) {
   const { toast } = useToast();
   const { signOut } = useAuth();
@@ -67,6 +135,9 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLogged, setIsLogged] = useState(false);
   const [smartActiveLog, setSmartActiveLog] = useState<any>(null);
+
+  const UserTypeIcon = getUserTypeIcon(user.user_type);
+  const AffiliationIcon = getAffiliationIcon(user.college_office);
 
   // Check for active session
   const activeSessionQuery = useMemoFirebase(() => {
@@ -94,11 +165,9 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
         const sameDay = isSameDay(entryTime, now);
         const hoursDiff = differenceInHours(now, entryTime);
 
-        // Rule: Normal Check-Out if same day AND < 3 hours
         if (sameDay && hoursDiff < 3) {
           setSmartActiveLog(lastLog);
         } else {
-          // Rule: Auto-Close Fallback if previous day OR > 3 hours
           autoCloseVisitLog(lastLog.id, lastLog.timestamp);
           setSmartActiveLog(null);
           toast({
@@ -302,21 +371,21 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
               <div className="md:col-span-2 p-6 rounded-3xl glass flex flex-col items-start justify-center text-left border border-black/5 dark:border-white/20 hover:bg-black/5 transition-all relative overflow-hidden group">
-                <div className="absolute -bottom-20 -right-20 opacity-[0.15] group-hover:opacity-[0.22] transition-all duration-700 rotate-12 group-hover:rotate-6">
-                  <User className="h-40 w-40 text-primary" />
+                <div className="absolute -bottom-20 -right-20 opacity-[0.1] group-hover:opacity-[0.15] transition-all duration-700 rotate-12 group-hover:rotate-6">
+                  <UserTypeIcon className="h-40 w-40 text-primary" />
                 </div>
                 <div className="flex items-center gap-2 mb-2 text-primary/60 relative z-10">
-                  <User className="h-3.5 w-3.5" />
+                  <UserTypeIcon className="h-3.5 w-3.5" />
                   <span className="text-[10px] font-black uppercase tracking-widest">ID Class</span>
                 </div>
                 <p className="text-lg font-black text-foreground relative z-10">{user.user_type}</p>
               </div>
               <div className="md:col-span-3 p-6 rounded-3xl glass border border-black/5 dark:border-white/20 hover:bg-black/5 transition-all relative overflow-hidden group">
-                <div className="absolute -bottom-20 -right-20 opacity-[0.15] group-hover:opacity-[0.22] transition-all duration-700 rotate-12 group-hover:rotate-6">
-                  <School className="h-40 w-40 text-primary" />
+                <div className="absolute -bottom-20 -right-20 opacity-[0.1] group-hover:opacity-[0.15] transition-all duration-700 rotate-12 group-hover:rotate-6">
+                  <AffiliationIcon className="h-40 w-40 text-primary" />
                 </div>
                 <div className="flex items-center gap-2 mb-2 text-primary/60 relative z-10">
-                  <School className="h-3.5 w-3.5" />
+                  <AffiliationIcon className="h-3.5 w-3.5" />
                   <span className="text-[10px] font-black uppercase tracking-widest">University Affiliation</span>
                 </div>
                 <p className="text-base font-black text-foreground truncate relative z-10" title={user.college_office ?? ''}>

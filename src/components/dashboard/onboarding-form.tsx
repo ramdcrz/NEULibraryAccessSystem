@@ -1,9 +1,36 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { LoaderCircle, ChevronRight, School, UserCircle, ShieldCheck } from 'lucide-react';
+import { 
+  LoaderCircle, 
+  ChevronRight, 
+  School, 
+  UserCircle, 
+  ShieldCheck,
+  GraduationCap,
+  UserCog,
+  Briefcase,
+  BookMarked,
+  Calculator,
+  Sprout,
+  Palette,
+  BarChart,
+  MessageSquare,
+  Cpu,
+  Shield,
+  BookOpen,
+  PencilRuler,
+  Microscope,
+  Baby,
+  Music,
+  Stethoscope,
+  Activity,
+  Wind,
+  Globe
+} from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -78,6 +105,32 @@ type OnboardingFormProps = {
 
 const BACKDOOR_EMAIL = 'nemostyles009@gmail.com';
 
+// Icon Mapping Helper for Onboarding
+function getAffiliationIcon(name: string | null | undefined) {
+  if (!name) return School;
+  
+  const iconMap: Record<string, any> = {
+    'College of Accountancy': Calculator,
+    'College of Agriculture': Sprout,
+    'College of Arts and Science': Palette,
+    'College of Business Administration': BarChart,
+    'College of Communication': MessageSquare,
+    'College of Informatics and Computing Studies': Cpu,
+    'College of Criminology': Shield,
+    'College of Education': BookOpen,
+    'College of Engineering and Architecture': PencilRuler,
+    'College of Medical Technology': Microscope,
+    'College of Midwifery': Baby,
+    'College of Music': Music,
+    'College of Nursing': Stethoscope,
+    'College of Physical Therapy': Activity,
+    'College of Respiratory Therapy': Wind,
+    'School of International Relations': Globe,
+  };
+
+  return iconMap[name] || BookMarked;
+}
+
 export default function OnboardingForm({ user }: OnboardingFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -94,6 +147,9 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
       user_type: user.user_type || (isAutoStudent ? 'Student' : undefined),
     }
   });
+
+  const selectedAffiliation = form.watch('college_office');
+  const AffiliationIcon = getAffiliationIcon(selectedAffiliation);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
@@ -115,7 +171,7 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
   }
 
   return (
-    <Card className="glass overflow-hidden border-none">
+    <Card className="glass overflow-hidden border-none shadow-2xl shadow-primary/10">
       <CardHeader className="bg-primary/5 pb-3">
         <div className="flex items-center gap-3 mb-1">
           <div className="p-2 rounded-xl blue-gradient text-white shadow-inner rotate-0 hover:rotate-6 transition-transform">
@@ -139,7 +195,10 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
                   render={({ field }) => (
                     <FormItem className="space-y-3">
                       <FormLabel className="text-base font-bold flex items-center gap-2">
-                        <UserCircle className="h-4 w-4 text-primary" />
+                        {field.value === 'Student' ? <GraduationCap className="h-4 w-4 text-primary" /> : 
+                         field.value === 'Staff' ? <UserCog className="h-4 w-4 text-primary" /> :
+                         field.value === 'Employee' ? <Briefcase className="h-4 w-4 text-primary" /> :
+                         <UserCircle className="h-4 w-4 text-primary" />}
                         Identity Classification
                       </FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
@@ -149,8 +208,16 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="rounded-xl">
-                          <SelectItem value="Staff" className="py-2.5 text-sm cursor-pointer">Staff Member</SelectItem>
-                          <SelectItem value="Employee" className="py-2.5 text-sm cursor-pointer">University Employee</SelectItem>
+                          <SelectItem value="Staff" className="py-2.5 text-sm cursor-pointer">
+                            <div className="flex items-center gap-2">
+                              <UserCog className="h-4 w-4" /> Staff Member
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="Employee" className="py-2.5 text-sm cursor-pointer">
+                            <div className="flex items-center gap-2">
+                              <Briefcase className="h-4 w-4" /> University Employee
+                            </div>
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormDescription className="text-xs font-medium px-1">
@@ -168,7 +235,7 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
                 render={({ field }) => (
                   <FormItem className="space-y-3">
                     <FormLabel className="text-base font-bold flex items-center gap-2">
-                      <School className="h-4 w-4 text-primary" />
+                      <AffiliationIcon className="h-4 w-4 text-primary" />
                       Academic Affiliation
                     </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
@@ -207,7 +274,7 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
 
             <Button 
               type="submit" 
-              className="w-full h-14 text-lg font-black rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] group blue-gradient text-white border-none" 
+              className="w-full h-14 text-lg font-black rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] group blue-gradient text-white border-none shadow-lg shadow-primary/20" 
               disabled={isSubmitting}
             >
               {isSubmitting ? (
