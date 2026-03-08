@@ -73,7 +73,7 @@ export default function LoginPage() {
             <Button
               onClick={handleSignIn}
               disabled={isAuthenticating}
-              className="w-full h-16 text-lg font-black transition-all hover:bg-primary/[0.05] hover:border-primary/20 border-2 rounded-2xl gap-4 active:scale-95 shadow-sm"
+              className="w-full h-16 text-[10px] font-black uppercase tracking-widest transition-all hover:bg-primary/[0.05] hover:border-primary/20 border-2 rounded-full gap-4 active:scale-95 shadow-sm"
               variant="outline"
             >
               <GoogleIcon />
@@ -87,7 +87,7 @@ export default function LoginPage() {
           </CardContent>
         </Card>
         
-        <p className="text-[11px] font-black uppercase tracking-[0.35em] text-muted-foreground/40 text-center px-8 py-3 rounded-full border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 w-full max-w-[450px] whitespace-nowrap">
+        <p className="text-[11px] font-black uppercase tracking-[0.35em] text-muted-foreground/60 text-center px-8 py-3 rounded-full border glass w-full max-w-[450px] whitespace-nowrap shadow-sm">
           New Era University • Library Systems
         </p>
       </div>
