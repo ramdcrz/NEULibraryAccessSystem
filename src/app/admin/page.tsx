@@ -213,16 +213,16 @@ export default function AdminDashboard() {
       doc.text('University Visit Activity Report', 14, 32);
       
       const tableRows = filteredLogs.map(log => [
-        log.timestamp ? format(log.timestamp.toDate(), 'PP p') : 'Pending...',
-        log.status?.toUpperCase() || 'ACTIVE',
-        log.email,
-        formatDuration(log.duration, 'ONGOING'),
+        log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : 'Pending...',
+        log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--',
+        `${log.email} (${log.userType})`,
+        formatDuration(log.duration, 'Ongoing', false),
         log.reason
       ]);
 
       autoTable(doc, {
         startY: 45,
-        head: [['Timeline', 'Status', 'Identity', 'Duration', 'Purpose']],
+        head: [['Time In', 'Time Out', 'Identity', 'Duration', 'Purpose']],
         body: tableRows,
         theme: 'grid',
         headStyles: { fillColor: [37, 99, 235], textColor: 255, fontSize: 8, fontStyle: 'bold' },
@@ -232,6 +232,7 @@ export default function AdminDashboard() {
       doc.save(`NEULibrary_Logs_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
       toast({ title: "Report Generated", description: "PDF report downloaded." });
     } catch (error: any) {
+      console.error('Export error:', error);
       toast({ variant: "destructive", title: "Export Error", description: "Failed to generate PDF." });
     } finally {
       setIsExporting(false);
@@ -595,10 +596,9 @@ export default function AdminDashboard() {
                               <TableCell>
                                 <div className="flex justify-center">
                                   <Badge 
-                                    variant={log.duration ? "default" : "secondary"} 
                                     className={cn(
-                                      "rounded-2xl font-black text-[10px] py-1.5 px-4 w-32 flex justify-center border-none pointer-events-none shadow-none",
-                                      log.duration ? "bg-primary/10 text-primary hover:bg-primary/10" : "opacity-40 hover:bg-secondary"
+                                      "rounded-2xl font-black text-[10px] py-1.5 px-4 w-32 flex justify-center border-none pointer-events-none shadow-none uppercase",
+                                      log.duration ? "bg-primary/10 text-primary hover:bg-primary/10" : "bg-secondary text-muted-foreground"
                                     )}
                                   >
                                     {formatDuration(log.duration)}
