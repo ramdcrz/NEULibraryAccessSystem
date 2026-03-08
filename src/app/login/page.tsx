@@ -73,11 +73,13 @@ export default function LoginPage() {
             <Button
               onClick={handleSignIn}
               disabled={isAuthenticating}
-              className="w-full h-16 text-[10px] font-black uppercase tracking-widest transition-all hover:bg-primary/[0.05] hover:border-primary/20 border-2 rounded-full gap-4 active:scale-95 shadow-sm"
+              className="w-full h-16 transition-all hover:bg-primary/[0.05] hover:border-primary/20 border-2 rounded-full gap-4 active:scale-95 shadow-sm"
               variant="outline"
             >
               <GoogleIcon />
-              <span className="text-foreground">Official University Sign In</span>
+              <span className="text-sm font-black uppercase tracking-widest text-purple-gradient">
+                Official University Sign In
+              </span>
             </Button>
             
             <div className="mt-12 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
