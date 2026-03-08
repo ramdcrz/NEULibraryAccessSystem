@@ -7,7 +7,6 @@ import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { 
   ShieldCheck, 
-  AlertCircle, 
   UserX, 
   UserCheck, 
   LoaderCircle, 
@@ -18,14 +17,12 @@ import {
   Filter,
   BarChart3,
   Users,
-  Clock,
-  LayoutDashboard
+  Clock
 } from 'lucide-react';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { format, startOfDay, endOfDay, isAfter, isBefore } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -85,7 +82,7 @@ export default function AdminDashboard() {
     return collection(firestore, 'users');
   }, [firestore, user?.uid, user?.role]);
 
-  const { data: allLogs, isLoading: logsLoading, error: logsError } = useCollection(logsQuery);
+  const { data: allLogs, isLoading: logsLoading } = useCollection(logsQuery);
   const { data: allUsers } = useCollection(usersQuery);
 
   const stats = useMemo(() => {
