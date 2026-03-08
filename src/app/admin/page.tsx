@@ -276,7 +276,7 @@ export default function AdminDashboard() {
           { label: 'Today', val: stats.today, icon: Clock },
           { label: 'Verified Reach', val: stats.unique, icon: Users }
         ].map((stat, i) => (
-          <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group border border-black/5 dark:border-white/18">
+          <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
             <div className="absolute -bottom-8 -right-8 opacity-[0.15] group-hover:opacity-[0.22] transition-all duration-700 rotate-12 group-hover:rotate-6">
               <stat.icon className="h-32 w-32 text-primary" />
             </div>
@@ -287,14 +287,14 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card className="glass rounded-[3rem] p-10 border border-black/5 dark:border-white/18">
+        <Card className="glass rounded-[3rem] p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
           <CardHeader className="p-0 mb-10">
             <CardTitle className="text-2xl font-black tracking-tight">Classification Distribution</CardTitle>
             <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Visits by User Type</CardDescription>
           </CardHeader>
           <CardContent className="p-0 h-[300px] w-full">
             <ChartContainer config={chartConfig} className="h-full w-full">
-              <BarChart data={chartData.userType}>
+              <BarChart data={chartData.userType} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.1} />
                 <XAxis 
                   dataKey="name" 
@@ -311,7 +311,7 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="glass rounded-[3rem] p-10 border border-black/5 dark:border-white/18">
+        <Card className="glass rounded-[3rem] p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
           <CardHeader className="p-0 mb-10">
             <CardTitle className="text-2xl font-black tracking-tight">Top Affiliations</CardTitle>
             <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Most active colleges & offices</CardDescription>
@@ -325,7 +325,7 @@ export default function AdminDashboard() {
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  outerRadius={100}
+                  outerRadius={120}
                   stroke="none"
                   paddingAngle={5}
                 >
@@ -341,7 +341,7 @@ export default function AdminDashboard() {
       </div>
 
       {showFilters && (
-        <Card className="glass rounded-[3rem] p-10 border border-black/5 dark:border-white/18 animate-in zoom-in-95 duration-500">
+        <Card className="glass rounded-[3rem] p-10 border border-black/5 dark:border-white/18 animate-in zoom-in-95 duration-500 shadow-xl shadow-primary/5">
           <div className="flex flex-col lg:flex-row gap-8 items-end">
             <div className="flex-1 w-full space-y-4">
               <label className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground px-1 flex items-center gap-2">
@@ -434,7 +434,7 @@ export default function AdminDashboard() {
         </Card>
       )}
 
-      <Card className="glass overflow-hidden rounded-[3rem] border border-black/5 dark:border-white/18">
+      <Card className="glass overflow-hidden rounded-[3rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
         <CardHeader className="p-10 border-b border-black/5 dark:border-white/10 bg-black/5">
           <div className="flex items-center gap-5">
             <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-black/5 dark:border-white/10 shadow-inner">
