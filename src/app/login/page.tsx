@@ -86,9 +86,9 @@ function LoginContent() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 animate-in fade-in duration-1000">
       <div className="w-full max-w-md flex flex-col items-center justify-center gap-10">
-        <Card className="w-full glass border border-black/5 dark:border-white/20 animate-in zoom-in-95 duration-1000 shadow-2xl shadow-primary/20 relative overflow-hidden">
+        <Card className="w-full glass border border-black/5 dark:border-white/20 animate-in zoom-in-95 duration-1000 shadow-2xl shadow-primary/20 relative overflow-hidden rounded-[2rem]">
           <CardHeader className="text-center pb-12 pt-20 px-10 relative z-10">
-            <div className="mx-auto mb-10 flex h-24 w-24 items-center justify-center rounded-[2.5rem] blue-gradient text-white animate-bounce shadow-xl shadow-primary/30">
+            <div className="mx-auto mb-10 flex h-24 w-24 items-center justify-center rounded-2xl blue-gradient text-white animate-bounce shadow-xl shadow-primary/30">
               <BookMarked className="h-12 w-12" />
             </div>
             <CardTitle className="mb-2">
@@ -102,11 +102,11 @@ function LoginContent() {
             <Button
               onClick={handleSignIn}
               disabled={isAuthenticating}
-              className="w-full h-14 transition-all hover:bg-primary/[0.05] hover:border-primary/20 border-2 rounded-full gap-4 active:scale-95 shadow-sm"
+              className="w-full h-14 transition-all hover:bg-primary/[0.05] hover:border-primary/20 border-2 rounded-2xl gap-4 active:scale-95 shadow-sm"
               variant="outline"
             >
               <GoogleIcon />
-              <span className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-gradient">
+              <span className="text-sm font-black uppercase tracking-[0.2em] text-blue-gradient">
                 Official University Sign In
               </span>
             </Button>
@@ -118,7 +118,7 @@ function LoginContent() {
           </CardContent>
         </Card>
         
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center px-10 py-4 rounded-full glass w-full max-w-[420px] shadow-sm">
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center px-10 py-4 rounded-2xl glass w-full max-w-[420px] shadow-sm">
           New Era University • Library Systems
         </p>
       </div>

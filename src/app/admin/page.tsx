@@ -249,7 +249,7 @@ export default function AdminDashboard() {
             variant="ghost"
             onClick={() => setShowFilters(!showFilters)}
             className={cn(
-              "h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border shadow-sm",
+              "h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border shadow-sm",
               showFilters 
                 ? "bg-primary/10 text-primary border-primary/20" 
                 : "border-black/5 dark:border-white/10 bg-white/5 hover:bg-primary/10 hover:text-primary"
@@ -262,7 +262,7 @@ export default function AdminDashboard() {
           <Button 
             onClick={exportToPDF} 
             disabled={isExporting || logsLoading || filteredLogs.length === 0}
-            className="h-11 px-8 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+            className="h-12 px-8 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
           >
             {isExporting ? <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" /> : <FileDown className="h-3.5 w-3.5 mr-2" />}
             Export Activity
@@ -276,7 +276,7 @@ export default function AdminDashboard() {
           { label: 'Today', val: stats.today, icon: Clock },
           { label: 'Verified Reach', val: stats.unique, icon: Users }
         ].map((stat, i) => (
-          <Card key={i} className="glass rounded-[3rem] p-8 relative overflow-hidden group border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
+          <Card key={i} className="glass rounded-[2rem] p-8 relative overflow-hidden group border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
             <div className="absolute -bottom-8 -right-8 opacity-[0.15] group-hover:opacity-[0.22] transition-all duration-700 rotate-12 group-hover:rotate-6">
               <stat.icon className="h-32 w-32 text-primary" />
             </div>
@@ -287,12 +287,12 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card className="glass rounded-[3rem] p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
+        <Card className="glass rounded-[2rem] p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
           <CardHeader className="p-0 mb-10">
             <CardTitle className="text-2xl font-black tracking-tight">Classification Distribution</CardTitle>
             <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Visits by User Type</CardDescription>
           </CardHeader>
-          <CardContent className="p-0 h-[300px] w-full">
+          <CardContent className="p-0 h-[400px] w-full">
             <ChartContainer config={chartConfig} className="h-full w-full">
               <BarChart data={chartData.userType} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.1} />
@@ -304,19 +304,19 @@ export default function AdminDashboard() {
                   tickFormatter={(val) => val.toUpperCase()}
                 />
                 <YAxis hide />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="value" fill="var(--color-value)" radius={[10, 10, 0, 0]} />
+                <ChartTooltip cursor={{ fill: 'hsl(var(--primary) / 0.05)' }} content={<ChartTooltipContent />} />
+                <Bar dataKey="value" fill="var(--color-value)" radius={[10, 10, 0, 0]} barSize={60} />
               </BarChart>
             </ChartContainer>
           </CardContent>
         </Card>
 
-        <Card className="glass rounded-[3rem] p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
+        <Card className="glass rounded-[2rem] p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
           <CardHeader className="p-0 mb-10">
             <CardTitle className="text-2xl font-black tracking-tight">Top Affiliations</CardTitle>
             <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Most active colleges & offices</CardDescription>
           </CardHeader>
-          <CardContent className="p-0 h-[300px] w-full">
+          <CardContent className="p-0 h-[400px] w-full">
             <ChartContainer config={chartConfig} className="h-full w-full">
               <PieChart>
                 <Pie
@@ -325,12 +325,13 @@ export default function AdminDashboard() {
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  outerRadius={120}
+                  outerRadius={150}
+                  innerRadius={60}
                   stroke="none"
-                  paddingAngle={5}
+                  paddingAngle={0}
                 >
                   {chartData.college.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                    <Cell key={`cell-${index}`} fill={entry.fill} className="hover:opacity-80 transition-opacity" />
                   ))}
                 </Pie>
                 <ChartTooltip content={<ChartTooltipContent />} />
@@ -341,7 +342,7 @@ export default function AdminDashboard() {
       </div>
 
       {showFilters && (
-        <Card className="glass rounded-[3rem] p-10 border border-black/5 dark:border-white/18 animate-in zoom-in-95 duration-500 shadow-xl shadow-primary/5">
+        <Card className="glass rounded-[2rem] p-10 border border-black/5 dark:border-white/18 animate-in zoom-in-95 duration-500 shadow-xl shadow-primary/5">
           <div className="flex flex-col lg:flex-row gap-8 items-end">
             <div className="flex-1 w-full space-y-4">
               <label className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground px-1 flex items-center gap-2">
@@ -352,7 +353,7 @@ export default function AdminDashboard() {
                 placeholder="Search by email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-12 rounded-full border-2 bg-black/5 transition-all text-sm font-bold focus:border-primary/30"
+                className="h-12 rounded-2xl border-2 bg-black/5 transition-all text-sm font-bold focus:border-primary/30"
               />
             </div>
 
@@ -367,7 +368,7 @@ export default function AdminDashboard() {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-full border-2 bg-black/5 hover:bg-black/10 transition-colors",
+                        "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-2xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
                         !startDate && "text-muted-foreground"
                       )}
                     >
@@ -399,7 +400,7 @@ export default function AdminDashboard() {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-full border-2 bg-black/5 hover:bg-black/10 transition-colors",
+                        "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-2xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
                         !endDate && "text-muted-foreground"
                       )}
                     >
@@ -425,7 +426,7 @@ export default function AdminDashboard() {
             <Button 
               variant="ghost" 
               onClick={clearFilters}
-              className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border border-destructive/30 text-destructive bg-destructive/5 hover:bg-destructive hover:text-white"
+              className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border border-destructive/30 text-destructive bg-destructive/5 hover:bg-destructive hover:text-white"
             >
               <XCircle className="h-3.5 w-3.5 mr-2" />
               Clear
@@ -434,7 +435,7 @@ export default function AdminDashboard() {
         </Card>
       )}
 
-      <Card className="glass overflow-hidden rounded-[3rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
+      <Card className="glass overflow-hidden rounded-[2rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
         <CardHeader className="p-10 border-b border-black/5 dark:border-white/10 bg-black/5">
           <div className="flex items-center gap-5">
             <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-black/5 dark:border-white/10 shadow-inner">
@@ -502,7 +503,7 @@ export default function AdminDashboard() {
                           <Button
                             variant="ghost"
                             className={cn(
-                              "h-11 w-32 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border shadow-sm",
+                              "h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border shadow-sm",
                               isBlocked 
                                 ? "text-green-600 bg-green-500/10 border-green-500/20 hover:bg-green-600 hover:text-white" 
                                 : "text-destructive bg-destructive/5 border-destructive/10 hover:bg-destructive hover:text-white"
