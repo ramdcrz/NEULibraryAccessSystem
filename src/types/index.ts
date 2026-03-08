@@ -19,7 +19,9 @@ export interface VisitLog {
   college_office: string; // Snapshotted for historical accuracy
   reason: string;
   timestamp: Timestamp;
+  exitTimestamp?: Timestamp | null;
+  duration?: number | null;
   entryDate: string; // YYYY-MM-DD
 }
 
-export type VisitLogPayload = Omit<VisitLog, 'id' | 'timestamp'>;
+export type VisitLogPayload = Omit<VisitLog, 'id' | 'timestamp' | 'exitTimestamp' | 'duration'>;

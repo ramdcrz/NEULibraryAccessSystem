@@ -1,10 +1,11 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { LoaderCircle, ChevronRight, Library, LogOut, CheckCircle2, User, School } from 'lucide-react';
-import { useState } from 'react';
+import { LoaderCircle, ChevronRight, Library, LogOut, CheckCircle2, User, School, Clock, MoveRight } from 'lucide-react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
@@ -26,11 +27,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { addVisitLog } from '@/lib/firebase/firestore';
+import { addVisitLog, checkOutVisitLog } from '@/lib/firebase/firestore';
 import { useAuth } from '@/hooks/use-auth';
 import type { AuthenticatedUser } from '@/contexts/auth-provider';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
+import { collection, query, where, orderBy, limit } from 'firebase/firestore';
+import { format } from 'date-fns';
 
 const visitReasons = [
   'Reading',
@@ -58,9 +62,24 @@ const formSchema = z.object({
 export default function VisitLogger({ user, onLogSuccess }: { user: AuthenticatedUser; onLogSuccess?: () => void }) {
   const { toast } = useToast();
   const { signOut } = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLogged, setIsLogged] = useState(false);
+
+  // Check for active session
+  const activeSessionQuery = useMemoFirebase(() => {
+    if (!firestore || !user?.uid) return null;
+    return query(
+      collection(firestore, 'visit_logs'),
+      where('uid', '==', user.uid),
+      orderBy('timestamp', 'desc'),
+      limit(1)
+    );
+  }, [firestore, user?.uid]);
+
+  const { data: recentLogs, isLoading: logsLoading } = useCollection(activeSessionQuery);
+  const activeLog = recentLogs && recentLogs.length > 0 && !recentLogs[0].exitTimestamp ? recentLogs[0] : null;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -71,6 +90,25 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   });
 
   const selectedReason = form.watch('reason');
+
+  async function handleCheckOut() {
+    if (!activeLog) return;
+    setIsSubmitting(true);
+    try {
+      checkOutVisitLog(activeLog.id, activeLog.timestamp);
+      toast({
+        title: 'Check-Out Successful',
+        description: 'Your library session has been closed.',
+      });
+      setIsLogged(true);
+      onLogSuccess?.();
+      setTimeout(() => signOut(), 3000);
+    } catch (error) {
+      console.error('Check-out failed:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
@@ -120,24 +158,86 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     }
   }
 
+  if (logsLoading) {
+    return (
+      <Card className="glass p-20 flex flex-col items-center justify-center gap-6 rounded-[3rem] border border-black/5 dark:border-white/20">
+        <LoaderCircle className="h-12 w-12 animate-spin text-primary/30" />
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-30">Authenticating Session...</p>
+      </Card>
+    );
+  }
+
   if (isLogged) {
     return (
       <Card className="glass p-12 text-center animate-in zoom-in-95 duration-500 rounded-[3rem] border border-black/5 dark:border-white/20 shadow-2xl shadow-primary/10">
         <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-green-500/10 text-green-500 shadow-inner">
           <CheckCircle2 className="h-12 w-12" />
         </div>
-        <CardTitle className="text-4xl font-black mb-4 tracking-tighter text-foreground">Access Granted</CardTitle>
+        <CardTitle className="text-4xl font-black mb-4 tracking-tighter text-foreground">Access Managed</CardTitle>
         <CardDescription className="text-lg font-medium mb-10 text-muted-foreground px-4 leading-relaxed">
-          Protocol requirement met. This terminal will reset automatically.
+          The terminal is now preparing for the next user.
         </CardDescription>
         <Button 
           variant="ghost" 
           onClick={() => signOut()}
-          className="h-11 px-8 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm hover:bg-primary/10 hover:text-primary mx-auto"
+          className="h-11 px-8 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm hover:bg-primary/10 hover:text-primary mx-auto"
         >
           <LogOut className="h-4 w-4 mr-2" />
           End Session
         </Button>
+      </Card>
+    );
+  }
+
+  if (activeLog) {
+    return (
+      <Card className="glass rounded-[3rem] overflow-hidden border border-black/5 dark:border-white/20 shadow-2xl shadow-primary/10 animate-in fade-in duration-700">
+        <CardHeader className="bg-white/5 pb-10 pt-10 px-10 border-b border-black/5 dark:border-white/10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-5">
+              <div className="p-3.5 rounded-2xl blue-gradient text-white shadow-inner">
+                <Clock className="h-8 w-8" />
+              </div>
+              <div>
+                <CardTitle className="text-3xl font-black tracking-tighter text-blue-gradient">Active Session</CardTitle>
+                <CardDescription className="text-sm font-medium opacity-60 mt-1">Check-out required to finalize duration</CardDescription>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-10 px-10 pb-12 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="p-8 rounded-3xl glass border border-black/5 dark:border-white/20 bg-primary/5">
+              <div className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-3 flex items-center gap-2">
+                <Library className="h-3 w-3" /> Started Entry
+              </div>
+              <p className="text-2xl font-black">{format(activeLog.timestamp.toDate(), 'hh:mm a')}</p>
+              <p className="text-xs font-bold opacity-40 mt-1">{format(activeLog.timestamp.toDate(), 'PP')}</p>
+            </div>
+            <div className="p-8 rounded-3xl glass border border-black/5 dark:border-white/20 bg-primary/5">
+              <div className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-3 flex items-center gap-2">
+                <Clock className="h-3 w-3" /> Purpose
+              </div>
+              <p className="text-2xl font-black truncate">{activeLog.reason}</p>
+              <p className="text-xs font-bold opacity-40 mt-1">Verified Identity</p>
+            </div>
+          </div>
+
+          <Separator className="bg-black/5" />
+
+          <Button 
+            onClick={handleCheckOut}
+            disabled={isSubmitting}
+            className="w-full h-20 font-black uppercase tracking-[0.25em] text-sm rounded-2xl transition-all hover:scale-[1.01] active:scale-[0.99] group blue-gradient text-white shadow-lg shadow-primary/20 border-none" 
+          >
+            {isSubmitting ? <LoaderCircle className="h-8 w-8 animate-spin" /> : (
+              <div className="flex items-center justify-center gap-3">
+                Finalize & Check-Out
+                <MoveRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
+              </div>
+            )}
+          </Button>
+        </CardContent>
       </Card>
     );
   }
@@ -207,7 +307,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
                         <SelectValue placeholder="Select purpose..." />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="rounded-[2rem] border-black/5 dark:border-white/20 glass shadow-2xl">
+                    <SelectContent className="rounded-2xl border-black/5 dark:border-white/20 glass shadow-2xl">
                       {visitReasons.map((reason) => (
                         <SelectItem key={reason} value={reason} className="py-4 px-6 text-base font-bold cursor-pointer rounded-xl hover:bg-primary/5">
                           {reason}
@@ -241,7 +341,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
 
             <Button 
               type="submit" 
-              className="w-full h-20 font-black uppercase tracking-[0.25em] text-sm rounded-3xl transition-all hover:scale-[1.01] active:scale-[0.99] group blue-gradient text-white shadow-lg shadow-primary/20 border-none" 
+              className="w-full h-20 font-black uppercase tracking-[0.25em] text-sm rounded-2xl transition-all hover:scale-[1.01] active:scale-[0.99] group blue-gradient text-white shadow-lg shadow-primary/20 border-none" 
               disabled={isSubmitting}
             >
               {isSubmitting ? (

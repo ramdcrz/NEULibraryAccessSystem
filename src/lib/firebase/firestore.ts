@@ -90,3 +90,29 @@ export function addVisitLog(logData: VisitLogPayload) {
     errorEmitter.emit('permission-error', permissionError);
   });
 }
+
+/**
+ * Checks out a user from an existing visit log and calculates duration.
+ */
+export function checkOutVisitLog(logId: string, entryTimestamp: Timestamp) {
+  const logRef = doc(db, 'visit_logs', logId);
+  
+  // Calculate duration locally for immediate display (approximate)
+  const entryDate = entryTimestamp.toDate();
+  const exitDate = new Date();
+  const durationMs = exitDate.getTime() - entryDate.getTime();
+  const durationMinutes = Math.max(1, Math.round(durationMs / (1000 * 60)));
+
+  const updateData = {
+    exitTimestamp: serverTimestamp(),
+    duration: durationMinutes
+  };
+
+  updateDoc(logRef, updateData).catch(async (error) => {
+    errorEmitter.emit('permission-error', new FirestorePermissionError({
+      path: logRef.path,
+      operation: 'update',
+      requestResourceData: updateData,
+    }));
+  });
+}

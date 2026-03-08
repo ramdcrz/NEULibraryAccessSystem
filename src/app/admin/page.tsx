@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -17,7 +18,9 @@ import {
   Filter,
   BarChart3,
   Users,
-  Clock
+  Clock,
+  LogOut,
+  LogIn
 } from 'lucide-react';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
@@ -200,6 +203,7 @@ export default function AdminDashboard() {
       
       const tableRows = filteredLogs.map(log => [
         log.timestamp ? format(log.timestamp.toDate(), 'PP p') : 'Pending...',
+        log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'PP p') : 'Active',
         log.email,
         log.userType,
         log.college_office,
@@ -208,7 +212,7 @@ export default function AdminDashboard() {
 
       autoTable(doc, {
         startY: 45,
-        head: [['Date & Time', 'Email', 'User Type', 'College / Office', 'Purpose']],
+        head: [['Entry', 'Exit', 'Email', 'User Type', 'College / Office', 'Purpose']],
         body: tableRows,
         theme: 'grid',
         headStyles: { fillColor: [37, 99, 235], textColor: 255, fontSize: 9, fontStyle: 'bold' },
@@ -470,9 +474,10 @@ export default function AdminDashboard() {
               <Table>
                 <TableHeader className="bg-black/5">
                   <TableRow className="hover:bg-transparent border-black/5 dark:border-white/10">
-                    <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10 text-foreground">Timestamp</TableHead>
+                    <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10 text-foreground">Timeline</TableHead>
                     <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Verified Identity</TableHead>
                     <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Classification</TableHead>
+                    <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Duration</TableHead>
                     <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Purpose</TableHead>
                     <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10 text-foreground">Control</TableHead>
                   </TableRow>
@@ -482,8 +487,15 @@ export default function AdminDashboard() {
                     const isBlocked = userStatusMap[log.uid] || false;
                     return (
                       <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10">
-                        <TableCell className="pl-10 py-6 whitespace-nowrap font-bold text-muted-foreground/70">
-                          {log.timestamp ? format(log.timestamp.toDate(), 'PP p') : '...'}
+                        <TableCell className="pl-10 py-6 whitespace-nowrap">
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase">
+                              <LogIn className="h-3 w-3" /> {log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--'}
+                            </div>
+                            <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase opacity-60">
+                              <LogOut className="h-3 w-3" /> {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : 'Active'}
+                            </div>
+                          </div>
                         </TableCell>
                         <TableCell className="font-black text-foreground">
                           <div className="flex flex-col">
@@ -496,7 +508,18 @@ export default function AdminDashboard() {
                             {log.userType}
                           </Badge>
                         </TableCell>
-                        <TableCell className="max-w-[200px] truncate font-bold text-foreground/80">
+                        <TableCell>
+                          {log.duration ? (
+                            <Badge className="rounded-2xl bg-primary/10 text-primary border-none font-black text-[10px] py-1.5 px-4">
+                              {log.duration} MIN
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary" className="rounded-2xl font-black text-[10px] py-1.5 px-4">
+                              IN PROGRESS
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="max-w-[150px] truncate font-bold text-foreground/80">
                           {log.reason}
                         </TableCell>
                         <TableCell className="text-center pr-10">

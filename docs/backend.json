@@ -80,8 +80,17 @@
         },
         "timestamp": {
           "type": "string",
-          "description": "Server timestamp when the visit was recorded.",
+          "description": "Server timestamp when the visit started.",
           "format": "date-time"
+        },
+        "exitTimestamp": {
+          "type": "string",
+          "description": "Server timestamp when the user checked out.",
+          "format": "date-time"
+        },
+        "duration": {
+          "type": "number",
+          "description": "Total duration of the visit in minutes."
         },
         "entryDate": {
           "type": "string",
