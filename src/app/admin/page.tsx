@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -22,7 +21,9 @@ import {
   LogOut,
   LogIn,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Activity,
+  PieChart as PieChartIcon
 } from 'lucide-react';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
@@ -50,6 +51,7 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
@@ -306,269 +308,292 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card className="glass rounded-[2rem] p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
-          <CardHeader className="p-0 mb-10">
-            <CardTitle className="text-2xl font-black tracking-tight">Classification Distribution</CardTitle>
-            <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Visits by User Type</CardDescription>
-          </CardHeader>
-          <CardContent className="p-0 h-[400px] w-full">
-            <ChartContainer config={chartConfig} className="h-full w-full">
-              <BarChart data={chartData.userType} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.1} />
-                <XAxis 
-                  dataKey="name" 
-                  tickLine={false} 
-                  axisLine={false} 
-                  tick={{ fontSize: 10, fontWeight: 900 }}
-                  tickFormatter={(val) => val.toUpperCase()}
-                />
-                <YAxis hide />
-                <ChartTooltip cursor={{ fill: 'hsl(var(--primary) / 0.05)' }} content={<ChartTooltipContent />} />
-                <Bar dataKey="value" fill="var(--color-value)" radius={[10, 10, 0, 0]} barSize={60} />
-              </BarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
+      <Tabs defaultValue="activity" className="space-y-12">
+        <TabsList className="h-16 p-2 glass border border-black/5 dark:border-white/10 rounded-2xl w-full max-w-[480px] grid grid-cols-2">
+          <TabsTrigger 
+            value="analytics" 
+            className="rounded-xl font-black text-[10px] uppercase tracking-widest data-[state=active]:blue-gradient data-[state=active]:text-white transition-all h-full gap-2"
+          >
+            <PieChartIcon className="h-3.5 w-3.5" />
+            Analytics Overview
+          </TabsTrigger>
+          <TabsTrigger 
+            value="activity" 
+            className="rounded-xl font-black text-[10px] uppercase tracking-widest data-[state=active]:blue-gradient data-[state=active]:text-white transition-all h-full gap-2"
+          >
+            <Activity className="h-3.5 w-3.5" />
+            Activity Stream
+          </TabsTrigger>
+        </TabsList>
 
-        <Card className="glass rounded-[2rem] p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
-          <CardHeader className="p-0 mb-10">
-            <CardTitle className="text-2xl font-black tracking-tight">Top Affiliations</CardTitle>
-            <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Most active colleges & offices</CardDescription>
-          </CardHeader>
-          <CardContent className="p-0 h-[400px] w-full">
-            <ChartContainer config={chartConfig} className="h-full w-full">
-              <PieChart>
-                <Pie
-                  data={chartData.college}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={150}
-                  innerRadius={60}
-                  stroke="none"
-                  paddingAngle={0}
-                >
-                  {chartData.college.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} className="hover:opacity-80 transition-opacity" />
-                  ))}
-                </Pie>
-                <ChartTooltip content={<ChartTooltipContent />} />
-              </PieChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {showFilters && (
-        <Card className="glass rounded-[2rem] p-10 border border-black/5 dark:border-white/18 animate-in zoom-in-95 duration-500 shadow-xl shadow-primary/5">
-          <div className="flex flex-col lg:flex-row gap-8 items-end">
-            <div className="flex-1 w-full space-y-4">
-              <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
-                <Search className="h-3.5 w-3.5" />
-                Terminal Identity Search
-              </label>
-              <Input
-                placeholder="Search by email..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-12 rounded-2xl border-2 bg-black/5 transition-all text-sm font-bold focus:border-primary/30"
-              />
-            </div>
-
-            <div className="flex gap-4 w-full lg:w-auto">
-              <div className="space-y-4">
-                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
-                  <CalendarIcon className="h-3.5 w-3.5" />
-                  Start Date
-                </label>
-                <Popover open={isStartOpen} onOpenChange={setIsStartOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-2xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
-                        !startDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-3 h-4 w-4" />
-                      {startDate ? format(startDate, "PP") : "Select date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={startDate}
-                      onSelect={(date) => {
-                        setStartDate(date);
-                        setIsStartOpen(false);
-                      }}
-                      initialFocus
+        <TabsContent value="analytics" className="space-y-12 mt-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <Card className="glass rounded-[2rem] p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
+              <CardHeader className="p-0 mb-10">
+                <CardTitle className="text-2xl font-black tracking-tight">Classification Distribution</CardTitle>
+                <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Visits by User Type</CardDescription>
+              </CardHeader>
+              <CardContent className="p-0 h-[400px] w-full">
+                <ChartContainer config={chartConfig} className="h-full w-full">
+                  <BarChart data={chartData.userType} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                    <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.1} />
+                    <XAxis 
+                      dataKey="name" 
+                      tickLine={false} 
+                      axisLine={false} 
+                      tick={{ fontSize: 10, fontWeight: 900 }}
+                      tickFormatter={(val) => val.toUpperCase()}
                     />
-                  </PopoverContent>
-                </Popover>
-              </div>
+                    <YAxis hide />
+                    <ChartTooltip cursor={{ fill: 'hsl(var(--primary) / 0.05)' }} content={<ChartTooltipContent />} />
+                    <Bar dataKey="value" fill="var(--color-value)" radius={[10, 10, 0, 0]} barSize={60} />
+                  </BarChart>
+                </ChartContainer>
+              </CardContent>
+            </Card>
 
-              <div className="space-y-4">
-                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
-                  <CalendarIcon className="h-3.5 w-3.5" />
-                  End Date
-                </label>
-                <Popover open={isEndOpen} onOpenChange={setIsEndOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-2xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
-                        !endDate && "text-muted-foreground"
-                      )}
+            <Card className="glass rounded-[2rem] p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
+              <CardHeader className="p-0 mb-10">
+                <CardTitle className="text-2xl font-black tracking-tight">Top Affiliations</CardTitle>
+                <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Most active colleges & offices</CardDescription>
+              </CardHeader>
+              <CardContent className="p-0 h-[400px] w-full">
+                <ChartContainer config={chartConfig} className="h-full w-full">
+                  <PieChart>
+                    <Pie
+                      data={chartData.college}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={150}
+                      innerRadius={60}
+                      stroke="none"
+                      paddingAngle={0}
                     >
-                      <CalendarIcon className="mr-3 h-4 w-4" />
-                      {endDate ? format(endDate, "PP") : "Select date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={(date) => {
-                        setEndDate(date);
-                        setIsEndOpen(false);
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-
-            <Button 
-              variant="ghost" 
-              onClick={clearFilters}
-              className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border border-destructive/30 text-destructive bg-destructive/5 hover:bg-destructive hover:text-white"
-            >
-              <XCircle className="h-3.5 w-3.5 mr-2" />
-              Clear
-            </Button>
+                      {chartData.college.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} className="hover:opacity-80 transition-opacity" />
+                      ))}
+                    </Pie>
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                  </PieChart>
+                </ChartContainer>
+              </CardContent>
+            </Card>
           </div>
-        </Card>
-      )}
+        </TabsContent>
 
-      <Card className="glass overflow-hidden rounded-[2rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
-        <CardHeader className="p-10 border-b border-black/5 dark:border-white/10 bg-black/5">
-          <div className="flex items-center gap-5">
-            <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-black/5 dark:border-white/10 shadow-inner">
-              <Filter className="h-7 w-7" />
-            </div>
-            <div>
-              <CardTitle className="text-3xl font-black tracking-tighter">
-                Activity Stream
-              </CardTitle>
-              <CardDescription className="text-sm font-bold opacity-60 mt-1">
-                {filteredLogs.length} matching entries found in terminal
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          {logsLoading ? (
-            <div className="p-32 flex flex-col items-center justify-center gap-6">
-              <LoaderCircle className="h-12 w-12 animate-spin text-primary/30" />
-              <p className="text-[11px] font-black uppercase tracking-[0.3em] opacity-30">Syncing logs...</p>
-            </div>
-          ) : filteredLogs.length === 0 ? (
-            <div className="p-40 text-center flex flex-col items-center gap-8">
-              <Search className="h-12 w-12 text-muted-foreground opacity-20" />
-              <div className="space-y-2">
-                <h3 className="text-2xl font-black tracking-tight">No Activity Detected</h3>
-                <p className="text-muted-foreground font-bold">Adjust filters to display terminal data.</p>
-              </div>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader className="bg-black/5">
-                  <TableRow className="hover:bg-transparent border-black/5 dark:border-white/10">
-                    <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10 text-foreground">Timeline</TableHead>
-                    <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Status</TableHead>
-                    <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Verified Identity</TableHead>
-                    <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Duration</TableHead>
-                    <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Purpose</TableHead>
-                    <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10 text-foreground">Control</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredLogs.map((log) => {
-                    const isBlocked = userStatusMap[log.uid] || false;
-                    return (
-                      <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10">
-                        <TableCell className="pl-10 py-6 whitespace-nowrap">
-                          <div className="flex flex-col gap-1">
-                            <div className="text-[10px] font-black text-foreground/40 uppercase tracking-widest mb-1">
-                              {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy') : 'Pending...'}
-                            </div>
-                            <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase">
-                              <LogIn className="h-3 w-3" /> {log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--'}
-                            </div>
-                            <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase opacity-60">
-                              <LogOut className="h-3 w-3" /> {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : 'Active'}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {getStatusBadge(log.status || 'active')}
-                        </TableCell>
-                        <TableCell className="font-black text-foreground">
-                          <div className="flex flex-col">
-                            <span>{log.email}</span>
-                            <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1">{log.userType} • {log.college_office}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {log.duration ? (
-                            <Badge className="rounded-2xl bg-primary/10 text-primary border-none font-black text-[10px] py-1.5 px-4">
-                              {log.duration} MIN
-                            </Badge>
-                          ) : (
-                            <Badge variant="secondary" className="rounded-2xl font-black text-[10px] py-1.5 px-4">
-                              IN PROGRESS
-                            </Badge>
+        <TabsContent value="activity" className="space-y-12 mt-0">
+          {showFilters && (
+            <Card className="glass rounded-[2rem] p-10 border border-black/5 dark:border-white/18 animate-in zoom-in-95 duration-500 shadow-xl shadow-primary/5">
+              <div className="flex flex-col lg:flex-row gap-8 items-end">
+                <div className="flex-1 w-full space-y-4">
+                  <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
+                    <Search className="h-3.5 w-3.5" />
+                    Terminal Identity Search
+                  </label>
+                  <Input
+                    placeholder="Search by email..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="h-12 rounded-2xl border-2 bg-black/5 transition-all text-sm font-bold focus:border-primary/30"
+                  />
+                </div>
+
+                <div className="flex gap-4 w-full lg:w-auto">
+                  <div className="space-y-4">
+                    <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
+                      <CalendarIcon className="h-3.5 w-3.5" />
+                      Start Date
+                    </label>
+                    <Popover open={isStartOpen} onOpenChange={setIsStartOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-2xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
+                            !startDate && "text-muted-foreground"
                           )}
-                        </TableCell>
-                        <TableCell className="max-w-[150px] truncate font-bold text-foreground/80">
-                          {log.reason}
-                        </TableCell>
-                        <TableCell className="text-center pr-10">
-                          <Button
-                            variant="ghost"
-                            className={cn(
-                              "h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border shadow-sm",
-                              isBlocked 
-                                ? "text-green-600 bg-green-500/10 border-green-500/20 hover:bg-green-600 hover:text-white" 
-                                : "text-destructive bg-destructive/5 border-destructive/10 hover:bg-destructive hover:text-white"
-                            )}
-                            onClick={() => handleToggleBlock(log.uid, log.email)}
-                            disabled={blockingUid === log.uid}
-                          >
-                            {blockingUid === log.uid ? (
-                              <LoaderCircle className="h-4 w-4 animate-spin" />
-                            ) : isBlocked ? (
-                              <><UserCheck className="h-3.5 w-3.5 mr-2" />Restore</>
-                            ) : (
-                              <><UserX className="h-3.5 w-3.5 mr-2" />Block</>
-                            )}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+                        >
+                          <CalendarIcon className="mr-3 h-4 w-4" />
+                          {startDate ? format(startDate, "PP") : "Select date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={startDate}
+                          onSelect={(date) => {
+                            setStartDate(date);
+                            setIsStartOpen(false);
+                          }}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
+                      <CalendarIcon className="h-3.5 w-3.5" />
+                      End Date
+                    </label>
+                    <Popover open={isEndOpen} onOpenChange={setIsEndOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-2xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
+                            !endDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-3 h-4 w-4" />
+                          {endDate ? format(endDate, "PP") : "Select date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={endDate}
+                          onSelect={(date) => {
+                            setEndDate(date);
+                            setIsEndOpen(false);
+                          }}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+
+                <Button 
+                  variant="ghost" 
+                  onClick={clearFilters}
+                  className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border border-destructive/30 text-destructive bg-destructive/5 hover:bg-destructive hover:text-white"
+                >
+                  <XCircle className="h-3.5 w-3.5 mr-2" />
+                  Clear
+                </Button>
+              </div>
+            </Card>
           )}
-        </CardContent>
-      </Card>
+
+          <Card className="glass overflow-hidden rounded-[2rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
+            <CardHeader className="p-10 border-b border-black/5 dark:border-white/10 bg-black/5">
+              <div className="flex items-center gap-5">
+                <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-black/5 dark:border-white/10 shadow-inner">
+                  <Filter className="h-7 w-7" />
+                </div>
+                <div>
+                  <CardTitle className="text-3xl font-black tracking-tighter">
+                    Activity Stream
+                  </CardTitle>
+                  <CardDescription className="text-sm font-bold opacity-60 mt-1">
+                    {filteredLogs.length} matching entries found in terminal
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              {logsLoading ? (
+                <div className="p-32 flex flex-col items-center justify-center gap-6">
+                  <LoaderCircle className="h-12 w-12 animate-spin text-primary/30" />
+                  <p className="text-[11px] font-black uppercase tracking-[0.3em] opacity-30">Syncing logs...</p>
+                </div>
+              ) : filteredLogs.length === 0 ? (
+                <div className="p-40 text-center flex flex-col items-center gap-8">
+                  <Search className="h-12 w-12 text-muted-foreground opacity-20" />
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-black tracking-tight">No Activity Detected</h3>
+                    <p className="text-muted-foreground font-bold">Adjust filters to display terminal data.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader className="bg-black/5">
+                      <TableRow className="hover:bg-transparent border-black/5 dark:border-white/10">
+                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10 text-foreground">Timeline</TableHead>
+                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Status</TableHead>
+                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Verified Identity</TableHead>
+                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Duration</TableHead>
+                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Purpose</TableHead>
+                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10 text-foreground">Control</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredLogs.map((log) => {
+                        const isBlocked = userStatusMap[log.uid] || false;
+                        return (
+                          <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10">
+                            <TableCell className="pl-10 py-6 whitespace-nowrap">
+                              <div className="flex flex-col gap-1">
+                                <div className="text-[10px] font-black text-foreground/40 uppercase tracking-widest mb-1">
+                                  {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy') : 'Pending...'}
+                                </div>
+                                <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase">
+                                  <LogIn className="h-3 w-3" /> {log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--'}
+                                </div>
+                                <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase opacity-60">
+                                  <LogOut className="h-3 w-3" /> {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : 'Active'}
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              {getStatusBadge(log.status || 'active')}
+                            </TableCell>
+                            <TableCell className="font-black text-foreground">
+                              <div className="flex flex-col">
+                                <span>{log.email}</span>
+                                <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1">{log.userType} • {log.college_office}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              {log.duration ? (
+                                <Badge className="rounded-2xl bg-primary/10 text-primary border-none font-black text-[10px] py-1.5 px-4">
+                                  {log.duration} MIN
+                                </Badge>
+                              ) : (
+                                <Badge variant="secondary" className="rounded-2xl font-black text-[10px] py-1.5 px-4">
+                                  IN PROGRESS
+                                </Badge>
+                              )}
+                            </TableCell>
+                            <TableCell className="max-w-[150px] truncate font-bold text-foreground/80">
+                              {log.reason}
+                            </TableCell>
+                            <TableCell className="text-center pr-10">
+                              <Button
+                                variant="ghost"
+                                className={cn(
+                                  "h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border shadow-sm",
+                                  isBlocked 
+                                    ? "text-green-600 bg-green-500/10 border-green-500/20 hover:bg-green-600 hover:text-white" 
+                                    : "text-destructive bg-destructive/5 border-destructive/10 hover:bg-destructive hover:text-white"
+                                )}
+                                onClick={() => handleToggleBlock(log.uid, log.email)}
+                                disabled={blockingUid === log.uid}
+                              >
+                                {blockingUid === log.uid ? (
+                                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                                ) : isBlocked ? (
+                                  <><UserCheck className="h-3.5 w-3.5 mr-2" />Restore</>
+                                ) : (
+                                  <><UserX className="h-3.5 w-3.5 mr-2" />Block</>
+                                )}
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </main>
   );
 }
