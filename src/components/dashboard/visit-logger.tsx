@@ -4,8 +4,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { LoaderCircle, ChevronRight, Library, LogOut, CheckCircle2, User, School, Clock, MoveRight } from 'lucide-react';
-import { useState } from 'react';
+import { LoaderCircle, ChevronRight, Library, LogOut, CheckCircle2, User, School, Clock, MoveRight, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
@@ -27,14 +27,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { addVisitLog, checkOutVisitLog } from '@/lib/firebase/firestore';
+import { addVisitLog, checkOutVisitLog, autoCloseVisitLog } from '@/lib/firebase/firestore';
 import { useAuth } from '@/hooks/use-auth';
 import type { AuthenticatedUser } from '@/contexts/auth-provider';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { collection, query, where, orderBy, limit } from 'firebase/firestore';
-import { format } from 'date-fns';
+import { format, isSameDay, differenceInHours } from 'date-fns';
 
 const visitReasons = [
   'Reading',
@@ -66,6 +66,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLogged, setIsLogged] = useState(false);
+  const [smartActiveLog, setSmartActiveLog] = useState<any>(null);
 
   // Check for active session
   const activeSessionQuery = useMemoFirebase(() => {
@@ -79,7 +80,37 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   }, [firestore, user?.uid]);
 
   const { data: recentLogs, isLoading: logsLoading } = useCollection(activeSessionQuery);
-  const activeLog = recentLogs && recentLogs.length > 0 && !recentLogs[0].exitTimestamp ? recentLogs[0] : null;
+
+  // Smart Evaluation Logic
+  useEffect(() => {
+    if (recentLogs && recentLogs.length > 0) {
+      const lastLog = recentLogs[0];
+      
+      if (lastLog.status === 'active') {
+        const entryTime = lastLog.timestamp?.toDate();
+        if (!entryTime) return;
+
+        const now = new Date();
+        const sameDay = isSameDay(entryTime, now);
+        const hoursDiff = differenceInHours(now, entryTime);
+
+        // Rule: Normal Check-Out if same day AND < 3 hours
+        if (sameDay && hoursDiff < 3) {
+          setSmartActiveLog(lastLog);
+        } else {
+          // Rule: Auto-Close Fallback if previous day OR > 3 hours
+          autoCloseVisitLog(lastLog.id, lastLog.timestamp);
+          setSmartActiveLog(null);
+          toast({
+            title: "Session Reset",
+            description: "A previous abandoned visit has been auto-closed.",
+          });
+        }
+      } else {
+        setSmartActiveLog(null);
+      }
+    }
+  }, [recentLogs, toast]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -92,10 +123,10 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   const selectedReason = form.watch('reason');
 
   async function handleCheckOut() {
-    if (!activeLog) return;
+    if (!smartActiveLog) return;
     setIsSubmitting(true);
     try {
-      checkOutVisitLog(activeLog.id, activeLog.timestamp);
+      checkOutVisitLog(smartActiveLog.id, smartActiveLog.timestamp);
       toast({
         title: 'Check-Out Successful',
         description: 'Your library session has been closed.',
@@ -189,7 +220,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     );
   }
 
-  if (activeLog) {
+  if (smartActiveLog) {
     return (
       <Card className="glass rounded-[3rem] overflow-hidden border border-black/5 dark:border-white/20 shadow-2xl shadow-primary/10 animate-in fade-in duration-700">
         <CardHeader className="bg-white/5 pb-10 pt-10 px-10 border-b border-black/5 dark:border-white/10">
@@ -212,17 +243,17 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
                 <Library className="h-3 w-3" /> Started Entry
               </div>
               <p className="text-2xl font-black">
-                {activeLog.timestamp ? format(activeLog.timestamp.toDate(), 'hh:mm a') : 'Syncing...'}
+                {smartActiveLog.timestamp ? format(smartActiveLog.timestamp.toDate(), 'hh:mm a') : 'Syncing...'}
               </p>
               <p className="text-xs font-bold opacity-40 mt-1">
-                {activeLog.timestamp ? format(activeLog.timestamp.toDate(), 'PP') : 'Pending...'}
+                {smartActiveLog.timestamp ? format(smartActiveLog.timestamp.toDate(), 'PP') : 'Pending...'}
               </p>
             </div>
             <div className="p-8 rounded-3xl glass border border-black/5 dark:border-white/20 bg-primary/5">
               <div className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-3 flex items-center gap-2">
                 <Clock className="h-3 w-3" /> Purpose
               </div>
-              <p className="text-2xl font-black truncate">{activeLog.reason}</p>
+              <p className="text-2xl font-black truncate">{smartActiveLog.reason}</p>
               <p className="text-xs font-bold opacity-40 mt-1">Verified Identity</p>
             </div>
           </div>

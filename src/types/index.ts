@@ -18,10 +18,11 @@ export interface VisitLog {
   userType: 'Student' | 'Staff' | 'Employee';
   college_office: string; // Snapshotted for historical accuracy
   reason: string;
+  status: 'active' | 'completed' | 'auto-closed';
   timestamp: Timestamp;
   exitTimestamp?: Timestamp | null;
   duration?: number | null;
   entryDate: string; // YYYY-MM-DD
 }
 
-export type VisitLogPayload = Omit<VisitLog, 'id' | 'timestamp' | 'exitTimestamp' | 'duration'>;
+export type VisitLogPayload = Omit<VisitLog, 'id' | 'status' | 'timestamp' | 'exitTimestamp' | 'duration'>;

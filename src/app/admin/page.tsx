@@ -20,7 +20,9 @@ import {
   Users,
   Clock,
   LogOut,
-  LogIn
+  LogIn,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
@@ -204,19 +206,20 @@ export default function AdminDashboard() {
       const tableRows = filteredLogs.map(log => [
         log.timestamp ? format(log.timestamp.toDate(), 'PP p') : 'Pending...',
         log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'PP p') : 'Active',
+        log.status?.toUpperCase() || 'ACTIVE',
         log.email,
         log.userType,
-        log.college_office,
+        log.duration ? `${log.duration}m` : '-',
         log.reason
       ]);
 
       autoTable(doc, {
         startY: 45,
-        head: [['Entry', 'Exit', 'Email', 'User Type', 'College / Office', 'Purpose']],
+        head: [['Entry', 'Exit', 'Status', 'Email', 'User Type', 'Duration', 'Purpose']],
         body: tableRows,
         theme: 'grid',
-        headStyles: { fillColor: [37, 99, 235], textColor: 255, fontSize: 9, fontStyle: 'bold' },
-        styles: { fontSize: 8, cellPadding: 3 }
+        headStyles: { fillColor: [37, 99, 235], textColor: 255, fontSize: 8, fontStyle: 'bold' },
+        styles: { fontSize: 7, cellPadding: 2 }
       });
 
       doc.save(`NEULibrary_Visit_Logs_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
@@ -231,6 +234,19 @@ export default function AdminDashboard() {
   if (loading || !user || user.role !== 'admin') {
     return <Loading />;
   }
+
+  const getStatusBadge = (status: string) => {
+    switch(status) {
+      case 'active':
+        return <Badge className="rounded-2xl bg-blue-500/10 text-blue-600 border-blue-500/20 font-black text-[9px] px-3 py-1 flex gap-1.5 items-center"><Clock className="h-2.5 w-2.5" /> ACTIVE</Badge>;
+      case 'completed':
+        return <Badge className="rounded-2xl bg-green-500/10 text-green-600 border-green-500/20 font-black text-[9px] px-3 py-1 flex gap-1.5 items-center"><CheckCircle2 className="h-2.5 w-2.5" /> COMPLETED</Badge>;
+      case 'auto-closed':
+        return <Badge className="rounded-2xl bg-amber-500/10 text-amber-600 border-amber-500/20 font-black text-[9px] px-3 py-1 flex gap-1.5 items-center"><AlertCircle className="h-2.5 w-2.5" /> AUTO-CLOSED</Badge>;
+      default:
+        return <Badge variant="outline" className="rounded-2xl font-black text-[9px] px-3 py-1">UNKNOWN</Badge>;
+    }
+  };
 
   return (
     <main className="flex-1 px-6 md:px-12 py-12 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-in-out">
@@ -349,7 +365,7 @@ export default function AdminDashboard() {
         <Card className="glass rounded-[2rem] p-10 border border-black/5 dark:border-white/18 animate-in zoom-in-95 duration-500 shadow-xl shadow-primary/5">
           <div className="flex flex-col lg:flex-row gap-8 items-end">
             <div className="flex-1 w-full space-y-4">
-              <label className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground px-1 flex items-center gap-2">
+              <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
                 <Search className="h-3.5 w-3.5" />
                 Terminal Identity Search
               </label>
@@ -363,7 +379,7 @@ export default function AdminDashboard() {
 
             <div className="flex gap-4 w-full lg:w-auto">
               <div className="space-y-4">
-                <label className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground px-1 flex items-center gap-2">
+                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
                   <CalendarIcon className="h-3.5 w-3.5" />
                   Start Date
                 </label>
@@ -395,7 +411,7 @@ export default function AdminDashboard() {
               </div>
 
               <div className="space-y-4">
-                <label className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground px-1 flex items-center gap-2">
+                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
                   <CalendarIcon className="h-3.5 w-3.5" />
                   End Date
                 </label>
@@ -475,8 +491,8 @@ export default function AdminDashboard() {
                 <TableHeader className="bg-black/5">
                   <TableRow className="hover:bg-transparent border-black/5 dark:border-white/10">
                     <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10 text-foreground">Timeline</TableHead>
+                    <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Status</TableHead>
                     <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Verified Identity</TableHead>
-                    <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Classification</TableHead>
                     <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Duration</TableHead>
                     <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Purpose</TableHead>
                     <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10 text-foreground">Control</TableHead>
@@ -497,16 +513,14 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                         </TableCell>
+                        <TableCell>
+                          {getStatusBadge(log.status || 'active')}
+                        </TableCell>
                         <TableCell className="font-black text-foreground">
                           <div className="flex flex-col">
                             <span>{log.email}</span>
-                            <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1">{log.college_office}</span>
+                            <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1">{log.userType} • {log.college_office}</span>
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="w-32 justify-center rounded-2xl py-1.5 font-black text-[10px] uppercase tracking-widest bg-black/5 border-black/5 text-primary">
-                            {log.userType}
-                          </Badge>
                         </TableCell>
                         <TableCell>
                           {log.duration ? (

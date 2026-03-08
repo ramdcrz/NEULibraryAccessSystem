@@ -51,7 +51,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "VisitLog",
       "type": "object",
-      "description": "Records each visit to the library by a user, including the purpose and time.",
+      "description": "Records each visit to the library by a user, including the purpose, time, and session status.",
       "properties": {
         "id": {
           "type": "string",
@@ -77,6 +77,11 @@
         "reason": {
           "type": "string",
           "description": "The purpose or reason for the user's visit to the library."
+        },
+        "status": {
+          "type": "string",
+          "description": "The current state of the library session.",
+          "enum": ["active", "completed", "auto-closed"]
         },
         "timestamp": {
           "type": "string",
@@ -105,6 +110,7 @@
         "userType",
         "college_office",
         "reason",
+        "status",
         "timestamp",
         "entryDate"
       ]

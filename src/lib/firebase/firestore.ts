@@ -78,11 +78,11 @@ export function addVisitLog(logData: VisitLogPayload) {
   
   const payload = {
     ...logData,
+    status: 'active',
     timestamp: serverTimestamp(),
   };
 
   addDoc(visitLogsCollection, payload).catch(async (error) => {
-    // Only emit the specialized permission error if it's truly a permission issue.
     if (error.code === 'permission-denied') {
       const permissionError = new FirestorePermissionError({
         path: visitLogsCollection.path,
@@ -91,7 +91,6 @@ export function addVisitLog(logData: VisitLogPayload) {
       } satisfies SecurityRuleContext);
       errorEmitter.emit('permission-error', permissionError);
     } else {
-      // For other errors (like missing index), we let the console log show the fix link.
       console.error("Firestore AddDoc Error:", error);
     }
   });
@@ -103,8 +102,6 @@ export function addVisitLog(logData: VisitLogPayload) {
 export function checkOutVisitLog(logId: string, entryTimestamp: Timestamp | null) {
   const logRef = doc(db, 'visit_logs', logId);
   
-  // Calculate duration locally for immediate display (approximate)
-  // If entryTimestamp is pending (null), we default to 1 minute stay.
   const entryDate = entryTimestamp ? entryTimestamp.toDate() : new Date();
   const exitDate = new Date();
   const durationMs = exitDate.getTime() - entryDate.getTime();
@@ -112,7 +109,8 @@ export function checkOutVisitLog(logId: string, entryTimestamp: Timestamp | null
 
   const updateData = {
     exitTimestamp: serverTimestamp(),
-    duration: durationMinutes
+    duration: durationMinutes,
+    status: 'completed'
   };
 
   updateDoc(logRef, updateData).catch(async (error) => {
@@ -124,6 +122,33 @@ export function checkOutVisitLog(logId: string, entryTimestamp: Timestamp | null
       } satisfies SecurityRuleContext));
     } else {
       console.error("Firestore UpdateDoc Error:", error);
+    }
+  });
+}
+
+/**
+ * Silently auto-closes an abandoned log (3 hours duration).
+ */
+export function autoCloseVisitLog(logId: string, entryTimestamp: Timestamp | null) {
+  const logRef = doc(db, 'visit_logs', logId);
+  
+  // Rule: Auto-close sets a default 180 minute stay (3 hours)
+  const entryDate = entryTimestamp ? entryTimestamp.toDate() : new Date();
+  const exitDate = new Date(entryDate.getTime() + (3 * 60 * 60 * 1000));
+
+  const updateData = {
+    exitTimestamp: Timestamp.fromDate(exitDate),
+    duration: 180,
+    status: 'auto-closed'
+  };
+
+  updateDoc(logRef, updateData).catch(async (error) => {
+    if (error.code === 'permission-denied') {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: logRef.path,
+        operation: 'update',
+        requestResourceData: updateData,
+      } satisfies SecurityRuleContext));
     }
   });
 }
