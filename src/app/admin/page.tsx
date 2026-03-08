@@ -210,7 +210,7 @@ export default function AdminDashboard() {
       doc.text('NEU Library Access System', 14, 22);
       doc.setFontSize(14);
       doc.setTextColor(0);
-      doc.text('University Visit Activity Report', 14, 32);
+      doc.text('University Library Visit Activity Report', 14, 32);
       
       // Group logs by date
       const groupedByDate: Record<string, typeof filteredLogs> = {};
@@ -228,11 +228,11 @@ export default function AdminDashboard() {
       sortedDates.forEach((dateStr, index) => {
         const logsForDate = groupedByDate[dateStr];
         
-        // Add Date Header
+        // Add Date Header - Format removed ordinal suffix (d instead of do)
         doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(37, 99, 235);
-        const formattedDate = format(parseISO(dateStr), 'EEEE, MMMM do, yyyy');
+        const formattedDate = format(parseISO(dateStr), 'EEEE, MMMM d, yyyy');
         doc.text(formattedDate.toUpperCase(), 14, currentY);
         currentY += 6;
 
