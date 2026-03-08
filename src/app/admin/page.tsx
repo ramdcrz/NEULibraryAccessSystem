@@ -240,13 +240,13 @@ export default function AdminDashboard() {
   const getStatusBadge = (status: string) => {
     switch(status) {
       case 'active':
-        return <Badge className="rounded-2xl bg-blue-500/10 text-blue-600 border-blue-500/20 font-black text-[9px] px-3 py-1 flex gap-1.5 items-center"><Clock className="h-2.5 w-2.5" /> ACTIVE</Badge>;
+        return <Badge className="rounded-2xl bg-blue-500/10 text-blue-600 border-blue-500/20 font-black text-[9px] px-3 py-1 flex gap-1.5 items-center justify-center"><Clock className="h-2.5 w-2.5" /> ACTIVE</Badge>;
       case 'completed':
-        return <Badge className="rounded-2xl bg-green-500/10 text-green-600 border-green-500/20 font-black text-[9px] px-3 py-1 flex gap-1.5 items-center"><CheckCircle2 className="h-2.5 w-2.5" /> COMPLETED</Badge>;
+        return <Badge className="rounded-2xl bg-green-500/10 text-green-600 border-green-500/20 font-black text-[9px] px-3 py-1 flex gap-1.5 items-center justify-center"><CheckCircle2 className="h-2.5 w-2.5" /> COMPLETED</Badge>;
       case 'auto-closed':
-        return <Badge className="rounded-2xl bg-amber-500/10 text-amber-600 border-amber-500/20 font-black text-[9px] px-3 py-1 flex gap-1.5 items-center"><AlertCircle className="h-2.5 w-2.5" /> AUTO-CLOSED</Badge>;
+        return <Badge className="rounded-2xl bg-amber-500/10 text-amber-600 border-amber-500/20 font-black text-[9px] px-3 py-1 flex gap-1.5 items-center justify-center"><AlertCircle className="h-2.5 w-2.5" /> AUTO-CLOSED</Badge>;
       default:
-        return <Badge variant="outline" className="rounded-2xl font-black text-[9px] px-3 py-1">UNKNOWN</Badge>;
+        return <Badge variant="outline" className="rounded-2xl font-black text-[9px] px-3 py-1 flex justify-center">UNKNOWN</Badge>;
     }
   };
 
@@ -268,7 +268,7 @@ export default function AdminDashboard() {
           </div>
           
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            <TabsList className="h-12 p-1.5 glass border border-black/5 dark:border-white/10 rounded-full w-full sm:w-[320px] grid grid-cols-2">
+            <TabsList className="h-12 p-1 glass border border-black/5 dark:border-white/10 rounded-full w-full sm:w-[320px] grid grid-cols-2">
               <TabsTrigger 
                 value="analytics" 
                 className="rounded-full font-black text-[9px] uppercase tracking-widest data-[state=active]:blue-gradient data-[state=active]:!text-white transition-all h-full gap-2"
@@ -466,7 +466,7 @@ export default function AdminDashboard() {
             )}
 
             <Card className="glass overflow-hidden rounded-[2rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
-              <CardHeader className="p-10 border-b border-black/5 dark:border-white/10 bg-black/5 flex flex-row items-center justify-between gap-4">
+              <CardHeader className="p-10 border-b border-black/5 dark:border-white/10 flex flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-5">
                   <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-black/5 dark:border-white/10 shadow-inner">
                     <Activity className="h-7 w-7" />
@@ -515,9 +515,9 @@ export default function AdminDashboard() {
                       <TableHeader className="bg-black/5">
                         <TableRow className="hover:bg-transparent border-black/5 dark:border-white/10">
                           <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10 text-foreground">Timeline</TableHead>
-                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Status</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground text-center">Status</TableHead>
                           <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Verified Identity</TableHead>
-                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Duration</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground text-center">Duration</TableHead>
                           <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Purpose</TableHead>
                           <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10 text-foreground">Control</TableHead>
                         </TableRow>
@@ -542,7 +542,9 @@ export default function AdminDashboard() {
                                 </div>
                               </TableCell>
                               <TableCell>
-                                {getStatusBadge(log.status || 'active')}
+                                <div className="flex justify-center">
+                                  {getStatusBadge(log.status || 'active')}
+                                </div>
                               </TableCell>
                               <TableCell className="font-black text-foreground">
                                 <div className="flex flex-col">
@@ -551,15 +553,17 @@ export default function AdminDashboard() {
                                 </div>
                               </TableCell>
                               <TableCell>
-                                {log.duration ? (
-                                  <Badge className="rounded-2xl bg-primary/10 text-primary border-none font-black text-[10px] py-1.5 px-4">
-                                    {log.duration} MIN
-                                  </Badge>
-                                ) : (
-                                  <Badge variant="secondary" className="rounded-2xl font-black text-[10px] py-1.5 px-4 opacity-40">
-                                    IN PROGRESS
-                                  </Badge>
-                                )}
+                                <div className="flex justify-center">
+                                  {log.duration ? (
+                                    <Badge className="rounded-2xl bg-primary/10 text-primary border-none font-black text-[10px] py-1.5 px-4 w-32 flex justify-center">
+                                      {log.duration} {log.duration === 1 ? 'MINUTE' : 'MINUTES'}
+                                    </Badge>
+                                  ) : (
+                                    <Badge variant="secondary" className="rounded-2xl font-black text-[10px] py-1.5 px-4 opacity-40 w-32 flex justify-center">
+                                      IN PROGRESS
+                                    </Badge>
+                                  )}
+                                </div>
                               </TableCell>
                               <TableCell className="max-w-[150px] truncate font-bold text-foreground/80">
                                 {log.reason}

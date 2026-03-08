@@ -87,7 +87,7 @@
 }
 
 .blue-gradient {
-  background: linear-gradient(135deg, hsl(var(--primary)) 0%, #1e40af 100%);
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, #1e40af 100%) !important;
 }
 
 .text-blue-gradient {
