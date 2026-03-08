@@ -37,7 +37,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useToast } from '@/hooks/use-toast';
 import { toggleUserBlock } from '@/lib/firebase/firestore';
 import { cn } from '@/lib/utils';
-import { jsPDF } from 'jspdf';
+import { jsPDF } from 'jsPDF';
 import autoTable from 'jspdf-autotable';
 import { 
   BarChart, 
@@ -122,13 +122,12 @@ export default function AdminDashboard() {
       .sort((a, b) => b.value - a.value)
       .slice(0, 5);
 
-    // High-contrast university blue spectrum
     const COLORS = [
-      '#2563eb', // Royal Blue
-      '#60a5fa', // Light Sky Blue
-      '#818cf8', // Soft Indigo
-      '#22d3ee', // Cyan
-      '#0369a1', // Dark Ocean
+      '#2563eb', 
+      '#60a5fa', 
+      '#818cf8', 
+      '#22d3ee', 
+      '#0369a1', 
     ];
 
     return {
@@ -346,7 +345,6 @@ export default function AdminDashboard() {
                       tickFormatter={(val) => val.toUpperCase()}
                     />
                     <YAxis hide domain={[0, 'auto']} />
-                    {/* Explicitly disabling cursor background rectangle for zero-artifact hover */}
                     <ChartTooltip cursor={false} content={<ChartTooltipContent gap={6} />} />
                     <Bar 
                       dataKey="value" 
@@ -445,12 +443,15 @@ export default function AdminDashboard() {
                             {startDate ? format(startDate, "PP") : "Select date"}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start">
+                        <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start" sideOffset={8}>
                           <Calendar
                             mode="single"
                             selected={startDate}
                             onSelect={(date) => {
                               setStartDate(date);
+                              if (date && endDate && isBefore(endDate, startOfDay(date))) {
+                                setEndDate(undefined);
+                              }
                               setIsStartOpen(false);
                             }}
                             initialFocus
@@ -477,7 +478,7 @@ export default function AdminDashboard() {
                             {endDate ? format(endDate, "PP") : "Select date"}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start">
+                        <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start" sideOffset={8}>
                           <Calendar
                             mode="single"
                             selected={endDate}
@@ -485,6 +486,7 @@ export default function AdminDashboard() {
                               setEndDate(date);
                               setIsEndOpen(false);
                             }}
+                            disabled={startDate ? { before: startDate } : undefined}
                             initialFocus
                           />
                         </PopoverContent>
