@@ -22,17 +22,10 @@ function Calendar({
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
-        month_caption: "relative flex items-center justify-center pt-1 pb-4",
+        caption: "flex w-full justify-between items-center px-2 pb-4",
+        nav: "contents",
+        month_caption: "flex justify-center items-center order-2",
         caption_label: "text-sm font-black tracking-tight",
-        nav: "flex items-center",
-        button_previous: cn(
-          buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 rounded-full absolute left-1 top-1 transition-all z-10"
-        ),
-        button_next: cn(
-          buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 rounded-full absolute right-1 top-1 transition-all z-10"
-        ),
         month_grid: "w-full border-collapse space-y-1",
         weekdays: "flex w-full mb-2",
         weekday:
@@ -52,6 +45,14 @@ function Calendar({
         range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         hidden: "invisible",
+        button_previous: cn(
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 rounded-full order-1 transition-all"
+        ),
+        button_next: cn(
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 rounded-full order-3 transition-all"
+        ),
         ...classNames,
       }}
       components={{
