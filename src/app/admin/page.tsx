@@ -268,17 +268,17 @@ export default function AdminDashboard() {
           </div>
           
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            <TabsList className="h-12 p-1.5 glass border border-black/5 dark:border-white/10 rounded-2xl w-full sm:w-[320px] grid grid-cols-2">
+            <TabsList className="h-12 p-1.5 glass border border-black/5 dark:border-white/10 rounded-full w-full sm:w-[320px] grid grid-cols-2">
               <TabsTrigger 
                 value="analytics" 
-                className="rounded-xl font-black text-[9px] uppercase tracking-widest data-[state=active]:blue-gradient data-[state=active]:text-white transition-all h-full gap-2"
+                className="rounded-full font-black text-[9px] uppercase tracking-widest data-[state=active]:blue-gradient data-[state=active]:!text-white transition-all h-full gap-2"
               >
                 <PieChartIcon className="h-3.5 w-3.5" />
                 Analytics
               </TabsTrigger>
               <TabsTrigger 
                 value="activity" 
-                className="rounded-xl font-black text-[9px] uppercase tracking-widest data-[state=active]:blue-gradient data-[state=active]:text-white transition-all h-full gap-2"
+                className="rounded-full font-black text-[9px] uppercase tracking-widest data-[state=active]:blue-gradient data-[state=active]:!text-white transition-all h-full gap-2"
               >
                 <Activity className="h-3.5 w-3.5" />
                 Activity
@@ -331,7 +331,7 @@ export default function AdminDashboard() {
                       tickFormatter={(val) => val.toUpperCase()}
                     />
                     <YAxis hide />
-                    <ChartTooltip cursor={{ fill: 'hsl(var(--primary) / 0.05)' }} content={<ChartTooltipContent />} />
+                    <ChartTooltip cursor={{ fill: 'hsl(var(--primary) / 0.05)' }} content={<ChartTooltipContent gap={6} />} />
                     <Bar dataKey="value" fill="var(--color-value)" radius={[10, 10, 0, 0]} barSize={60} />
                   </BarChart>
                 </ChartContainer>
@@ -361,7 +361,7 @@ export default function AdminDashboard() {
                         <Cell key={`cell-${index}`} fill={entry.fill} className="hover:opacity-80 transition-opacity" />
                       ))}
                     </Pie>
-                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <ChartTooltip content={<ChartTooltipContent gap={6} />} />
                   </PieChart>
                 </ChartContainer>
               </CardContent>
@@ -525,6 +525,7 @@ export default function AdminDashboard() {
                       <TableBody>
                         {filteredLogs.map((log) => {
                           const isBlocked = userStatusMap[log.uid] || false;
+                          const isActive = !log.exitTimestamp;
                           return (
                             <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10">
                               <TableCell className="pl-10 py-6 whitespace-nowrap">
@@ -535,8 +536,8 @@ export default function AdminDashboard() {
                                   <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase">
                                     <LogIn className="h-3 w-3" /> {log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--'}
                                   </div>
-                                  <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase opacity-60">
-                                    <LogOut className="h-3 w-3" /> {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : 'Active'}
+                                  <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase opacity-40">
+                                    <LogOut className="h-3 w-3" /> {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--'}
                                   </div>
                                 </div>
                               </TableCell>
@@ -555,7 +556,7 @@ export default function AdminDashboard() {
                                     {log.duration} MIN
                                   </Badge>
                                 ) : (
-                                  <Badge variant="secondary" className="rounded-2xl font-black text-[10px] py-1.5 px-4">
+                                  <Badge variant="secondary" className="rounded-2xl font-black text-[10px] py-1.5 px-4 opacity-40">
                                     IN PROGRESS
                                   </Badge>
                                 )}
