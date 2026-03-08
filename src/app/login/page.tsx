@@ -88,7 +88,7 @@ function LoginContent() {
       <div className="w-full max-w-md flex flex-col items-center justify-center gap-10">
         <Card className="w-full glass border border-black/5 dark:border-white/20 animate-in zoom-in-95 duration-1000 shadow-2xl shadow-primary/20 relative overflow-hidden rounded-[2rem]">
           <CardHeader className="text-center pb-12 pt-20 px-10 relative z-10">
-            <div className="mx-auto mb-10 flex h-24 w-24 items-center justify-center rounded-2xl blue-gradient text-white animate-bounce shadow-xl shadow-primary/30">
+            <div className="mx-auto mb-10 flex h-24 w-24 items-center justify-center rounded-2xl blue-gradient text-white animate-float shadow-xl shadow-primary/30">
               <BookMarked className="h-12 w-12" />
             </div>
             <CardTitle className="mb-2">

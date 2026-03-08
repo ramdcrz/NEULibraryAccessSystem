@@ -95,6 +95,8 @@
   display: inline-block;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
 }
 
 .hover-glass:hover {

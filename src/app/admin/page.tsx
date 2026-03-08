@@ -236,7 +236,7 @@ export default function AdminDashboard() {
             <ShieldCheck className="h-3.5 w-3.5" />
             Administrative Terminal
           </div>
-          <h1 className="text-6xl font-black tracking-tighter">
+          <h1 className="text-6xl font-black tracking-tighter py-2">
             System <span className="text-blue-gradient">Analytics</span>
           </h1>
           <p className="text-muted-foreground text-xl font-bold opacity-70 tracking-tight">
@@ -492,7 +492,7 @@ export default function AdminDashboard() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="w-32 justify-center rounded-xl py-1.5 font-black text-[10px] uppercase tracking-widest bg-black/5 border-black/5 text-primary">
+                          <Badge variant="outline" className="w-32 justify-center rounded-2xl py-1.5 font-black text-[10px] uppercase tracking-widest bg-black/5 border-black/5 text-primary">
                             {log.userType}
                           </Badge>
                         </TableCell>
