@@ -58,6 +58,7 @@ function LoginContent() {
     setIsAuthenticating(true);
     try {
       await signInWithGoogle();
+      // Keep isAuthenticating true until the redirect happens via effect
     } catch (error: any) {
       setIsAuthenticating(false);
       console.error('Sign in failed:', error);
@@ -126,6 +127,7 @@ function LoginContent() {
         </p>
       </div>
     </main>
+  );
 }
 
 export default function LoginPage() {
