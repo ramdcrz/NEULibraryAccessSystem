@@ -11,29 +11,36 @@ service cloud.firestore {
     // Helper: Is the requester an admin?
     // This helper performs a cross-document lookup to the users collection.
     function isSystemAdmin() {
-      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      return isSignedIn() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // 1. VISIT LOGS (FLAT TOP-LEVEL COLLECTION)
+    // 1. VISIT LOGS
     match /visit_logs/{logId} {
-      // allow create: Any signed-in user can log their own visit.
-      // Updated to check 'uid' field to match new schema.
+      // Create: Any signed-in user can log their own visit.
       allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
       
-      // allow read, list: Admins can see all logs. Users can see their own logs.
-      allow read, list: if isSignedIn() && (
-        (resource != null && resource.data.uid == request.auth.uid) || 
+      // Update: Users can update (check-out) their own logs. Admins can manage all.
+      allow update: if isSignedIn() && (
+        resource.data.uid == request.auth.uid || 
         isSystemAdmin()
+      );
+      
+      // Read/List: Admins can see all logs. Users can see their own logs (must use filtered query).
+      allow read, list: if isSignedIn() && (
+        isSystemAdmin() || 
+        resource.data.uid == request.auth.uid
       );
     }
 
     // 2. USER PROFILE RULES
     match /users/{userId} {
-      // Base case for self-access to prevent recursion loops
-      allow read, write: if isSignedIn() && request.auth.uid == userId;
-      
-      // Allow admins to access other user records
-      allow read, write: if isSystemAdmin();
+      // Users can read/write their own profile. Admins can access all.
+      allow read, write: if isSignedIn() && (
+        request.auth.uid == userId || 
+        isSystemAdmin()
+      );
     }
   }
 }
