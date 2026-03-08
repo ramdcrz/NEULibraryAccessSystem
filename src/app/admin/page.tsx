@@ -275,7 +275,7 @@ export default function AdminDashboard() {
                 className={cn(
                   "rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2",
                   "text-muted-foreground bg-transparent", // Inactive
-                  "data-[state=active]:blue-gradient data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20" // Unified Active State
+                  "data-[state=active]:blue-gradient data-[state=active]:!text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20" // Unified Active State
                 )}
               >
                 <PieChartIcon className="h-3.5 w-3.5" />
@@ -286,7 +286,7 @@ export default function AdminDashboard() {
                 className={cn(
                   "rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2",
                   "text-muted-foreground bg-transparent", // Inactive
-                  "data-[state=active]:blue-gradient data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20" // Unified Active State
+                  "data-[state=active]:blue-gradient data-[state=active]:!text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20" // Unified Active State
                 )}
               >
                 <Activity className="h-3.5 w-3.5" />
