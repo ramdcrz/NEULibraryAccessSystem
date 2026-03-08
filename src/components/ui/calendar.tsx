@@ -18,13 +18,14 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn("p-8", className)}
+      className={cn("p-4", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
-        caption: "flex justify-center relative items-center w-full mb-4",
-        nav: "flex items-center",
-        month_caption: "flex justify-center items-center",
+        // The caption is now the anchor. h-10 gives it a bit more "header" presence.
+        caption: "flex justify-center relative items-center w-full mb-4 h-10", 
+        nav: "contents", 
+        month_caption: "flex justify-center items-center w-full",
         caption_label: "text-sm font-black tracking-tight",
         month_grid: "w-full border-collapse space-y-1",
         weekdays: "flex w-full mb-2",
@@ -45,13 +46,14 @@ function Calendar({
         range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         hidden: "invisible",
+        // Anchored to the top corners of the header area, not the middle of the box
         button_previous: cn(
           buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 rounded-full transition-all absolute left-0"
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 rounded-full transition-all absolute left-0 top-1/2 -translate-y-1/2"
         ),
         button_next: cn(
           buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 rounded-full transition-all absolute right-0"
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 rounded-full transition-all absolute right-0 top-1/2 -translate-y-1/2"
         ),
         ...classNames,
       }}

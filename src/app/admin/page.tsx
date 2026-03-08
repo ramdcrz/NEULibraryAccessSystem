@@ -36,7 +36,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 import { toggleUserBlock } from '@/lib/firebase/firestore';
-import { cn } from '@/lib/utils';
+import { cn, formatDuration } from '@/lib/utils';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { 
@@ -216,7 +216,7 @@ export default function AdminDashboard() {
         log.timestamp ? format(log.timestamp.toDate(), 'PP p') : 'Pending...',
         log.status?.toUpperCase() || 'ACTIVE',
         log.email,
-        log.duration ? `${log.duration}m` : '-',
+        formatDuration(log.duration, '-'),
         log.reason
       ]);
 
@@ -594,15 +594,15 @@ export default function AdminDashboard() {
                               </TableCell>
                               <TableCell>
                                 <div className="flex justify-center">
-                                  {log.duration ? (
-                                    <Badge className="rounded-2xl bg-primary/10 text-primary border-none font-black text-[10px] py-1.5 px-4 w-32 flex justify-center">
-                                      {log.duration} {log.duration === 1 ? 'MINUTE' : 'MINUTES'}
-                                    </Badge>
-                                  ) : (
-                                    <Badge variant="secondary" className="rounded-2xl font-black text-[10px] py-1.5 px-4 opacity-40 w-32 flex justify-center">
-                                      Active
-                                    </Badge>
-                                  )}
+                                  <Badge 
+                                    variant={log.duration ? "default" : "secondary"} 
+                                    className={cn(
+                                      "rounded-2xl font-black text-[10px] py-1.5 px-4 w-32 flex justify-center border-none",
+                                      log.duration ? "bg-primary/10 text-primary" : "opacity-40"
+                                    )}
+                                  >
+                                    {formatDuration(log.duration)}
+                                  </Badge>
                                 </div>
                               </TableCell>
                               <TableCell className="max-w-[150px] truncate font-bold text-foreground/80">
