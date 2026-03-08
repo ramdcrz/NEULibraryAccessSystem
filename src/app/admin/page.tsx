@@ -122,7 +122,7 @@ export default function AdminDashboard() {
       .sort((a, b) => b.value - a.value)
       .slice(0, 5);
 
-    // Specific Blue spectrum for peak readability
+    // High-contrast university blue spectrum
     const COLORS = [
       '#2563eb', // Royal Blue
       '#60a5fa', // Light Sky Blue
@@ -266,7 +266,7 @@ export default function AdminDashboard() {
               <ShieldCheck className="h-3.5 w-3.5" />
               Administrative Terminal
             </div>
-            <h1 className="text-6xl font-black tracking-tighter py-2">
+            <h1 className="text-6xl font-black tracking-tighter py-2 pb-4">
               System <span className="text-blue-gradient">Analytics</span>
             </h1>
             <p className="text-muted-foreground text-xl font-bold opacity-70 tracking-tight">
@@ -275,7 +275,7 @@ export default function AdminDashboard() {
           </div>
           
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            <TabsList className="h-12 p-1 border border-black/5 dark:border-white/10 rounded-full w-[280px] grid grid-cols-2 bg-transparent">
+            <TabsList className="h-12 p-1 border border-black/5 dark:border-white/10 rounded-full w-[280px] grid grid-cols-2 bg-transparent shadow-sm">
               <TabsTrigger 
                 value="analytics" 
                 className={cn(
@@ -346,7 +346,8 @@ export default function AdminDashboard() {
                       tickFormatter={(val) => val.toUpperCase()}
                     />
                     <YAxis hide domain={[0, 'auto']} />
-                    <ChartTooltip cursor={{ fill: 'transparent' }} content={<ChartTooltipContent gap={6} />} />
+                    {/* Explicitly disabling cursor background rectangle for zero-artifact hover */}
+                    <ChartTooltip cursor={false} content={<ChartTooltipContent gap={6} />} />
                     <Bar 
                       dataKey="value" 
                       fill="hsl(var(--primary))" 
