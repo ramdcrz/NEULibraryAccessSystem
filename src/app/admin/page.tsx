@@ -269,7 +269,7 @@ export default function AdminDashboard() {
             variant="ghost"
             onClick={() => setShowFilters(!showFilters)}
             className={cn(
-              "h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border shadow-sm",
+              "h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border shadow-sm",
               showFilters 
                 ? "bg-primary/10 text-primary border-primary/20" 
                 : "border-black/5 dark:border-white/10 bg-white/5 hover:bg-primary/10 hover:text-primary"
@@ -282,7 +282,7 @@ export default function AdminDashboard() {
           <Button 
             onClick={exportToPDF} 
             disabled={isExporting || logsLoading || filteredLogs.length === 0}
-            className="h-12 px-8 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+            className="h-12 px-8 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
           >
             {isExporting ? <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" /> : <FileDown className="h-3.5 w-3.5 mr-2" />}
             Export Activity
@@ -505,6 +505,9 @@ export default function AdminDashboard() {
                       <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10">
                         <TableCell className="pl-10 py-6 whitespace-nowrap">
                           <div className="flex flex-col gap-1">
+                            <div className="text-[10px] font-black text-foreground/40 uppercase tracking-widest mb-1">
+                              {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy') : 'Pending...'}
+                            </div>
                             <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase">
                               <LogIn className="h-3 w-3" /> {log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--'}
                             </div>
