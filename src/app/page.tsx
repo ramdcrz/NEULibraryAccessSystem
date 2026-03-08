@@ -14,18 +14,39 @@ export default function Home() {
   const { user, loading, signOut } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
-  const [year, setYear] = useState<number | null>(null);
   const [hasLogged, setHasLogged] = useState(false);
+
+  // Option A: Kiosk Idle Timeout (30 Seconds)
+  useEffect(() => {
+    // Only apply timeout to standard users who haven't finished logging their visit
+    if (!user || user.role === 'admin' || hasLogged) return;
+
+    let timeoutId: number;
+
+    const resetTimer = () => {
+      if (timeoutId) window.clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(() => {
+        signOut();
+      }, 30000); // 30 seconds of inactivity
+    };
+
+    const handleActivity = () => resetTimer();
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    
+    events.forEach(event => document.addEventListener(event, handleActivity));
+    resetTimer(); // Start the initial timer
+
+    return () => {
+      if (timeoutId) window.clearTimeout(timeoutId);
+      events.forEach(event => document.removeEventListener(event, handleActivity));
+    };
+  }, [user, signOut, hasLogged]);
 
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
     }
   }, [user, loading, router]);
-
-  useEffect(() => {
-    setYear(new Date().getFullYear());
-  }, []);
 
   useEffect(() => {
     if (!loading && user?.isBlocked) {
