@@ -27,6 +27,7 @@ function LoginContent() {
   useEffect(() => {
     const isTimeout = searchParams.get('timeout') === 'true';
     if (isTimeout) {
+      // Small delay to ensure the toast system is ready
       const timer = setTimeout(() => {
         toast({
           variant: "default",
@@ -41,6 +42,7 @@ function LoginContent() {
           duration: 5000,
         });
         
+        // Remove query param to avoid re-triggering on manual refresh
         const params = new URLSearchParams(searchParams.toString());
         params.delete('timeout');
         router.replace(params.toString() ? `/login?${params.toString()}` : '/login');

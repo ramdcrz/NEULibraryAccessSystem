@@ -18,25 +18,27 @@ export default function Home() {
 
   // Kiosk Idle Timeout (20 Seconds)
   useEffect(() => {
+    // Admins don't get logged out automatically
     if (!user || user.role === 'admin' || hasLogged) return;
 
     let timeoutId: number;
 
     const handleTimeout = () => {
+      // Pass the timeout state to the login page via query param
       router.push('/login?timeout=true');
       signOut();
     };
 
     const resetTimer = () => {
       if (timeoutId) window.clearTimeout(timeoutId);
-      timeoutId = window.setTimeout(handleTimeout, 20000); 
+      timeoutId = window.setTimeout(handleTimeout, 20000); // 20 seconds
     };
 
     const handleActivity = () => resetTimer();
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
     
     events.forEach(event => document.addEventListener(event, handleActivity));
-    resetTimer(); 
+    resetTimer(); // Initialize
 
     return () => {
       if (timeoutId) window.clearTimeout(timeoutId);
