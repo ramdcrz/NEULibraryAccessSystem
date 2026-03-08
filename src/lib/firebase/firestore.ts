@@ -39,11 +39,13 @@ export function updateUserDoc(uid: string, data: Partial<UserProfile>) {
   const userRef = doc(db, 'users', uid);
   
   updateDoc(userRef, data).catch(async (error) => {
-    errorEmitter.emit('permission-error', new FirestorePermissionError({
-      path: userRef.path,
-      operation: 'update',
-      requestResourceData: data,
-    } satisfies SecurityRuleContext));
+    if (error.code === 'permission-denied') {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: userRef.path,
+        operation: 'update',
+        requestResourceData: data,
+      } satisfies SecurityRuleContext));
+    }
   });
 }
 
@@ -91,7 +93,9 @@ export function addVisitLog(logData: VisitLogPayload) {
       } satisfies SecurityRuleContext);
       errorEmitter.emit('permission-error', permissionError);
     } else {
-      console.error("Firestore AddDoc Error:", error);
+      // Log non-permission errors (like already exists or network issues) to console
+      // but do not trigger the global permission error listener
+      console.warn("Firestore Write Conflict or System Error:", error);
     }
   });
 }
@@ -121,7 +125,7 @@ export function checkOutVisitLog(logId: string, entryTimestamp: Timestamp | null
         requestResourceData: updateData,
       } satisfies SecurityRuleContext));
     } else {
-      console.error("Firestore UpdateDoc Error:", error);
+      console.warn("Firestore Check-out Sync Issue:", error);
     }
   });
 }

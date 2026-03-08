@@ -123,7 +123,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   const selectedReason = form.watch('reason');
 
   async function handleCheckOut() {
-    if (!smartActiveLog) return;
+    if (!smartActiveLog || isSubmitting) return;
     setIsSubmitting(true);
     try {
       checkOutVisitLog(smartActiveLog.id, smartActiveLog.timestamp);
@@ -136,12 +136,12 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
       setTimeout(() => signOut(), 3000);
     } catch (error) {
       console.error('Check-out failed:', error);
-    } finally {
       setIsSubmitting(false);
     }
   }
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
+    if (isSubmitting) return;
     setIsSubmitting(true);
     try {
       const entryDate = new Date().toISOString().split('T')[0];
@@ -179,13 +179,12 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
 
     } catch (error) {
       console.error('Failed to log visit:', error);
+      setIsSubmitting(false);
       toast({
         variant: "destructive",
         title: "Submission Failure",
         description: "A database error occurred. Please refresh and try again.",
       });
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
