@@ -1,18 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { BookMarked, LoaderCircle, ShieldCheck } from 'lucide-react';
+import { useEffect, useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { BookMarked, LoaderCircle, ShieldCheck, Info } from 'lucide-react';
 
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 
-export default function LoginPage() {
+function LoginContent() {
   const { user, loading, signInWithGoogle } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   useEffect(() => {
@@ -21,13 +22,41 @@ export default function LoginPage() {
     }
   }, [user, loading, router]);
 
+  // Handle Timeout Toast
+  useEffect(() => {
+    const isTimeout = searchParams.get('timeout') === 'true';
+    if (isTimeout) {
+      // Small delay to ensure the UI has settled
+      const timer = setTimeout(() => {
+        toast({
+          variant: "default",
+          title: "Session Reset",
+          description: (
+            <div className="flex items-center gap-2">
+              <Info className="h-4 w-4 text-primary" />
+              <span>The previous session was closed due to inactivity.</span>
+            </div>
+          ),
+          className: "bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-900 border-2 font-bold",
+          duration: 5000,
+        });
+        
+        // Clean up the URL
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete('timeout');
+        router.replace(params.toString() ? `/login?${params.toString()}` : '/login');
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams, toast, router]);
+
   const handleSignIn = async () => {
     if (isAuthenticating) return;
     
     setIsAuthenticating(true);
     try {
       await signInWithGoogle();
-      // Keep isAuthenticating true to show loader until the redirect triggers via useEffect
     } catch (error: any) {
       setIsAuthenticating(false);
       console.error('Sign in failed:', error);
@@ -59,12 +88,12 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 animate-in fade-in duration-1000">
       <div className="w-full max-w-md flex flex-col items-center justify-center gap-12 animate-in fade-in duration-1000 ease-in-out">
-        <Card className="w-full glass border border-black/5 dark:border-white/20 animate-in zoom-in-95 duration-1000 shadow-2xl relative overflow-hidden shadow-primary/20">
+        <Card className="w-full glass border border-black/5 dark:border-white/20 animate-in zoom-in-95 duration-1000 shadow-2xl shadow-primary/20 relative overflow-hidden">
           <CardHeader className="text-center pb-12 pt-24 px-10 relative z-10">
             <div className="mx-auto mb-10 flex h-24 w-24 items-center justify-center rounded-[2.5rem] blue-gradient text-white animate-bounce shadow-xl shadow-primary/30">
               <BookMarked className="h-12 w-12" />
             </div>
-            <CardTitle className="text-5xl font-black tracking-tighter text-blue-gradient mb-2">NEU Library</CardTitle>
+            <CardTitle className="text-5xl font-black tracking-tighter blue-gradient bg-clip-text text-transparent mb-2">NEU Library</CardTitle>
             <CardDescription className="text-muted-foreground text-lg font-medium px-4">
               Access Management Terminal
             </CardDescription>
@@ -77,7 +106,7 @@ export default function LoginPage() {
               variant="outline"
             >
               <GoogleIcon />
-              <span className="text-sm font-black uppercase tracking-widest text-blue-gradient">
+              <span className="text-sm font-black uppercase tracking-widest blue-gradient bg-clip-text text-transparent">
                 Official University Sign In
               </span>
             </Button>
@@ -89,10 +118,18 @@ export default function LoginPage() {
           </CardContent>
         </Card>
         
-        <p className="text-[11px] font-black uppercase tracking-[0.35em] text-muted-foreground/60 text-center px-8 py-3 rounded-full border glass w-full max-w-[450px] whitespace-nowrap shadow-sm">
+        <p className="text-[11px] font-black uppercase tracking-[0.35em] text-muted-foreground/60 text-center px-8 py-3 rounded-full glass w-full max-w-[450px] whitespace-nowrap shadow-sm">
           New Era University • Library Systems
         </p>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center"><LoaderCircle className="h-14 w-14 animate-spin text-primary" /></div>}>
+      <LoginContent />
+    </Suspense>
   );
 }

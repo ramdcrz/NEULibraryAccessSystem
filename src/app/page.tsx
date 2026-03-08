@@ -16,18 +16,22 @@ export default function Home() {
   const { toast } = useToast();
   const [hasLogged, setHasLogged] = useState(false);
 
-  // Option A: Kiosk Idle Timeout (30 Seconds)
+  // Kiosk Idle Timeout (20 Seconds)
   useEffect(() => {
     // Only apply timeout to standard users who haven't finished logging their visit
     if (!user || user.role === 'admin' || hasLogged) return;
 
     let timeoutId: number;
 
+    const handleTimeout = () => {
+      // Redirect with a flag before signing out to trigger the notification
+      router.push('/login?timeout=true');
+      signOut();
+    };
+
     const resetTimer = () => {
       if (timeoutId) window.clearTimeout(timeoutId);
-      timeoutId = window.setTimeout(() => {
-        signOut();
-      }, 30000); // 30 seconds of inactivity
+      timeoutId = window.setTimeout(handleTimeout, 20000); // 20 seconds of inactivity
     };
 
     const handleActivity = () => resetTimer();
@@ -40,7 +44,7 @@ export default function Home() {
       if (timeoutId) window.clearTimeout(timeoutId);
       events.forEach(event => document.removeEventListener(event, handleActivity));
     };
-  }, [user, signOut, hasLogged]);
+  }, [user, signOut, hasLogged, router]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -104,7 +108,7 @@ export default function Home() {
               University Terminal
             </div>
             <h1 className="text-6xl font-extrabold tracking-tight sm:text-7xl md:text-8xl text-foreground">
-              Hello, <span className="text-blue-gradient">{getFirstName()}!</span>
+              Hello, <span className="blue-gradient bg-clip-text text-transparent">{getFirstName()}!</span>
             </h1>
             <p className="mx-auto max-w-4xl text-xl font-medium text-muted-foreground md:text-2xl leading-relaxed tracking-tight">
               {needsOnboarding 
