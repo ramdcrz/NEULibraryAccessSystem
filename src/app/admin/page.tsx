@@ -122,7 +122,14 @@ export default function AdminDashboard() {
       .sort((a, b) => b.value - a.value)
       .slice(0, 5);
 
-    const COLORS = ['hsl(var(--primary))', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'];
+    // Distinct Blue/Indigo Palette for High Readability
+    const COLORS = [
+      '#2563eb', // Royal Blue (Library)
+      '#60a5fa', // Sky Blue (Computer Studies)
+      '#818cf8', // Soft Indigo (Criminology)
+      '#22d3ee', // Cyan (Additional)
+      '#0369a1', // Dark Ocean (Additional)
+    ];
 
     return {
       userType: Object.entries(userTypeCounts).map(([name, value]) => ({ name, value })),
@@ -270,7 +277,7 @@ export default function AdminDashboard() {
           </div>
           
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            <TabsList className="h-12 p-1 glass border border-black/5 dark:border-white/10 rounded-full w-full sm:w-[280px] grid grid-cols-2 bg-transparent">
+            <TabsList className="h-12 p-1 border border-black/5 dark:border-white/10 rounded-full w-full sm:w-[280px] grid grid-cols-2 bg-transparent">
               <TabsTrigger 
                 value="analytics" 
                 className={cn(
@@ -341,6 +348,7 @@ export default function AdminDashboard() {
                       tickFormatter={(val) => val.toUpperCase()}
                     />
                     <YAxis hide domain={[0, 'auto']} />
+                    {/* cursor: fill transparent removes the dark background on hover */}
                     <ChartTooltip cursor={{ fill: 'transparent' }} content={<ChartTooltipContent gap={6} />} />
                     <Bar 
                       dataKey="value" 
@@ -570,7 +578,7 @@ export default function AdminDashboard() {
                                     <LogIn className="h-3 w-3" /> {log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--'}
                                   </div>
                                   <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase opacity-40">
-                                    <LogOut className="h-3 w-3" /> {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--'}
+                                    <LogOut className="h-3 w-3" /> {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : <span className="text-[9px] font-bold italic tracking-normal">Active</span>}
                                   </div>
                                 </div>
                               </TableCell>
