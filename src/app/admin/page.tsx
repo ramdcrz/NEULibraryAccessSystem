@@ -149,7 +149,6 @@ export default function AdminDashboard() {
     setIsExporting(true);
     try {
       const doc = new jsPDF();
-      const currentDate = format(new Date(), 'PP');
       
       doc.setFontSize(22);
       doc.setTextColor(30, 58, 138);
