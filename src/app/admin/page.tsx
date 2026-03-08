@@ -29,7 +29,7 @@ import { collection, query, orderBy } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { format, startOfDay, endOfDay, isAfter, isBefore } from 'date-fns';
+import { format, startOfDay, endOfDay, isAfter, isBefore, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Calendar } from '@/components/ui/calendar';
@@ -212,21 +212,57 @@ export default function AdminDashboard() {
       doc.setTextColor(0);
       doc.text('University Visit Activity Report', 14, 32);
       
-      const tableRows = filteredLogs.map(log => [
-        log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : 'Pending...',
-        log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--',
-        `${log.email} (${log.userType})`,
-        formatDuration(log.duration, 'Ongoing', false),
-        log.reason
-      ]);
+      // Group logs by date
+      const groupedByDate: Record<string, typeof filteredLogs> = {};
+      filteredLogs.forEach(log => {
+        const dateKey = log.entryDate || (log.timestamp ? format(log.timestamp.toDate(), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'));
+        if (!groupedByDate[dateKey]) groupedByDate[dateKey] = [];
+        groupedByDate[dateKey].push(log);
+      });
 
-      autoTable(doc, {
-        startY: 45,
-        head: [['Time In', 'Time Out', 'Identity', 'Duration', 'Purpose']],
-        body: tableRows,
-        theme: 'grid',
-        headStyles: { fillColor: [37, 99, 235], textColor: 255, fontSize: 8, fontStyle: 'bold' },
-        styles: { fontSize: 7, cellPadding: 2 }
+      // Sort dates newest first
+      const sortedDates = Object.keys(groupedByDate).sort((a, b) => b.localeCompare(a));
+
+      let currentY = 45;
+
+      sortedDates.forEach((dateStr, index) => {
+        const logsForDate = groupedByDate[dateStr];
+        
+        // Add Date Header
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(37, 99, 235);
+        const formattedDate = format(parseISO(dateStr), 'EEEE, MMMM do, yyyy');
+        doc.text(formattedDate.toUpperCase(), 14, currentY);
+        currentY += 6;
+
+        const tableRows = logsForDate.map(log => [
+          log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : 'Pending...',
+          log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--',
+          log.email,
+          log.userType,
+          formatDuration(log.duration, 'Ongoing', false),
+          log.reason
+        ]);
+
+        autoTable(doc, {
+          startY: currentY,
+          head: [['Time In', 'Time Out', 'User', 'Type', 'Duration', 'Purpose']],
+          body: tableRows,
+          theme: 'grid',
+          headStyles: { fillColor: [37, 99, 235], textColor: 255, fontSize: 8, fontStyle: 'bold' },
+          styles: { fontSize: 7, cellPadding: 2 },
+          margin: { bottom: 15 }
+        });
+
+        // @ts-ignore
+        currentY = doc.lastAutoTable.finalY + 15;
+        
+        // Simple page break logic
+        if (currentY > 270 && index < sortedDates.length - 1) {
+          doc.addPage();
+          currentY = 22;
+        }
       });
 
       doc.save(`NEULibrary_Logs_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
