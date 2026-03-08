@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { LoaderCircle, ChevronRight, Library, LogOut, CheckCircle2, User, School, Clock, MoveRight } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
@@ -211,8 +211,12 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
               <div className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-3 flex items-center gap-2">
                 <Library className="h-3 w-3" /> Started Entry
               </div>
-              <p className="text-2xl font-black">{format(activeLog.timestamp.toDate(), 'hh:mm a')}</p>
-              <p className="text-xs font-bold opacity-40 mt-1">{format(activeLog.timestamp.toDate(), 'PP')}</p>
+              <p className="text-2xl font-black">
+                {activeLog.timestamp ? format(activeLog.timestamp.toDate(), 'hh:mm a') : 'Syncing...'}
+              </p>
+              <p className="text-xs font-bold opacity-40 mt-1">
+                {activeLog.timestamp ? format(activeLog.timestamp.toDate(), 'PP') : 'Pending...'}
+              </p>
             </div>
             <div className="p-8 rounded-3xl glass border border-black/5 dark:border-white/20 bg-primary/5">
               <div className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-3 flex items-center gap-2">
