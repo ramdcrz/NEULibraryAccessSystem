@@ -35,11 +35,11 @@ export default function Header() {
     <header className="sticky top-0 z-[100] w-full bg-background/5 backdrop-blur-3xl border-b border-black/5 dark:border-white/10 flex h-20 items-center gap-4 px-6 md:px-12 transition-all">
       <div className="flex items-center gap-8">
         <Link href="/" className="flex items-center gap-3.5 group transition-opacity hover:opacity-80">
-          <div className="p-2 rounded-xl purple-gradient text-white shadow-md shadow-primary/20 transition-transform group-active:scale-95">
+          <div className="p-2 rounded-xl blue-gradient text-white shadow-md shadow-primary/20 transition-transform group-active:scale-95">
             <BookMarked className="h-5 w-5" />
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-black leading-none tracking-tight text-purple-gradient">NEU Library</span>
+            <span className="text-lg font-black leading-none tracking-tight text-blue-gradient">NEU Library</span>
             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-1">Terminal</span>
           </div>
         </Link>
@@ -82,11 +82,11 @@ export default function Header() {
         ) : user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="flex h-[42px] w-[42px] items-center justify-center rounded-full purple-gradient cursor-pointer active:scale-95 transition-transform group shadow-md shadow-primary/10">
+              <div className="flex h-[42px] w-[42px] items-center justify-center rounded-full blue-gradient cursor-pointer active:scale-95 transition-transform group shadow-md shadow-primary/10">
                 <div className="relative h-[38px] w-[38px] rounded-full overflow-hidden border-2 border-background bg-background flex items-center justify-center shadow-sm">
                   <Avatar className="h-full w-full">
                     <AvatarImage src={user.photoURL ?? ''} alt={user.email ?? ''} />
-                    <AvatarFallback className="purple-gradient text-white font-bold text-xs">{getInitials(user.email)}</AvatarFallback>
+                    <AvatarFallback className="blue-gradient text-white font-bold text-xs">{getInitials(user.email)}</AvatarFallback>
                   </Avatar>
                 </div>
               </div>

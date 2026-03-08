@@ -151,7 +151,7 @@ export default function AdminDashboard() {
       const doc = new jsPDF();
       
       doc.setFontSize(22);
-      doc.setTextColor(30, 58, 138);
+      doc.setTextColor(37, 99, 235);
       doc.text('NEU Library Access System', 14, 22);
       
       doc.setFontSize(14);
@@ -182,7 +182,7 @@ export default function AdminDashboard() {
         head: [['Date & Time', 'Email', 'User Type', 'College / Office', 'Purpose']],
         body: tableRows,
         theme: 'grid',
-        headStyles: { fillColor: [30, 58, 138], textColor: 255, fontSize: 9, fontStyle: 'bold' },
+        headStyles: { fillColor: [37, 99, 235], textColor: 255, fontSize: 9, fontStyle: 'bold' },
         styles: { fontSize: 8, cellPadding: 3 }
       });
 
@@ -233,7 +233,7 @@ export default function AdminDashboard() {
           <Button 
             onClick={exportToPDF} 
             disabled={isExporting || logsLoading || filteredLogs.length === 0}
-            className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border-none purple-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 group"
+            className="h-11 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border-none blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 group"
           >
             {isExporting ? (
               <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" />

@@ -147,15 +147,15 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
       <CardHeader className="bg-white/5 dark:bg-white/5 pb-10 pt-10 px-10 border-b border-black/5 dark:border-white/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5">
-            <div className="p-3.5 rounded-2xl purple-gradient text-white border border-black/5 dark:border-white/20 shadow-inner">
+            <div className="p-3.5 rounded-2xl blue-gradient text-white border border-black/5 dark:border-white/20 shadow-inner">
               <Library className="h-8 w-8" />
             </div>
             <div>
-              <CardTitle className="text-3xl font-black tracking-tighter text-purple-gradient">Visit Log</CardTitle>
+              <CardTitle className="text-3xl font-black tracking-tighter text-blue-gradient">Visit Log</CardTitle>
               <CardDescription className="text-sm font-medium opacity-60 tracking-tight text-muted-foreground">Identity verification terminal</CardDescription>
             </div>
           </div>
-          <Badge className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.25em] purple-gradient text-white rounded-full shadow-lg shadow-primary/20 border-none">
+          <Badge className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.25em] blue-gradient text-white rounded-full shadow-lg shadow-primary/20 border-none">
             {user.user_type}
           </Badge>
         </div>
@@ -239,7 +239,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
 
             <Button 
               type="submit" 
-              className="w-full h-20 font-black uppercase tracking-[0.25em] text-sm rounded-3xl transition-all hover:scale-[1.01] active:scale-[0.99] group purple-gradient text-white shadow-lg shadow-primary/20 border-none" 
+              className="w-full h-20 font-black uppercase tracking-[0.25em] text-sm rounded-3xl transition-all hover:scale-[1.01] active:scale-[0.99] group blue-gradient text-white shadow-lg shadow-primary/20 border-none" 
               disabled={isSubmitting}
             >
               {isSubmitting ? (
