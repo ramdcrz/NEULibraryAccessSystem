@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import Loading from './loading';
-import Header from '@/components/layout/header';
 import VisitLogger from '@/components/dashboard/visit-logger';
 import OnboardingForm from '@/components/dashboard/onboarding-form';
 import { useToast } from '@/hooks/use-toast';
@@ -48,7 +47,7 @@ export default function Home() {
 
   if (user.isBlocked) {
     return (
-      <div className="flex min-h-screen items-center justify-center p-6 gradient-bg">
+      <div className="flex min-h-[calc(100vh-80px)] items-center justify-center p-6">
         <Alert variant="destructive" className="max-w-md glass border-none rounded-[2.5rem] p-10 animate-in fade-in duration-1000">
           <ShieldAlert className="h-10 w-10 mb-6 mx-auto text-destructive" />
           <AlertTitle className="text-3xl font-bold text-center tracking-tight">Access Denied</AlertTitle>
@@ -75,9 +74,8 @@ export default function Home() {
   const needsOnboarding = !user.college_office || !user.user_type;
 
   return (
-    <div className="flex min-h-screen w-full flex-col gradient-bg">
-      <Header />
-      <main className="flex flex-1 flex-col items-center justify-center gap-12 px-6 md:px-12 py-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-in-out relative">
+    <>
+      <main className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center gap-12 px-6 md:px-12 py-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-in-out relative">
         {!hasLogged && (
           <div className="w-full max-w-4xl text-center space-y-6">
             <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-secondary text-foreground/70 text-[10px] font-bold uppercase tracking-[0.25em] border border-border mb-2">
@@ -105,6 +103,6 @@ export default function Home() {
       <footer className="w-full py-12 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground/50">
         © {year ?? '...'} New Era University • Library Systems
       </footer>
-    </div>
+    </>
   );
 }

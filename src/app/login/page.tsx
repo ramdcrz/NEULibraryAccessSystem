@@ -50,14 +50,14 @@ export default function LoginPage() {
 
   if (loading || user) {
     return (
-      <div className="flex h-screen items-center justify-center gradient-bg">
+      <div className="flex h-screen items-center justify-center">
         <LoaderCircle className="h-14 w-14 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 gradient-bg">
+    <main className="flex min-h-screen flex-col items-center justify-center p-6 animate-in fade-in duration-1000">
       <div className="w-full max-w-md flex flex-col items-center justify-center gap-12 animate-in fade-in duration-1000 ease-in-out">
         <Card className="w-full glass border border-black/5 dark:border-white/20 animate-in zoom-in-95 duration-1000 shadow-2xl relative overflow-hidden">
           <CardHeader className="text-center pb-12 pt-10 px-10 relative z-10">

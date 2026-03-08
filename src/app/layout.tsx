@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/contexts/theme-provider';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
+import HeaderWrapper from '@/components/layout/header-wrapper';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -17,16 +18,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </head>
-      <body className={cn('font-body antialiased min-h-screen bg-background tracking-normal')}>
+      <body className={cn('font-body antialiased min-h-screen gradient-bg tracking-normal')}>
         <FirebaseClientProvider>
           <ThemeProvider>
             <AuthProvider>
+              <HeaderWrapper />
               {children}
               <Toaster />
             </AuthProvider>
