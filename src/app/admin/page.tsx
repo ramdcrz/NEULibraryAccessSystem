@@ -269,7 +269,7 @@ export default function AdminDashboard() {
           </div>
           
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            <TabsList className="h-12 p-1 glass border border-black/5 dark:border-white/10 rounded-full w-full sm:w-[320px] grid grid-cols-2">
+            <TabsList className="h-12 p-1 glass border border-black/5 dark:border-white/10 rounded-full w-full sm:w-[320px] grid grid-cols-2 bg-transparent">
               <TabsTrigger 
                 value="analytics" 
                 className="rounded-full font-black text-[9px] uppercase tracking-widest data-[state=active]:blue-gradient data-[state=active]:!text-white transition-all h-full gap-2"
@@ -289,7 +289,7 @@ export default function AdminDashboard() {
             <Button 
               onClick={exportToPDF} 
               disabled={isExporting || logsLoading || filteredLogs.length === 0}
-              className="h-12 px-8 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 w-full sm:w-auto"
+              className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 w-full sm:w-auto min-w-[160px]"
             >
               {isExporting ? <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" /> : <FileDown className="h-3.5 w-3.5 mr-2" />}
               Export Activity
@@ -332,8 +332,20 @@ export default function AdminDashboard() {
                       tickFormatter={(val) => val.toUpperCase()}
                     />
                     <YAxis hide />
-                    <ChartTooltip cursor={{ fill: 'hsl(var(--primary) / 0.03)' }} content={<ChartTooltipContent gap={6} />} />
-                    <Bar dataKey="value" fill="var(--color-value)" radius={[10, 10, 0, 0]} barSize={60} />
+                    <ChartTooltip cursor={{ fill: 'transparent' }} content={<ChartTooltipContent gap={6} />} />
+                    <Bar 
+                      dataKey="value" 
+                      fill="hsl(var(--primary))" 
+                      radius={[10, 10, 0, 0]} 
+                      barSize={60}
+                    >
+                      {chartData.userType.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          className="transition-opacity duration-300 hover:opacity-70 cursor-pointer"
+                        />
+                      ))}
+                    </Bar>
                   </BarChart>
                 </ChartContainer>
               </CardContent>
