@@ -37,7 +37,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useToast } from '@/hooks/use-toast';
 import { toggleUserBlock } from '@/lib/firebase/firestore';
 import { cn } from '@/lib/utils';
-import { jsPDF } from 'jspdf';
+import { jsPDF } from 'jsPDF';
 import autoTable from 'jspdf-autotable';
 import { 
   BarChart, 
@@ -252,79 +252,65 @@ export default function AdminDashboard() {
 
   return (
     <main className="flex-1 px-6 md:px-12 py-12 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-in-out">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.4em] text-[10px] opacity-60">
-            <ShieldCheck className="h-3.5 w-3.5" />
-            Administrative Terminal
-          </div>
-          <h1 className="text-6xl font-black tracking-tighter py-2">
-            System <span className="text-blue-gradient">Analytics</span>
-          </h1>
-          <p className="text-muted-foreground text-xl font-bold opacity-70 tracking-tight">
-            Real-time monitoring and security reporting.
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            onClick={() => setShowFilters(!showFilters)}
-            className={cn(
-              "h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border shadow-sm",
-              showFilters 
-                ? "bg-primary/10 text-primary border-primary/20" 
-                : "border-black/5 dark:border-white/10 bg-white/5 hover:bg-primary/10 hover:text-primary"
-            )}
-          >
-            <Filter className="h-3.5 w-3.5 mr-2" />
-            {showFilters ? 'Hide Filters' : 'Filter View'}
-          </Button>
-
-          <Button 
-            onClick={exportToPDF} 
-            disabled={isExporting || logsLoading || filteredLogs.length === 0}
-            className="h-12 px-8 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
-          >
-            {isExporting ? <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" /> : <FileDown className="h-3.5 w-3.5 mr-2" />}
-            Export Activity
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {[
-          { label: 'Total Visits', val: stats.total, icon: BarChart3 },
-          { label: 'Today', val: stats.today, icon: Clock },
-          { label: 'Verified Reach', val: stats.unique, icon: Users }
-        ].map((stat, i) => (
-          <Card key={i} className="glass rounded-[2rem] p-8 relative overflow-hidden group border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
-            <div className="absolute -bottom-8 -right-8 opacity-[0.15] group-hover:opacity-[0.22] transition-all duration-700 rotate-12 group-hover:rotate-6">
-              <stat.icon className="h-32 w-32 text-primary" />
-            </div>
-            <CardDescription className="text-[11px] font-black uppercase tracking-[0.3em] opacity-50 mb-3 relative z-10">{stat.label}</CardDescription>
-            <CardTitle className="text-5xl font-black tracking-tighter relative z-10">{stat.val}</CardTitle>
-          </Card>
-        ))}
-      </div>
-
       <Tabs defaultValue="activity" className="space-y-12">
-        <TabsList className="h-16 p-2 glass border border-black/5 dark:border-white/10 rounded-2xl w-full max-w-[480px] grid grid-cols-2">
-          <TabsTrigger 
-            value="analytics" 
-            className="rounded-xl font-black text-[10px] uppercase tracking-widest data-[state=active]:blue-gradient data-[state=active]:text-white transition-all h-full gap-2"
-          >
-            <PieChartIcon className="h-3.5 w-3.5" />
-            Analytics Overview
-          </TabsTrigger>
-          <TabsTrigger 
-            value="activity" 
-            className="rounded-xl font-black text-[10px] uppercase tracking-widest data-[state=active]:blue-gradient data-[state=active]:text-white transition-all h-full gap-2"
-          >
-            <Activity className="h-3.5 w-3.5" />
-            Activity Stream
-          </TabsTrigger>
-        </TabsList>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.4em] text-[10px] opacity-60">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Administrative Terminal
+            </div>
+            <h1 className="text-6xl font-black tracking-tighter py-2">
+              System <span className="text-blue-gradient">Analytics</span>
+            </h1>
+            <p className="text-muted-foreground text-xl font-bold opacity-70 tracking-tight">
+              Real-time monitoring and security reporting.
+            </p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <TabsList className="h-12 p-1.5 glass border border-black/5 dark:border-white/10 rounded-2xl w-full sm:w-[320px] grid grid-cols-2">
+              <TabsTrigger 
+                value="analytics" 
+                className="rounded-xl font-black text-[9px] uppercase tracking-widest data-[state=active]:blue-gradient data-[state=active]:text-white transition-all h-full gap-2"
+              >
+                <PieChartIcon className="h-3.5 w-3.5" />
+                Analytics
+              </TabsTrigger>
+              <TabsTrigger 
+                value="activity" 
+                className="rounded-xl font-black text-[9px] uppercase tracking-widest data-[state=active]:blue-gradient data-[state=active]:text-white transition-all h-full gap-2"
+              >
+                <Activity className="h-3.5 w-3.5" />
+                Activity
+              </TabsTrigger>
+            </TabsList>
+
+            <Button 
+              onClick={exportToPDF} 
+              disabled={isExporting || logsLoading || filteredLogs.length === 0}
+              className="h-12 px-8 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 w-full sm:w-auto"
+            >
+              {isExporting ? <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" /> : <FileDown className="h-3.5 w-3.5 mr-2" />}
+              Export Activity
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { label: 'Total Visits', val: stats.total, icon: BarChart3 },
+            { label: 'Today', val: stats.today, icon: Clock },
+            { label: 'Verified Reach', val: stats.unique, icon: Users }
+          ].map((stat, i) => (
+            <Card key={i} className="glass rounded-[2rem] p-8 relative overflow-hidden group border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
+              <div className="absolute -bottom-8 -right-8 opacity-[0.15] group-hover:opacity-[0.22] transition-all duration-700 rotate-12 group-hover:rotate-6">
+                <stat.icon className="h-32 w-32 text-primary" />
+              </div>
+              <CardDescription className="text-[11px] font-black uppercase tracking-[0.3em] opacity-50 mb-3 relative z-10">{stat.label}</CardDescription>
+              <CardTitle className="text-5xl font-black tracking-tighter relative z-10">{stat.val}</CardTitle>
+            </Card>
+          ))}
+        </div>
 
         <TabsContent value="analytics" className="space-y-12 mt-0">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -384,214 +370,230 @@ export default function AdminDashboard() {
         </TabsContent>
 
         <TabsContent value="activity" className="space-y-12 mt-0">
-          {showFilters && (
-            <Card className="glass rounded-[2rem] p-10 border border-black/5 dark:border-white/18 animate-in zoom-in-95 duration-500 shadow-xl shadow-primary/5">
-              <div className="flex flex-col lg:flex-row gap-8 items-end">
-                <div className="flex-1 w-full space-y-4">
-                  <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
-                    <Search className="h-3.5 w-3.5" />
-                    Terminal Identity Search
-                  </label>
-                  <Input
-                    placeholder="Search by email..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-12 rounded-2xl border-2 bg-black/5 transition-all text-sm font-bold focus:border-primary/30"
-                  />
-                </div>
-
-                <div className="flex gap-4 w-full lg:w-auto">
-                  <div className="space-y-4">
+          <div className="flex flex-col gap-12">
+            {showFilters && (
+              <Card className="glass rounded-[2rem] p-10 border border-black/5 dark:border-white/18 animate-in zoom-in-95 duration-500 shadow-xl shadow-primary/5">
+                <div className="flex flex-col lg:flex-row gap-8 items-end">
+                  <div className="flex-1 w-full space-y-4">
                     <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
-                      <CalendarIcon className="h-3.5 w-3.5" />
-                      Start Date
+                      <Search className="h-3.5 w-3.5" />
+                      Terminal Identity Search
                     </label>
-                    <Popover open={isStartOpen} onOpenChange={setIsStartOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-2xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
-                            !startDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-3 h-4 w-4" />
-                          {startDate ? format(startDate, "PP") : "Select date"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={startDate}
-                          onSelect={(date) => {
-                            setStartDate(date);
-                            setIsStartOpen(false);
-                          }}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Input
+                      placeholder="Search by email..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="h-12 rounded-2xl border-2 bg-black/5 transition-all text-sm font-bold focus:border-primary/30"
+                    />
                   </div>
 
-                  <div className="space-y-4">
-                    <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
-                      <CalendarIcon className="h-3.5 w-3.5" />
-                      End Date
-                    </label>
-                    <Popover open={isEndOpen} onOpenChange={setIsEndOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-2xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
-                            !endDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-3 h-4 w-4" />
-                          {endDate ? format(endDate, "PP") : "Select date"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={endDate}
-                          onSelect={(date) => {
-                            setEndDate(date);
-                            setIsEndOpen(false);
-                          }}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                  <div className="flex gap-4 w-full lg:w-auto">
+                    <div className="space-y-4">
+                      <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
+                        <CalendarIcon className="h-3.5 w-3.5" />
+                        Start Date
+                      </label>
+                      <Popover open={isStartOpen} onOpenChange={setIsStartOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-2xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
+                              !startDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-3 h-4 w-4" />
+                            {startDate ? format(startDate, "PP") : "Select date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={startDate}
+                            onSelect={(date) => {
+                              setStartDate(date);
+                              setIsStartOpen(false);
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    <div className="space-y-4">
+                      <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
+                        <CalendarIcon className="h-3.5 w-3.5" />
+                        End Date
+                      </label>
+                      <Popover open={isEndOpen} onOpenChange={setIsEndOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full lg:w-[200px] h-12 justify-start text-left font-bold rounded-2xl border-2 bg-black/5 hover:bg-black/10 transition-colors",
+                              !endDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-3 h-4 w-4" />
+                            {endDate ? format(endDate, "PP") : "Select date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0 rounded-[2rem] border glass shadow-2xl" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={endDate}
+                            onSelect={(date) => {
+                              setEndDate(date);
+                              setIsEndOpen(false);
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </div>
+
+                  <Button 
+                    variant="ghost" 
+                    onClick={clearFilters}
+                    className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border border-destructive/30 text-destructive bg-destructive/5 hover:bg-destructive hover:text-white"
+                  >
+                    <XCircle className="h-3.5 w-3.5 mr-2" />
+                    Clear
+                  </Button>
+                </div>
+              </Card>
+            )}
+
+            <Card className="glass overflow-hidden rounded-[2rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
+              <CardHeader className="p-10 border-b border-black/5 dark:border-white/10 bg-black/5 flex flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-5">
+                  <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-black/5 dark:border-white/10 shadow-inner">
+                    <Activity className="h-7 w-7" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-3xl font-black tracking-tighter">
+                      Activity Stream
+                    </CardTitle>
+                    <CardDescription className="text-sm font-bold opacity-60 mt-1">
+                      {filteredLogs.length} matching entries found in terminal
+                    </CardDescription>
                   </div>
                 </div>
 
-                <Button 
-                  variant="ghost" 
-                  onClick={clearFilters}
-                  className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border border-destructive/30 text-destructive bg-destructive/5 hover:bg-destructive hover:text-white"
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={cn(
+                    "h-11 px-6 font-black text-[9px] uppercase tracking-widest rounded-full transition-all border shadow-sm",
+                    showFilters 
+                      ? "bg-primary/10 text-primary border-primary/20" 
+                      : "border-black/5 dark:border-white/10 bg-white/5 hover:bg-primary/10 hover:text-primary"
+                  )}
                 >
-                  <XCircle className="h-3.5 w-3.5 mr-2" />
-                  Clear
+                  <Filter className="h-3.5 w-3.5 mr-2" />
+                  {showFilters ? 'Hide Filters' : 'Filter View'}
                 </Button>
-              </div>
-            </Card>
-          )}
-
-          <Card className="glass overflow-hidden rounded-[2rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
-            <CardHeader className="p-10 border-b border-black/5 dark:border-white/10 bg-black/5">
-              <div className="flex items-center gap-5">
-                <div className="p-3.5 rounded-2xl bg-primary/10 text-primary border border-black/5 dark:border-white/10 shadow-inner">
-                  <Filter className="h-7 w-7" />
-                </div>
-                <div>
-                  <CardTitle className="text-3xl font-black tracking-tighter">
-                    Activity Stream
-                  </CardTitle>
-                  <CardDescription className="text-sm font-bold opacity-60 mt-1">
-                    {filteredLogs.length} matching entries found in terminal
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
-              {logsLoading ? (
-                <div className="p-32 flex flex-col items-center justify-center gap-6">
-                  <LoaderCircle className="h-12 w-12 animate-spin text-primary/30" />
-                  <p className="text-[11px] font-black uppercase tracking-[0.3em] opacity-30">Syncing logs...</p>
-                </div>
-              ) : filteredLogs.length === 0 ? (
-                <div className="p-40 text-center flex flex-col items-center gap-8">
-                  <Search className="h-12 w-12 text-muted-foreground opacity-20" />
-                  <div className="space-y-2">
-                    <h3 className="text-2xl font-black tracking-tight">No Activity Detected</h3>
-                    <p className="text-muted-foreground font-bold">Adjust filters to display terminal data.</p>
+              </CardHeader>
+              <CardContent className="p-0">
+                {logsLoading ? (
+                  <div className="p-32 flex flex-col items-center justify-center gap-6">
+                    <LoaderCircle className="h-12 w-12 animate-spin text-primary/30" />
+                    <p className="text-[11px] font-black uppercase tracking-[0.3em] opacity-30">Syncing logs...</p>
                   </div>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader className="bg-black/5">
-                      <TableRow className="hover:bg-transparent border-black/5 dark:border-white/10">
-                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10 text-foreground">Timeline</TableHead>
-                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Status</TableHead>
-                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Verified Identity</TableHead>
-                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Duration</TableHead>
-                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Purpose</TableHead>
-                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10 text-foreground">Control</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredLogs.map((log) => {
-                        const isBlocked = userStatusMap[log.uid] || false;
-                        return (
-                          <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10">
-                            <TableCell className="pl-10 py-6 whitespace-nowrap">
-                              <div className="flex flex-col gap-1">
-                                <div className="text-[10px] font-black text-foreground/40 uppercase tracking-widest mb-1">
-                                  {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy') : 'Pending...'}
+                ) : filteredLogs.length === 0 ? (
+                  <div className="p-40 text-center flex flex-col items-center gap-8">
+                    <Search className="h-12 w-12 text-muted-foreground opacity-20" />
+                    <div className="space-y-2">
+                      <h3 className="text-2xl font-black tracking-tight">No Activity Detected</h3>
+                      <p className="text-muted-foreground font-bold">Adjust filters to display terminal data.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader className="bg-black/5">
+                        <TableRow className="hover:bg-transparent border-black/5 dark:border-white/10">
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10 text-foreground">Timeline</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Status</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Verified Identity</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Duration</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Purpose</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10 text-foreground">Control</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredLogs.map((log) => {
+                          const isBlocked = userStatusMap[log.uid] || false;
+                          return (
+                            <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10">
+                              <TableCell className="pl-10 py-6 whitespace-nowrap">
+                                <div className="flex flex-col gap-1">
+                                  <div className="text-[10px] font-black text-foreground/40 uppercase tracking-widest mb-1">
+                                    {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy') : 'Pending...'}
+                                  </div>
+                                  <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase">
+                                    <LogIn className="h-3 w-3" /> {log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--'}
+                                  </div>
+                                  <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase opacity-60">
+                                    <LogOut className="h-3 w-3" /> {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : 'Active'}
+                                  </div>
                                 </div>
-                                <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase">
-                                  <LogIn className="h-3 w-3" /> {log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--'}
+                              </TableCell>
+                              <TableCell>
+                                {getStatusBadge(log.status || 'active')}
+                              </TableCell>
+                              <TableCell className="font-black text-foreground">
+                                <div className="flex flex-col">
+                                  <span>{log.email}</span>
+                                  <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1">{log.userType} • {log.college_office}</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase opacity-60">
-                                  <LogOut className="h-3 w-3" /> {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : 'Active'}
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              {getStatusBadge(log.status || 'active')}
-                            </TableCell>
-                            <TableCell className="font-black text-foreground">
-                              <div className="flex flex-col">
-                                <span>{log.email}</span>
-                                <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1">{log.userType} • {log.college_office}</span>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              {log.duration ? (
-                                <Badge className="rounded-2xl bg-primary/10 text-primary border-none font-black text-[10px] py-1.5 px-4">
-                                  {log.duration} MIN
-                                </Badge>
-                              ) : (
-                                <Badge variant="secondary" className="rounded-2xl font-black text-[10px] py-1.5 px-4">
-                                  IN PROGRESS
-                                </Badge>
-                              )}
-                            </TableCell>
-                            <TableCell className="max-w-[150px] truncate font-bold text-foreground/80">
-                              {log.reason}
-                            </TableCell>
-                            <TableCell className="text-center pr-10">
-                              <Button
-                                variant="ghost"
-                                className={cn(
-                                  "h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border shadow-sm",
-                                  isBlocked 
-                                    ? "text-green-600 bg-green-500/10 border-green-500/20 hover:bg-green-600 hover:text-white" 
-                                    : "text-destructive bg-destructive/5 border-destructive/10 hover:bg-destructive hover:text-white"
-                                )}
-                                onClick={() => handleToggleBlock(log.uid, log.email)}
-                                disabled={blockingUid === log.uid}
-                              >
-                                {blockingUid === log.uid ? (
-                                  <LoaderCircle className="h-4 w-4 animate-spin" />
-                                ) : isBlocked ? (
-                                  <><UserCheck className="h-3.5 w-3.5 mr-2" />Restore</>
+                              </TableCell>
+                              <TableCell>
+                                {log.duration ? (
+                                  <Badge className="rounded-2xl bg-primary/10 text-primary border-none font-black text-[10px] py-1.5 px-4">
+                                    {log.duration} MIN
+                                  </Badge>
                                 ) : (
-                                  <><UserX className="h-3.5 w-3.5 mr-2" />Block</>
+                                  <Badge variant="secondary" className="rounded-2xl font-black text-[10px] py-1.5 px-4">
+                                    IN PROGRESS
+                                  </Badge>
                                 )}
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                              </TableCell>
+                              <TableCell className="max-w-[150px] truncate font-bold text-foreground/80">
+                                {log.reason}
+                              </TableCell>
+                              <TableCell className="text-center pr-10">
+                                <Button
+                                  variant="ghost"
+                                  className={cn(
+                                    "h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border shadow-sm",
+                                    isBlocked 
+                                      ? "text-green-600 bg-green-500/10 border-green-500/20 hover:bg-green-600 hover:text-white" 
+                                      : "text-destructive bg-destructive/5 border-destructive/10 hover:bg-destructive hover:text-white"
+                                  )}
+                                  onClick={() => handleToggleBlock(log.uid, log.email)}
+                                  disabled={blockingUid === log.uid}
+                                >
+                                  {blockingUid === log.uid ? (
+                                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                                  ) : isBlocked ? (
+                                    <><UserCheck className="h-3.5 w-3.5 mr-2" />Restore</>
+                                  ) : (
+                                    <><UserX className="h-3.5 w-3.5 mr-2" />Block</>
+                                  )}
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </main>
