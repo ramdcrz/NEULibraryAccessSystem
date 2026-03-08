@@ -122,13 +122,13 @@ export default function AdminDashboard() {
       .sort((a, b) => b.value - a.value)
       .slice(0, 5);
 
-    // Distinct Blue/Indigo Palette for High Readability
+    // High-Contrast Distinct Blue spectrum for peak readability
     const COLORS = [
       '#2563eb', // Royal Blue (Library)
       '#60a5fa', // Sky Blue (Computer Studies)
       '#818cf8', // Soft Indigo (Criminology)
-      '#22d3ee', // Cyan (Additional)
-      '#0369a1', // Dark Ocean (Additional)
+      '#22d3ee', // Cyan
+      '#0369a1', // Dark Ocean
     ];
 
     return {
@@ -348,7 +348,7 @@ export default function AdminDashboard() {
                       tickFormatter={(val) => val.toUpperCase()}
                     />
                     <YAxis hide domain={[0, 'auto']} />
-                    {/* cursor: fill transparent removes the dark background on hover */}
+                    {/* Strictly remove the hover cursor background rectangle */}
                     <ChartTooltip cursor={{ fill: 'transparent' }} content={<ChartTooltipContent gap={6} />} />
                     <Bar 
                       dataKey="value" 
@@ -392,7 +392,6 @@ export default function AdminDashboard() {
                         outerRadius={130}
                         innerRadius={60}
                         stroke="none"
-                        paddingAngle={2}
                       >
                         {chartData.college.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.fill} className="hover:opacity-80 transition-opacity" />
