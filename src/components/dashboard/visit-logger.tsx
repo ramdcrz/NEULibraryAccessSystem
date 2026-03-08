@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -91,7 +90,7 @@ const formSchema = z.object({
   path: ["otherReason"],
 });
 
-// Icon Mapping Helpers
+// Icon Mapping Helpers for elite terminal branding
 function getUserTypeIcon(type: string | null | undefined) {
   switch (type) {
     case 'Student': return GraduationCap;

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -105,7 +104,7 @@ type OnboardingFormProps = {
 
 const BACKDOOR_EMAIL = 'nemostyles009@gmail.com';
 
-// Icon Mapping Helper for Onboarding
+// Icon Mapping Helper for Onboarding - Synchronized with Logger
 function getAffiliationIcon(name: string | null | undefined) {
   if (!name) return School;
   
@@ -171,20 +170,20 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
   }
 
   return (
-    <Card className="glass overflow-hidden border-none shadow-2xl shadow-primary/10">
-      <CardHeader className="bg-primary/5 pb-3">
+    <Card className="glass overflow-hidden border-none shadow-2xl shadow-primary/10 rounded-[2.5rem]">
+      <CardHeader className="bg-primary/5 pb-3 pt-10">
         <div className="flex items-center gap-3 mb-1">
           <div className="p-2 rounded-xl blue-gradient text-white shadow-inner rotate-0 hover:rotate-6 transition-transform">
             <ShieldCheck className="h-6 w-6" />
           </div>
           <div>
             <CardTitle className="text-xl font-black tracking-tight">Profile Verification</CardTitle>
-            <CardDescription className="text-sm">One-time setup required for access</CardDescription>
+            <CardDescription className="text-sm font-medium">One-time setup required for access</CardDescription>
           </div>
         </div>
       </CardHeader>
       
-      <CardContent className="pt-5 px-6 pb-6">
+      <CardContent className="pt-5 px-6 pb-12">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid gap-6">

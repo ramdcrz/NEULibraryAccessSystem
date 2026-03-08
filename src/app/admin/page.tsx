@@ -122,11 +122,11 @@ export default function AdminDashboard() {
       .sort((a, b) => b.value - a.value)
       .slice(0, 5);
 
-    // High-Contrast Distinct Blue spectrum for peak readability
+    // Specific Blue spectrum for peak readability
     const COLORS = [
-      '#2563eb', // Royal Blue (Library)
-      '#60a5fa', // Sky Blue (Computer Studies)
-      '#818cf8', // Soft Indigo (Criminology)
+      '#2563eb', // Royal Blue
+      '#60a5fa', // Light Sky Blue
+      '#818cf8', // Soft Indigo
       '#22d3ee', // Cyan
       '#0369a1', // Dark Ocean
     ];
@@ -215,10 +215,8 @@ export default function AdminDashboard() {
       
       const tableRows = filteredLogs.map(log => [
         log.timestamp ? format(log.timestamp.toDate(), 'PP p') : 'Pending...',
-        log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'PP p') : 'Active',
         log.status?.toUpperCase() || 'ACTIVE',
         log.email,
-        log.userType,
         log.duration ? `${log.duration}m` : '-',
         log.reason
       ]);
@@ -277,7 +275,7 @@ export default function AdminDashboard() {
           </div>
           
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            <TabsList className="h-12 p-1 border border-black/5 dark:border-white/10 rounded-full w-full sm:w-[280px] grid grid-cols-2 bg-transparent">
+            <TabsList className="h-12 p-1 border border-black/5 dark:border-white/10 rounded-full w-[280px] grid grid-cols-2 bg-transparent">
               <TabsTrigger 
                 value="analytics" 
                 className={cn(
@@ -305,7 +303,7 @@ export default function AdminDashboard() {
             <Button 
               onClick={exportToPDF} 
               disabled={isExporting || logsLoading || filteredLogs.length === 0}
-              className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 w-full sm:w-auto"
+              className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
             >
               {isExporting ? <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" /> : <FileDown className="h-3.5 w-3.5 mr-2" />}
               Export Activity
@@ -348,7 +346,6 @@ export default function AdminDashboard() {
                       tickFormatter={(val) => val.toUpperCase()}
                     />
                     <YAxis hide domain={[0, 'auto']} />
-                    {/* Strictly remove the hover cursor background rectangle */}
                     <ChartTooltip cursor={{ fill: 'transparent' }} content={<ChartTooltipContent gap={6} />} />
                     <Bar 
                       dataKey="value" 
