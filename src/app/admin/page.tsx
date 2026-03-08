@@ -123,11 +123,11 @@ export default function AdminDashboard() {
       .slice(0, 5);
 
     const COLORS = [
-      '#2563eb', 
-      '#60a5fa', 
-      '#818cf8', 
-      '#22d3ee', 
-      '#0369a1', 
+      '#2563eb', // Royal Blue
+      '#60a5fa', // Sky Blue
+      '#818cf8', // Soft Indigo
+      '#22d3ee', // Cyan
+      '#0369a1', // Deep Ocean
     ];
 
     return {
@@ -205,11 +205,16 @@ export default function AdminDashboard() {
     setIsExporting(true);
     try {
       const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      
+      // Header Section
       doc.setFontSize(22);
-      doc.setTextColor(37, 99, 235);
+      doc.setTextColor(37, 99, 235); // Primary Blue
       doc.text('NEU Library Access System', 14, 22);
+      
       doc.setFontSize(14);
-      doc.setTextColor(0);
+      doc.setTextColor(60, 60, 60);
       doc.text('University Library Visit Activity Report', 14, 32);
       
       // Group logs by date
@@ -228,7 +233,7 @@ export default function AdminDashboard() {
       sortedDates.forEach((dateStr, index) => {
         const logsForDate = groupedByDate[dateStr];
         
-        // Add Date Header - Format removed ordinal suffix (d instead of do)
+        // Add Date Header
         doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(37, 99, 235);
@@ -236,14 +241,20 @@ export default function AdminDashboard() {
         doc.text(formattedDate.toUpperCase(), 14, currentY);
         currentY += 6;
 
-        const tableRows = logsForDate.map(log => [
-          log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : 'Pending...',
-          log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--',
-          log.email,
-          log.userType,
-          formatDuration(log.duration, 'Ongoing', false),
-          log.reason
-        ]);
+        const tableRows = logsForDate.map(log => {
+          const durationStr = formatDuration(log.duration, 'Ongoing', false);
+          const isOngoing = durationStr === 'Ongoing';
+
+          return [
+            log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : 'Pending...',
+            log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--',
+            log.email,
+            log.userType,
+            // Premium Suggestion: Wrap "Ongoing" in a styled cell object
+            isOngoing ? { content: 'Ongoing', styles: { textColor: [22, 163, 74], fontStyle: 'bold' } } : durationStr,
+            log.reason
+          ];
+        });
 
         autoTable(doc, {
           startY: currentY,
@@ -251,25 +262,49 @@ export default function AdminDashboard() {
           body: tableRows,
           theme: 'grid',
           headStyles: { fillColor: [37, 99, 235], textColor: 255, fontSize: 8, fontStyle: 'bold' },
-          styles: { fontSize: 7, cellPadding: 2 },
-          margin: { bottom: 15 }
+          styles: { fontSize: 7, cellPadding: 2.5 },
+          margin: { bottom: 20 },
+          columnStyles: {
+            0: { cellWidth: 20 },
+            1: { cellWidth: 20 },
+            3: { cellWidth: 20 },
+            4: { cellWidth: 35 },
+          },
+          // Standard autoTable handling for page breaks
         });
 
-        // @ts-ignore
+        // @ts-ignore - Update currentY for the next table
         currentY = doc.lastAutoTable.finalY + 15;
-        
-        // Simple page break logic
-        if (currentY > 270 && index < sortedDates.length - 1) {
-          doc.addPage();
-          currentY = 22;
-        }
       });
 
-      doc.save(`NEULibrary_Logs_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
-      toast({ title: "Report Generated", description: "PDF report downloaded." });
+      // Premium Suggestion: Global Footer for all pages
+      const pageCount = doc.internal.getNumberOfPages();
+      const generationDate = format(new Date(), 'MMMM d, yyyy HH:mm');
+      
+      for(let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        
+        // Left: Generation Timestamp
+        doc.text(`Generated on: ${generationDate}`, 14, pageHeight - 10);
+        
+        // Center: Page Numbering
+        const pageLabel = `Page ${i} of ${pageCount}`;
+        const labelWidth = doc.getTextWidth(pageLabel);
+        doc.text(pageLabel, (pageWidth - labelWidth) / 2, pageHeight - 10);
+        
+        // Right: System Identifier
+        const systemId = "NEU Library Terminal v1.0";
+        const idWidth = doc.getTextWidth(systemId);
+        doc.text(systemId, pageWidth - idWidth - 14, pageHeight - 10);
+      }
+
+      doc.save(`NEULibrary_Audit_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+      toast({ title: "Report Finalized", description: "Audit documentation downloaded." });
     } catch (error: any) {
       console.error('Export error:', error);
-      toast({ variant: "destructive", title: "Export Error", description: "Failed to generate PDF." });
+      toast({ variant: "destructive", title: "Export Error", description: "System failed to render PDF." });
     } finally {
       setIsExporting(false);
     }
