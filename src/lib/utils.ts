@@ -10,7 +10,7 @@ export function cn(...inputs: ClassValue[]) {
  * @param totalMinutes The total duration in minutes.
  * @param fallback The string to return if duration is missing or 0.
  */
-export function formatDuration(totalMinutes: number | null | undefined, fallback: string = 'Active'): string {
+export function formatDuration(totalMinutes: number | null | undefined, fallback: string = 'Ongoing'): string {
   if (totalMinutes === null || totalMinutes === undefined || totalMinutes === 0) return fallback;
   
   if (totalMinutes < 60) {

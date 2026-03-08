@@ -216,7 +216,7 @@ export default function AdminDashboard() {
         log.timestamp ? format(log.timestamp.toDate(), 'PP p') : 'Pending...',
         log.status?.toUpperCase() || 'ACTIVE',
         log.email,
-        formatDuration(log.duration, '-'),
+        formatDuration(log.duration, 'ONGOING'),
         log.reason
       ]);
 
@@ -243,16 +243,16 @@ export default function AdminDashboard() {
   }
 
   const getStatusBadge = (status: string) => {
-    const baseClasses = "rounded-2xl border font-black text-[9px] px-3 py-1.5 flex gap-1.5 items-center justify-center w-32 mx-auto";
+    const baseClasses = "rounded-2xl border font-black text-[9px] px-3 py-1.5 flex gap-1.5 items-center justify-center w-32 mx-auto pointer-events-none";
     switch(status) {
       case 'active':
-        return <Badge className={cn(baseClasses, "bg-blue-500/10 text-blue-600 border-blue-500/20")}><Clock className="h-2.5 w-2.5" /> ACTIVE</Badge>;
+        return <Badge className={cn(baseClasses, "bg-blue-500/10 text-blue-600 border-blue-500/20 shadow-none hover:bg-blue-500/10")}><Clock className="h-2.5 w-2.5" /> ACTIVE</Badge>;
       case 'completed':
-        return <Badge className={cn(baseClasses, "bg-green-500/10 text-green-600 border-green-500/20")}><CheckCircle2 className="h-2.5 w-2.5" /> COMPLETED</Badge>;
+        return <Badge className={cn(baseClasses, "bg-green-500/10 text-green-600 border-green-500/20 shadow-none hover:bg-green-500/10")}><CheckCircle2 className="h-2.5 w-2.5" /> COMPLETED</Badge>;
       case 'auto-closed':
-        return <Badge className={cn(baseClasses, "bg-amber-500/10 text-amber-600 border-amber-500/20")}><AlertCircle className="h-2.5 w-2.5" /> AUTO-CLOSED</Badge>;
+        return <Badge className={cn(baseClasses, "bg-amber-500/10 text-amber-600 border-amber-500/20 shadow-none hover:bg-amber-500/10")}><AlertCircle className="h-2.5 w-2.5" /> AUTO-CLOSED</Badge>;
       default:
-        return <Badge variant="outline" className={cn(baseClasses, "opacity-40")}>UNKNOWN</Badge>;
+        return <Badge variant="outline" className={cn(baseClasses, "opacity-40 shadow-none hover:bg-transparent")}>UNKNOWN</Badge>;
     }
   };
 
@@ -577,7 +577,7 @@ export default function AdminDashboard() {
                                     <LogIn className="h-3 w-3" /> {log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--'}
                                   </div>
                                   <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase opacity-40">
-                                    <LogOut className="h-3 w-3" /> {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : <span className="text-[9px] font-bold italic tracking-normal">Active</span>}
+                                    <LogOut className="h-3 w-3" /> {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--'}
                                   </div>
                                 </div>
                               </TableCell>
@@ -597,8 +597,8 @@ export default function AdminDashboard() {
                                   <Badge 
                                     variant={log.duration ? "default" : "secondary"} 
                                     className={cn(
-                                      "rounded-2xl font-black text-[10px] py-1.5 px-4 w-32 flex justify-center border-none",
-                                      log.duration ? "bg-primary/10 text-primary" : "opacity-40"
+                                      "rounded-2xl font-black text-[10px] py-1.5 px-4 w-32 flex justify-center border-none pointer-events-none shadow-none",
+                                      log.duration ? "bg-primary/10 text-primary hover:bg-primary/10" : "opacity-40 hover:bg-secondary"
                                     )}
                                   >
                                     {formatDuration(log.duration)}
