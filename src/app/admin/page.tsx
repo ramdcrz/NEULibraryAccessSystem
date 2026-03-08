@@ -149,7 +149,7 @@ export default function AdminDashboard() {
     setIsExporting(true);
     try {
       const doc = new jsPDF();
-      const currentDate = format(new Date(), 'yyyy-MM-dd');
+      const currentDate = format(new Date(), 'PP');
       
       doc.setFontSize(22);
       doc.setTextColor(30, 58, 138);
@@ -187,7 +187,7 @@ export default function AdminDashboard() {
         styles: { fontSize: 8, cellPadding: 3 }
       });
 
-      doc.save(`NEULibrary_Visit_Logs_${currentDate}.pdf`);
+      doc.save(`NEULibrary_Visit_Logs_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
       toast({ title: "Report Generated", description: "PDF report downloaded." });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Export Error", description: "Failed to generate PDF." });

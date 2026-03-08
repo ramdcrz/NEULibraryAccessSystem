@@ -27,15 +27,15 @@ export default function LoginPage() {
     setIsAuthenticating(true);
     try {
       await signInWithGoogle();
+      // Keep isAuthenticating true to show loader until the redirect triggers via useEffect
     } catch (error: any) {
+      setIsAuthenticating(false);
       console.error('Sign in failed:', error);
       toast({
         variant: "destructive",
         title: "Authentication Error",
         description: error.message || "Failed to verify your Google account. Please try again.",
       });
-    } finally {
-      setIsAuthenticating(false);
     }
   };
   
@@ -48,7 +48,7 @@ export default function LoginPage() {
     </svg>
   );
 
-  if (loading || user) {
+  if (loading || user || isAuthenticating) {
     return (
       <div className="flex h-screen items-center justify-center">
         <LoaderCircle className="h-14 w-14 animate-spin text-primary" />
@@ -61,7 +61,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md flex flex-col items-center justify-center gap-12 animate-in fade-in duration-1000 ease-in-out">
         <Card className="w-full glass border border-black/5 dark:border-white/20 animate-in zoom-in-95 duration-1000 shadow-2xl relative overflow-hidden">
           <CardHeader className="text-center pb-12 pt-10 px-10 relative z-10">
-            <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] purple-gradient text-white animate-float shadow-lg shadow-primary/30">
+            <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] purple-gradient text-white animate-bounce shadow-lg shadow-primary/30">
               <BookMarked className="h-12 w-12" />
             </div>
             <CardTitle className="text-5xl font-black tracking-tighter text-purple-gradient mb-2">NEU Library</CardTitle>
@@ -76,11 +76,7 @@ export default function LoginPage() {
               className="w-full h-16 text-lg font-black transition-all hover:bg-primary/[0.05] hover:border-primary/20 border-2 rounded-2xl gap-4 active:scale-95 shadow-sm"
               variant="outline"
             >
-              {isAuthenticating ? (
-                <LoaderCircle className="h-6 w-6 animate-spin" />
-              ) : (
-                <GoogleIcon />
-              )}
+              <GoogleIcon />
               <span className="text-foreground">Official University Sign In</span>
             </Button>
             
