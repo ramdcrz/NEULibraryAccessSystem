@@ -410,8 +410,8 @@ export default function AdminDashboard() {
                     <Bar 
                       dataKey="value" 
                       fill="hsl(var(--primary))" 
-                      radius={[8, 8, 0, 0]} 
-                      barSize={40}
+                      radius={[12, 12, 0, 0]} 
+                      barSize={80}
                     >
                       <LabelList 
                         dataKey="value" 
@@ -446,8 +446,8 @@ export default function AdminDashboard() {
                         nameKey="name"
                         cx="50%"
                         cy="50%"
-                        outerRadius={100}
-                        innerRadius={50}
+                        outerRadius={120}
+                        innerRadius={40}
                         stroke="none"
                       >
                         {chartData.college.map((entry, index) => (
