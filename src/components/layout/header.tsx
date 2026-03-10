@@ -38,7 +38,7 @@ export default function Header() {
           <div className="flex-shrink-0 p-1.5 sm:p-2 rounded-xl blue-gradient text-white shadow-md shadow-primary/20 transition-transform group-active:scale-95 aspect-square flex items-center justify-center">
             <BookMarked className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col justify-center">
             <span className="text-sm sm:text-lg font-black leading-none tracking-tight text-blue-gradient">NEU Library</span>
             <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-0">Access System</span>
           </div>

@@ -123,11 +123,9 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   const [isLogged, setIsLogged] = useState(false);
   const [smartActiveLog, setSmartActiveLog] = useState<any>(null);
   
-  // Smart Timer (60s)
   const [timeLeft, setTimeLeft] = useState(60);
   const [timerProgress, setTimerProgress] = useState(100);
   
-  // Confirmation Progress (3s)
   const [confirmProgress, setConfirmProgress] = useState(100);
   
   const submitRef = useRef<boolean>(false);
@@ -154,7 +152,6 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     }
   });
 
-  // Decision Timer Logic
   useEffect(() => {
     if (logsLoading || smartActiveLog || isLogged || user.role === 'admin' || submitRef.current) return;
 
@@ -175,13 +172,12 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     return () => clearInterval(interval);
   }, [logsLoading, smartActiveLog, isLogged, user.role]);
 
-  // Confirmation Countdown Logic (3s)
   useEffect(() => {
     if (!isLogged) return;
 
     const interval = setInterval(() => {
       setConfirmProgress((prev) => {
-        const nextVal = Math.max(0, prev - (100 / 60)); // Decrement over 60 steps of 50ms = 3000ms
+        const nextVal = Math.max(0, prev - (100 / 60)); 
         return nextVal;
       });
     }, 50);
@@ -189,7 +185,6 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     return () => clearInterval(interval);
   }, [isLogged]);
 
-  // Handle actual logout when progress hits zero
   useEffect(() => {
     if (isLogged && confirmProgress <= 0) {
       signOut();
@@ -212,36 +207,26 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
 
         const now = new Date();
         const sameDay = isSameDay(entryTime, now);
-        
-        // Institutional Closing Time Rule: 6:00 PM
         const closingTime = setMinutes(setHours(entryTime, 18), 0);
         const isPastClosing = isAfter(now, closingTime);
         const hoursDiff = differenceInHours(now, entryTime);
 
-        // Auto-close if past 6 PM of visit date OR if session is older than 3 hours
         if (sameDay && !isPastClosing && hoursDiff < 3) {
           setSmartActiveLog(lastLog);
         } else {
           autoCloseVisitLog(lastLog.id, lastLog.timestamp);
           setSmartActiveLog(null);
-          toast({
-            title: "Session Reset",
-            description: isPastClosing 
-              ? "Your session was closed at the library's 6 PM closing time."
-              : "A previous abandoned visit has been auto-closed.",
-          });
         }
       } else {
         setSmartActiveLog(null);
       }
     }
-  }, [recentLogs, toast]);
+  }, [recentLogs]);
 
   const handleCheckOut = () => {
     if (!smartActiveLog || isSubmitting) return;
     setIsSubmitting(true);
     
-    // BLAZINGLY FAST: Update Firestore without awaiting
     checkOutVisitLog(smartActiveLog.id, smartActiveLog.timestamp);
     
     toast({
@@ -260,7 +245,6 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     
     const entryDate = new Date().toISOString().split('T')[0];
     
-    // BLAZINGLY FAST: Add Log without awaiting. Firebase updates local cache instantly.
     addVisitLog({
       uid: user.uid,
       email: user.email!,
@@ -290,10 +274,10 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
 
   if (logsLoading) {
     return (
-      <Card className="glass p-20 flex flex-col items-center justify-center gap-6 rounded-[3rem] border border-black/5 dark:border-white/20">
-        <LoaderCircle className="h-12 w-12 animate-spin text-primary/30" />
+      <div className="flex p-20 flex-col items-center justify-center gap-6">
+        <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
         <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-30">Authenticating Session...</p>
-      </Card>
+      </div>
     );
   }
 
@@ -329,15 +313,13 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     return (
       <Card className="glass rounded-[3rem] overflow-hidden border border-black/5 dark:border-white/20 shadow-2xl shadow-primary/10 animate-in fade-in duration-700">
         <CardHeader className="bg-white/5 pb-10 pt-10 px-10 border-b border-black/5 dark:border-white/10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-5">
-              <div className="p-3.5 rounded-2xl blue-gradient text-white shadow-inner">
-                <Clock className="h-8 w-8" />
-              </div>
-              <div>
-                <CardTitle className="text-3xl font-black tracking-tighter text-blue-gradient">Active Session</CardTitle>
-                <CardDescription className="text-sm font-medium opacity-60 mt-1">Check-out required to finalize duration</CardDescription>
-              </div>
+          <div className="flex items-center gap-5">
+            <div className="p-3.5 rounded-2xl blue-gradient text-white shadow-inner">
+              <Clock className="h-8 w-8" />
+            </div>
+            <div>
+              <CardTitle className="text-3xl font-black tracking-tighter text-blue-gradient">Active Session</CardTitle>
+              <CardDescription className="text-sm font-medium opacity-60 mt-1">Check-out required to finalize duration</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -350,21 +332,14 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
               <p className="text-2xl font-black">
                 {smartActiveLog.timestamp ? format(smartActiveLog.timestamp.toDate(), 'hh:mm a') : 'Syncing...'}
               </p>
-              <p className="text-xs font-bold opacity-40 mt-1">
-                {smartActiveLog.timestamp ? format(smartActiveLog.timestamp.toDate(), 'PP') : 'Pending...'}
-              </p>
             </div>
             <div className="p-8 rounded-3xl glass border border-black/5 dark:border-white/20 bg-primary/5 text-left">
               <div className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-3 flex items-center gap-2">
                 <Clock className="h-3 w-3" /> Purpose
               </div>
               <p className="text-2xl font-black truncate">{smartActiveLog.reason}</p>
-              <p className="text-xs font-bold opacity-40 mt-1">Verified Identity</p>
             </div>
           </div>
-
-          <Separator className="bg-black/5" />
-
           <Button 
             onClick={handleCheckOut}
             disabled={isSubmitting}
@@ -420,13 +395,11 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
                   <AffiliationIcon className="h-3.5 w-3.5" />
                   <span className="text-[10px] font-black uppercase tracking-widest">University Affiliation</span>
                 </div>
-                <p className="text-base font-black text-foreground truncate relative z-10" title={user.college_office ?? ''}>
+                <p className="text-base font-black text-foreground truncate relative z-10">
                   {user.college_office}
                 </p>
               </div>
             </div>
-
-            <Separator className="bg-black/5 dark:bg-white/10" />
 
             <FormField
               control={form.control}
@@ -444,13 +417,12 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
                     </FormControl>
                     <SelectContent className="rounded-2xl border-black/5 dark:border-white/20 glass shadow-2xl">
                       {visitReasons.map((reason) => (
-                        <SelectItem key={reason} value={reason} className="py-4 px-6 text-base font-bold cursor-pointer rounded-xl hover:bg-primary/5 relative pr-12">
+                        <SelectItem key={reason} value={reason} className="py-4 px-6 text-base font-bold cursor-pointer rounded-xl hover:bg-primary/5">
                           {reason}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -473,7 +445,6 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
         </Form>
       </CardContent>
 
-      {/* Decision Timer Progress Bar */}
       {timeLeft > 0 && !isSubmitting && !logsLoading && !smartActiveLog && !isLogged && user.role !== 'admin' && (
         <div className="absolute bottom-0 left-0 w-full h-2 bg-black/5">
           <div 
