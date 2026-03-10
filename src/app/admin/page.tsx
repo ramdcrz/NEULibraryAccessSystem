@@ -676,8 +676,8 @@ export default function AdminDashboard() {
                                   className={cn(
                                     "h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border shadow-sm",
                                     isBlocked 
-                                      ? "text-green-600 bg-green-500/10 border-green-500/20 hover:bg-green-600 hover:text-white" 
-                                      : "text-destructive bg-destructive/5 border-destructive/10 hover:bg-destructive hover:text-white"
+                                      ? "text-green-600 dark:text-green-400 bg-green-500/10 border-green-500/20 hover:bg-green-600 hover:text-white" 
+                                      : "text-destructive dark:text-red-400 bg-destructive/5 border-destructive/10 hover:bg-destructive hover:text-white"
                                   )}
                                   onClick={() => handleToggleBlock(log.uid, log.email)}
                                   disabled={blockingUid === log.uid}
@@ -762,8 +762,8 @@ export default function AdminDashboard() {
                             className={cn(
                               "w-full h-11 font-black text-[9px] uppercase tracking-widest rounded-xl transition-all border shadow-sm",
                               isBlocked 
-                                ? "text-green-600 bg-green-500/10 border-green-500/20" 
-                                : "text-destructive bg-destructive/5 border-destructive/10"
+                                ? "text-green-600 dark:text-green-400 bg-green-500/10 border-green-500/20" 
+                                : "text-destructive dark:text-red-400 bg-destructive/5 border-destructive/10"
                             )}
                             onClick={() => handleToggleBlock(log.uid, log.email)}
                             disabled={blockingUid === log.uid}
