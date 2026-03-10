@@ -473,15 +473,15 @@ export default function AdminDashboard() {
           <Card className="glass overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
             <CardHeader className="p-6 sm:p-10 border-b border-black/5 dark:border-white/10 flex flex-row items-center justify-between gap-4 text-left">
               <div className="flex items-center gap-4 sm:gap-5">
-                <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl blue-gradient text-white shadow-inner">
+                <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl blue-gradient text-white shadow-inner flex-shrink-0 aspect-square flex items-center justify-center">
                   <Activity className="h-5 w-5 sm:h-7 sm:w-7" />
                 </div>
                 <div>
                   <CardTitle className="text-xl sm:text-3xl font-black tracking-tighter">
-                    Activity Stream
+                    Logs
                   </CardTitle>
                   <CardDescription className="text-xs sm:text-sm font-bold opacity-60 mt-0.5 sm:mt-1">
-                    Showing {filteredLogs.length} {isFiltered ? 'matching' : 'total'} records
+                    {filteredLogs.length} {isFiltered ? 'matching' : 'total'} records
                   </CardDescription>
                 </div>
               </div>
@@ -609,7 +609,7 @@ export default function AdminDashboard() {
                 <div className="p-20 sm:p-40 text-center flex flex-col items-center gap-6 sm:gap-8">
                   <Search className="h-10 w-10 sm:h-12 w-12 text-muted-foreground opacity-20" />
                   <div className="space-y-1 sm:space-y-2">
-                    <h3 className="text-xl sm:text-2xl font-black tracking-tight">No Activity Detected</h3>
+                    <h3 className="text-xl sm:text-2xl font-black tracking-tight">No Logs Detected</h3>
                     <p className="text-sm text-muted-foreground font-bold">Adjust filters to display system data.</p>
                   </div>
                 </div>
@@ -692,7 +692,7 @@ export default function AdminDashboard() {
                                   ) : isBlocked ? (
                                     <><UserCheck className="h-3.5 w-3.5 mr-2" />Restore</>
                                   ) : (
-                                    <><UserX className="h-3.5 w-3.5 mr-2" />Block</>
+                                    <><UserX className="h-3.5 w-3.5 mr-2" />Block User</>
                                   )}
                                 </Button>
                               </TableCell>
@@ -703,78 +703,76 @@ export default function AdminDashboard() {
                     </Table>
                   </div>
 
-                  {/* Mobile Activity Cards View (Refined based on design) */}
-                  <div className="md:hidden space-y-4 p-4">
+                  {/* Mobile Activity Cards View (High-Density Optimized) */}
+                  <div className="md:hidden space-y-3 p-3">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
-                      const dateStr = log.timestamp ? format(log.timestamp.toDate(), 'MMMM d, yyyy') : 'Pending...';
+                      const dateStr = log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy') : 'Pending...';
                       const timeIn = log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--';
                       const timeOut = log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--';
                       const durationStr = formatDuration(log.duration);
 
                       return (
-                        <Card key={log.id} className="glass border border-black/5 dark:border-white/20 rounded-[2.5rem] overflow-hidden shadow-xl shadow-primary/5">
-                          <CardContent className="p-8 space-y-8">
-                            {/* Header row: Date and Status */}
-                            <div className="flex justify-between items-center">
-                              <div className="text-[10px] font-black text-foreground/40 uppercase tracking-[0.2em]">
+                        <Card key={log.id} className="glass border border-black/5 dark:border-white/20 rounded-[2rem] overflow-hidden shadow-lg shadow-primary/5">
+                          <CardContent className="p-5 space-y-4">
+                            {/* Header row: Date and Status (Minimized) */}
+                            <div className="flex justify-between items-center mb-1">
+                              <div className="text-[9px] font-black text-foreground/40 uppercase tracking-[0.2em]">
                                 {dateStr.toUpperCase()}
                               </div>
                               {getStatusBadge(log.status || 'active', true)}
                             </div>
 
                             {/* User identity & Duration */}
-                            <div className="flex justify-between items-start gap-4">
-                              <div className="space-y-1 overflow-hidden">
-                                <div className="font-black text-xl text-foreground truncate">
+                            <div className="flex justify-between items-start gap-3">
+                              <div className="space-y-0.5 overflow-hidden">
+                                <div className="font-black text-lg text-foreground truncate leading-tight">
                                   {log.email}
                                 </div>
-                                <div className="text-[10px] font-black text-primary uppercase tracking-widest truncate">
+                                <div className="text-[9px] font-black text-primary uppercase tracking-widest truncate">
                                   {log.userType} • {log.college_office}
                                 </div>
                               </div>
                               <Badge className={cn(
-                                "rounded-2xl font-black text-[9px] py-1.5 px-4 border-none shadow-none uppercase flex-shrink-0",
+                                "rounded-xl font-black text-[8px] py-1 px-3 border-none shadow-none uppercase flex-shrink-0",
                                 isOngoing ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"
                               )}>
                                 {durationStr}
                               </Badge>
                             </div>
 
-                            {/* Time container (Gray Box) */}
-                            <div className="bg-black/5 dark:bg-white/5 rounded-3xl p-6 flex items-center justify-between">
-                              <div className="space-y-1 flex-1">
-                                <div className="flex items-center gap-2 text-[9px] font-black text-foreground/40 uppercase tracking-widest">
-                                  <LogIn className="h-3 w-3" /> Time In
+                            {/* Time container (Compact Gray Box) */}
+                            <div className="bg-black/5 dark:bg-white/5 rounded-2xl p-4 flex items-center justify-between">
+                              <div className="space-y-0.5 flex-1">
+                                <div className="flex items-center gap-1.5 text-[8px] font-black text-foreground/40 uppercase tracking-widest">
+                                  <LogIn className="h-2.5 w-2.5" /> Time In
                                 </div>
-                                <div className="text-base font-black text-primary uppercase">
+                                <div className="text-sm font-black text-primary uppercase">
                                   {timeIn}
                                 </div>
                               </div>
-                              <div className="w-px h-8 bg-black/10 dark:bg-white/10 mx-4" />
-                              <div className="space-y-1 flex-1">
-                                <div className="flex items-center gap-2 text-[9px] font-black text-foreground/40 uppercase tracking-widest">
-                                  <LogOut className="h-3 w-3" /> Time Out
+                              <div className="w-px h-6 bg-black/10 dark:bg-white/10 mx-3" />
+                              <div className="space-y-0.5 flex-1 text-right">
+                                <div className="flex items-center justify-end gap-1.5 text-[8px] font-black text-foreground/40 uppercase tracking-widest">
+                                  <LogOut className="h-2.5 w-2.5" /> Time Out
                                 </div>
-                                <div className="text-base font-black text-muted-foreground uppercase opacity-40">
+                                <div className="text-sm font-black text-muted-foreground uppercase opacity-40">
                                   {timeOut}
                                 </div>
                               </div>
                             </div>
 
-                            {/* Purpose section */}
-                            <div className="space-y-3">
-                              <div className="flex items-center gap-2 text-[10px] font-black text-foreground/40 uppercase tracking-widest">
-                                <Activity className="h-3.5 w-3.5" /> Purpose: {log.reason}
-                              </div>
+                            {/* Purpose section (One-liner) */}
+                            <div className="text-[10px] font-black text-foreground/60 uppercase tracking-widest flex items-center gap-2 border-l-2 border-primary/20 pl-3 py-0.5">
+                              Purpose: {log.reason}
                             </div>
 
-                            {/* Action button */}
+                            {/* Action button (Minimized) */}
                             <Button
                               variant="ghost"
                               className={cn(
-                                "w-full h-16 font-black text-[10px] uppercase tracking-[0.3em] rounded-2xl transition-all border shadow-sm flex items-center justify-center gap-3",
+                                "w-full h-12 font-black text-[9px] uppercase tracking-[0.2em] rounded-xl transition-all border shadow-sm flex items-center justify-center gap-2.5",
                                 isBlocked 
                                   ? "text-green-600 bg-green-500/10 border-green-500/20" 
                                   : "text-destructive bg-destructive/5 border-destructive/10"
@@ -783,11 +781,11 @@ export default function AdminDashboard() {
                               disabled={blockingUid === log.uid}
                             >
                               {blockingUid === log.uid ? (
-                                <LoaderCircle className="h-4 w-4 animate-spin" />
+                                <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
                               ) : isBlocked ? (
-                                <><UserCheck className="h-3.5 w-3.5" /> Restore User</>
+                                <><UserCheck className="h-3 w-3" /> Restore User</>
                               ) : (
-                                <><UserX className="h-3.5 w-3.5" /> Block User</>
+                                <><UserX className="h-3 w-3" /> Block User</>
                               )}
                             </Button>
                           </CardContent>
