@@ -96,6 +96,8 @@
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
   display: inline-block;
+  padding-bottom: 0.15em;
+  padding-right: 0.05em;
 }
 
 .hover-glass:hover {
