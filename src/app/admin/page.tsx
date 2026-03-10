@@ -305,7 +305,7 @@ export default function AdminDashboard() {
   const getStatusBadge = (status: string, isMobile = false) => {
     const baseClasses = cn(
       "rounded-2xl border font-black text-[9px] px-3 py-1.5 flex gap-1.5 items-center justify-center pointer-events-none",
-      isMobile ? "w-full" : "w-32 mx-auto"
+      isMobile ? "shadow-sm" : "w-32 mx-auto"
     );
     switch(status) {
       case 'active':
@@ -328,8 +328,7 @@ export default function AdminDashboard() {
               <ShieldCheck className="h-3.5 w-3.5" />
               Administrative Access System
             </div>
-            {/* Added pb-2 and px-1 to prevent 's' clipping */}
-            <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-blue-gradient pb-2 px-1">
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-blue-gradient pb-4 px-1">
               System Analytics
             </h1>
             <p className="text-muted-foreground text-lg sm:text-xl font-bold opacity-70 tracking-tight">
@@ -704,73 +703,95 @@ export default function AdminDashboard() {
                     </Table>
                   </div>
 
-                  {/* Mobile Activity Cards View */}
-                  <div className="md:hidden divide-y divide-black/5 dark:divide-white/10">
+                  {/* Mobile Activity Cards View (Refined based on design) */}
+                  <div className="md:hidden space-y-4 p-4">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
+                      const dateStr = log.timestamp ? format(log.timestamp.toDate(), 'MMMM d, yyyy') : 'Pending...';
+                      const timeIn = log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--';
+                      const timeOut = log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--';
+                      const durationStr = formatDuration(log.duration);
+
                       return (
-                        <div key={log.id} className="p-6 space-y-4 hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors">
-                          <div className="flex justify-between items-start">
-                            <div className="space-y-1">
-                              <div className="text-[10px] font-black text-foreground/40 uppercase tracking-widest">
-                                {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy') : 'Pending...'}
+                        <Card key={log.id} className="glass border border-black/5 dark:border-white/20 rounded-[2.5rem] overflow-hidden shadow-xl shadow-primary/5">
+                          <CardContent className="p-8 space-y-8">
+                            {/* Header row: Date and Status */}
+                            <div className="flex justify-between items-center">
+                              <div className="text-[10px] font-black text-foreground/40 uppercase tracking-[0.2em]">
+                                {dateStr.toUpperCase()}
                               </div>
-                              <div className="flex flex-col gap-1">
-                                <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase">
-                                  <LogIn className="h-3 w-3" /> {log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--'}
+                              {getStatusBadge(log.status || 'active', true)}
+                            </div>
+
+                            {/* User identity & Duration */}
+                            <div className="flex justify-between items-start gap-4">
+                              <div className="space-y-1 overflow-hidden">
+                                <div className="font-black text-xl text-foreground truncate">
+                                  {log.email}
                                 </div>
-                                <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase opacity-40">
-                                  <LogOut className="h-3 w-3" /> {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--'}
+                                <div className="text-[10px] font-black text-primary uppercase tracking-widest truncate">
+                                  {log.userType} • {log.college_office}
+                                </div>
+                              </div>
+                              <Badge className={cn(
+                                "rounded-2xl font-black text-[9px] py-1.5 px-4 border-none shadow-none uppercase flex-shrink-0",
+                                isOngoing ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"
+                              )}>
+                                {durationStr}
+                              </Badge>
+                            </div>
+
+                            {/* Time container (Gray Box) */}
+                            <div className="bg-black/5 dark:bg-white/5 rounded-3xl p-6 flex items-center justify-between">
+                              <div className="space-y-1 flex-1">
+                                <div className="flex items-center gap-2 text-[9px] font-black text-foreground/40 uppercase tracking-widest">
+                                  <LogIn className="h-3 w-3" /> Time In
+                                </div>
+                                <div className="text-base font-black text-primary uppercase">
+                                  {timeIn}
+                                </div>
+                              </div>
+                              <div className="w-px h-8 bg-black/10 dark:bg-white/10 mx-4" />
+                              <div className="space-y-1 flex-1">
+                                <div className="flex items-center gap-2 text-[9px] font-black text-foreground/40 uppercase tracking-widest">
+                                  <LogOut className="h-3 w-3" /> Time Out
+                                </div>
+                                <div className="text-base font-black text-muted-foreground uppercase opacity-40">
+                                  {timeOut}
                                 </div>
                               </div>
                             </div>
-                            {getStatusBadge(log.status || 'active', true)}
-                          </div>
 
-                          <div className="space-y-1">
-                            <div className="font-black text-sm text-foreground truncate">{log.email}</div>
-                            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">
-                              {log.userType} • {log.college_office}
+                            {/* Purpose section */}
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2 text-[10px] font-black text-foreground/40 uppercase tracking-widest">
+                                <Activity className="h-3.5 w-3.5" /> Purpose: {log.reason}
+                              </div>
                             </div>
-                          </div>
 
-                          <div className="flex items-center justify-between gap-4 pt-2">
-                            <Badge 
+                            {/* Action button */}
+                            <Button
+                              variant="ghost"
                               className={cn(
-                                "rounded-2xl font-black text-[9px] py-1.5 px-3 border-none shadow-none uppercase flex-1 justify-center",
-                                isOngoing 
-                                  ? "bg-sky-500/15 text-sky-600" 
-                                  : "bg-primary/10 text-primary"
-                              )}
+                                "w-full h-16 font-black text-[10px] uppercase tracking-[0.3em] rounded-2xl transition-all border shadow-sm flex items-center justify-center gap-3",
+                                isBlocked 
+                                  ? "text-green-600 bg-green-500/10 border-green-500/20" 
+                                  : "text-destructive bg-destructive/5 border-destructive/10"
+                                )}
+                              onClick={() => handleToggleBlock(log.uid, log.email)}
+                              disabled={blockingUid === log.uid}
                             >
-                              {formatDuration(log.duration)}
-                            </Badge>
-                            <Badge variant="outline" className="flex-1 justify-center py-1.5 text-[9px] font-bold rounded-2xl border-black/10 truncate">
-                              {log.reason}
-                            </Badge>
-                          </div>
-
-                          <Button
-                            variant="ghost"
-                            className={cn(
-                              "w-full h-11 font-black text-[9px] uppercase tracking-widest rounded-xl transition-all border shadow-sm",
-                              isBlocked 
-                                ? "text-green-600 bg-green-500/10 border-green-500/20" 
-                                : "text-destructive bg-destructive/5 border-destructive/10"
+                              {blockingUid === log.uid ? (
+                                <LoaderCircle className="h-4 w-4 animate-spin" />
+                              ) : isBlocked ? (
+                                <><UserCheck className="h-3.5 w-3.5" /> Restore User</>
+                              ) : (
+                                <><UserX className="h-3.5 w-3.5" /> Block User</>
                               )}
-                            onClick={() => handleToggleBlock(log.uid, log.email)}
-                            disabled={blockingUid === log.uid}
-                          >
-                            {blockingUid === log.uid ? (
-                              <LoaderCircle className="h-4 w-4 animate-spin" />
-                            ) : isBlocked ? (
-                              <><UserCheck className="h-3 w-3 mr-2" />Restore User</>
-                            ) : (
-                              <><UserX className="h-3 w-3 mr-2" />Block User</>
-                            )}
-                          </Button>
-                        </div>
+                            </Button>
+                          </CardContent>
+                        </Card>
                       );
                     })}
                   </div>
