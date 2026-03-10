@@ -91,10 +91,11 @@ function LoginContent() {
             <div className="mx-auto mb-10 flex h-24 w-24 items-center justify-center rounded-2xl blue-gradient text-white animate-float shadow-xl shadow-primary/30">
               <BookMarked className="h-12 w-12" />
             </div>
-            <CardTitle className="mb-2">
-              <span className="text-4xl font-black tracking-tighter text-blue-gradient">NEU Library Access System</span>
-            </CardTitle>
-            <CardDescription className="text-muted-foreground text-lg font-medium px-4">
+            <div className="flex flex-col gap-2 mb-6">
+              <h1 className="text-5xl font-black tracking-tighter text-blue-gradient">NEU Library</h1>
+              <p className="text-sm font-black uppercase tracking-[0.3em] text-muted-foreground/60">Access System</p>
+            </div>
+            <CardDescription className="text-muted-foreground text-base font-medium px-4">
               Authorized Access System
             </CardDescription>
           </CardHeader>

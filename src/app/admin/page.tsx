@@ -480,7 +480,7 @@ export default function AdminDashboard() {
                   <div className="flex-1 w-full space-y-4">
                     <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
                       <Search className="h-3.5 w-3.5" />
-                      Terminal Identity Search
+                      User Identity Search
                     </label>
                     <Input
                       placeholder="Search by email..."
