@@ -57,7 +57,12 @@ function LoginContent() {
       await signInWithGoogle();
     } catch (error: any) {
       setIsAuthenticating(false);
-      console.error('Sign in failed:', error);
+      
+      // Handle the specific "popup closed" error silently (no console.error) 
+      // to avoid Next.js error overlays, but show the requested UI feedback.
+      if (error.code !== 'auth/popup-closed-by-user') {
+        console.error('Sign in failed:', error);
+      }
       
       toast({
         variant: "destructive",
@@ -118,7 +123,7 @@ function LoginContent() {
           </CardContent>
         </Card>
         
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center px-10 py-5 rounded-2xl glass w-full max-w-md shadow-sm border border-black/5 dark:border-white/10">
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center px-10 py-5 rounded-2xl glass w-full shadow-sm border border-black/5 dark:border-white/10">
           New Era University • Library Systems
         </p>
       </div>
