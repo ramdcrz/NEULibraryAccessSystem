@@ -470,7 +470,7 @@ export default function AdminDashboard() {
         </TabsContent>
 
         <TabsContent value="activity" className="space-y-8 sm:space-y-12 mt-0">
-          <Card className="glass overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
+          <Card className="glass overflow-hidden rounded-[2.5rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
             <CardHeader className="p-6 sm:p-10 border-b border-black/5 dark:border-white/10 flex flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4 sm:gap-5 text-left">
                 <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl blue-gradient text-white shadow-inner flex-shrink-0 aspect-square flex items-center justify-center">
@@ -615,17 +615,17 @@ export default function AdminDashboard() {
                 </div>
               ) : (
                 <>
-                  {/* Desktop Table View */}
-                  <div className="hidden md:block overflow-x-auto">
-                    <Table>
+                  {/* Desktop Table View - Refined for Responsiveness */}
+                  <div className="hidden md:block w-full overflow-x-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+                    <Table className="min-w-[1000px] border-collapse">
                       <TableHeader className="border-b border-black/5 dark:border-white/10">
                         <TableRow className="hover:bg-transparent border-none">
-                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10 text-foreground">Timeline</TableHead>
-                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground text-center">Status</TableHead>
-                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Verified Identity</TableHead>
-                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground text-center">Duration</TableHead>
-                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Purpose</TableHead>
-                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10 text-foreground">Control</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10 text-foreground w-[160px]">Timeline</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground text-center w-[140px]">Status</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground flex-1 min-w-[250px]">Verified Identity</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground text-center w-[130px]">Duration</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground min-w-[180px]">Purpose</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10 text-foreground w-[160px] shrink-0">Control</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -634,7 +634,7 @@ export default function AdminDashboard() {
                           const isOngoing = !log.duration;
                           return (
                             <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10">
-                              <TableCell className="pl-10 py-6 whitespace-nowrap">
+                              <TableCell className="pl-10 py-6 whitespace-nowrap w-[160px]">
                                 <div className="flex flex-col gap-1">
                                   <div className="text-[10px] font-black text-foreground/40 uppercase tracking-widest mb-1">
                                     {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy') : 'Pending...'}
@@ -647,18 +647,18 @@ export default function AdminDashboard() {
                                   </div>
                                 </div>
                               </TableCell>
-                              <TableCell>
+                              <TableCell className="w-[140px]">
                                 <div className="flex justify-center">
                                   {getStatusBadge(log.status || 'active')}
                                 </div>
                               </TableCell>
-                              <TableCell className="font-black text-foreground">
-                                <div className="flex flex-col">
-                                  <span>{log.email}</span>
-                                  <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1">{log.userType} • {log.college_office}</span>
+                              <TableCell className="font-black text-foreground flex-1 min-w-[250px] max-w-[400px]">
+                                <div className="flex flex-col truncate">
+                                  <span className="truncate block" title={log.email}>{log.email}</span>
+                                  <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1 truncate block">{log.userType} • {log.college_office}</span>
                                 </div>
                               </TableCell>
-                              <TableCell>
+                              <TableCell className="w-[130px]">
                                 <div className="flex justify-center">
                                   <Badge 
                                     className={cn(
@@ -672,10 +672,10 @@ export default function AdminDashboard() {
                                   </Badge>
                                 </div>
                               </TableCell>
-                              <TableCell className="max-w-[150px] truncate font-bold text-foreground/80">
-                                {log.reason}
+                              <TableCell className="min-w-[180px] max-w-[250px] font-bold text-foreground/80">
+                                <span className="truncate block">{log.reason}</span>
                               </TableCell>
-                              <TableCell className="text-center pr-10">
+                              <TableCell className="text-center pr-10 w-[160px] shrink-0">
                                 <Button
                                   variant="ghost"
                                   className={cn(
@@ -703,7 +703,7 @@ export default function AdminDashboard() {
                     </Table>
                   </div>
 
-                  {/* High-Density Mobile Card View */}
+                  {/* High-Density Mobile Card View - Strictly Responsive */}
                   <div className="md:hidden space-y-2 p-2">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
@@ -716,9 +716,7 @@ export default function AdminDashboard() {
                       return (
                         <Card key={log.id} className="glass border border-black/5 dark:border-white/15 rounded-2xl overflow-hidden shadow-sm">
                           <CardContent className="p-4 space-y-3">
-                            {/* Header Flex Layout */}
                             <div className="flex justify-between gap-4 items-start">
-                              {/* Left Column (Data Stack) */}
                               <div className="flex-1 min-w-0 space-y-1">
                                 <div className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">
                                   {dateStr.toUpperCase()}
@@ -731,7 +729,6 @@ export default function AdminDashboard() {
                                 </div>
                               </div>
 
-                              {/* Right Column (Status Pills Stack) */}
                               <div className="flex flex-col items-end gap-2 shrink-0">
                                 {getStatusBadge(log.status || 'active', true)}
                                 <Badge className={cn(
@@ -743,7 +740,6 @@ export default function AdminDashboard() {
                               </div>
                             </div>
 
-                            {/* Time Container (Tight Box) */}
                             <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 flex items-center justify-between">
                               <div className="space-y-0.5 flex-1">
                                 <div className="flex items-center gap-1.5 text-[8px] font-black text-foreground/40 uppercase tracking-widest leading-none">
@@ -764,12 +760,10 @@ export default function AdminDashboard() {
                               </div>
                             </div>
 
-                            {/* Purpose Section */}
                             <div className="text-[10px] font-black text-foreground/60 uppercase tracking-widest flex items-center gap-2 border-l-2 border-primary/20 pl-2.5 py-0.5">
                               Purpose: {log.reason}
                             </div>
 
-                            {/* Action Button */}
                             <Button
                               variant="ghost"
                               className={cn(
