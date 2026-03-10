@@ -639,7 +639,7 @@ export default function AdminDashboard() {
                     </Table>
                   </div>
 
-                  <div className="xl:hidden space-y-4 p-4 pb-24">
+                  <div className="xl:hidden space-y-4 p-4 pb-4">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
