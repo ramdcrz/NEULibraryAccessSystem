@@ -125,7 +125,7 @@ const SelectItem = React.forwardRef<
   >
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
     
-    {/* Moved checkmark to the absolute right edge */}
+    {/* Locked checkmark to the absolute right edge */}
     <span className="absolute right-4 flex h-3.5 w-3.5 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
         <Check className="h-4 w-4" />

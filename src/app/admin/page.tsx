@@ -471,7 +471,7 @@ export default function AdminDashboard() {
 
         <TabsContent value="activity" className="space-y-8 sm:space-y-12 mt-0">
           <Card className="glass overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
-            <CardHeader className="p-6 sm:p-10 border-b border-black/5 dark:border-white/10 flex items-center justify-between gap-4">
+            <CardHeader className="p-6 sm:p-10 border-b border-black/5 dark:border-white/10 flex flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4 sm:gap-5">
                 <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl blue-gradient text-white shadow-inner">
                   <Activity className="h-5 w-5 sm:h-7 sm:w-7" />
