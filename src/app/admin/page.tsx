@@ -619,8 +619,8 @@ export default function AdminDashboard() {
                                   className={cn(
                                     "h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border shadow-sm",
                                     isBlocked 
-                                      ? "text-green-600 dark:text-green-400 bg-green-500/10 border-green-500/20 hover:bg-green-600 hover:text-white" 
-                                      : "text-destructive dark:text-red-400 bg-destructive/5 border-destructive/10 hover:bg-destructive hover:text-white"
+                                      ? "text-green-600 dark:text-green-400 bg-green-500/10 border-green-500/20 hover:bg-green-600 dark:hover:bg-green-400 hover:text-white dark:hover:text-green-950" 
+                                      : "text-destructive dark:text-red-400 bg-destructive/5 border-destructive/10 hover:bg-destructive dark:hover:bg-red-400 hover:text-white dark:hover:text-red-950"
                                     )}
                                   onClick={() => handleToggleBlock(log.uid, log.email)}
                                   disabled={blockingUid === log.uid}
@@ -641,7 +641,7 @@ export default function AdminDashboard() {
                     </Table>
                   </div>
 
-                  <div className="md:hidden space-y-2 p-2">
+                  <div className="md:hidden space-y-4 p-4 pb-12">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
@@ -706,8 +706,8 @@ export default function AdminDashboard() {
                               className={cn(
                                 "w-full h-11 font-black text-[9px] uppercase tracking-[0.2em] rounded-xl transition-all border shadow-sm flex items-center justify-center gap-2.5",
                                 isBlocked 
-                                  ? "text-green-600 bg-green-500/10 border-green-500/20" 
-                                  : "text-destructive bg-destructive/5 border-destructive/10"
+                                  ? "text-green-600 dark:text-green-400 bg-green-500/10 border-green-500/20 hover:bg-green-600 dark:hover:bg-green-400 hover:text-white dark:hover:text-green-950" 
+                                  : "text-destructive dark:text-red-400 bg-destructive/5 border-destructive/10 hover:bg-destructive dark:hover:bg-red-400 hover:text-white dark:hover:text-red-950"
                                 )}
                               onClick={() => handleToggleBlock(log.uid, log.email)}
                               disabled={blockingUid === log.uid}
