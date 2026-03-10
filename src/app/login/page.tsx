@@ -95,9 +95,6 @@ function LoginContent() {
               <h1 className="text-5xl font-black tracking-tighter text-blue-gradient">NEU Library</h1>
               <p className="text-sm font-black uppercase tracking-[0.3em] text-muted-foreground/60">Access System</p>
             </div>
-            <CardDescription className="text-muted-foreground text-base font-medium px-4">
-              Authorized Access System
-            </CardDescription>
           </CardHeader>
           <CardContent className="px-10 pb-16 relative z-10">
             <Button
