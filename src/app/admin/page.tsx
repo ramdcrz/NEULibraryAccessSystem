@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -12,7 +13,6 @@ import {
   LoaderCircle, 
   FileDown, 
   Search, 
-  Calendar as CalendarIcon, 
   XCircle,
   Filter,
   BarChart3,
@@ -32,25 +32,11 @@ import { Badge } from '@/components/ui/badge';
 import { format, startOfDay, endOfDay, isAfter, isBefore } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 import { toggleUserBlock } from '@/lib/firebase/firestore';
 import { cn, formatDuration } from '@/lib/utils';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  PieChart, 
-  Pie, 
-  Cell, 
-  LabelList
-} from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, type ChartConfig } from '@/components/ui/chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function AdminDashboard() {
@@ -64,9 +50,6 @@ export default function AdminDashboard() {
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   
-  const [isStartOpen, setIsStartOpen] = useState(false);
-  const [isEndOpen, setIsEndOpen] = useState(false);
-
   const [blockingUid, setBlockingUid] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -93,7 +76,6 @@ export default function AdminDashboard() {
   const { data: allLogs, isLoading: logsLoading } = useCollection(logsQuery);
   const { data: allUsers } = useCollection(usersQuery);
 
-  // Sorting Logic: Prioritize pending logs (null timestamp) at the top
   const sortedLogs = useMemo(() => {
     if (!allLogs) return [];
     return [...allLogs].sort((a, b) => {
@@ -114,38 +96,6 @@ export default function AdminDashboard() {
       unique: uniqueUids.size
     };
   }, [sortedLogs]);
-
-  const chartData = useMemo(() => {
-    if (!sortedLogs) return { userType: [], college: [] };
-    
-    const userTypeCounts: Record<string, number> = { Student: 0, Staff: 0, Employee: 0 };
-    const collegeCounts: Record<string, number> = {};
-
-    sortedLogs.forEach(log => {
-      if (userTypeCounts[log.userType] !== undefined) userTypeCounts[log.userType]++;
-      const college = log.college_office || 'Unknown';
-      collegeCounts[college] = (collegeCounts[college] || 0) + 1;
-    });
-
-    const collegeData = Object.entries(collegeCounts)
-      .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 5);
-
-    const COLORS = ['#2563eb', '#60a5fa', '#818cf8', '#22d3ee', '#0369a1'];
-
-    return {
-      userType: Object.entries(userTypeCounts).map(([name, value]) => ({ name, value })),
-      college: collegeData.map((d, i) => ({ ...d, fill: COLORS[i % COLORS.length] }))
-    };
-  }, [sortedLogs]);
-
-  const chartConfig = {
-    value: {
-      label: "Visits",
-      color: "hsl(var(--primary))",
-    },
-  } satisfies ChartConfig;
 
   const userStatusMap = useMemo(() => {
     const map: Record<string, boolean> = {};
@@ -200,6 +150,7 @@ export default function AdminDashboard() {
   };
 
   const exportToPDF = () => {
+    if (typeof window === 'undefined') return;
     if (!filteredLogs || filteredLogs.length === 0) {
       toast({ variant: "destructive", title: "Export Failed", description: "No records to export." });
       return;
@@ -477,7 +428,7 @@ export default function AdminDashboard() {
                     </Table>
                   </div>
 
-                  {/* High-Density Mobile View (Triggers at xl breakpoint) */}
+                  {/* High-Density Mobile View */}
                   <div className="xl:hidden space-y-4 p-4 pb-16">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;

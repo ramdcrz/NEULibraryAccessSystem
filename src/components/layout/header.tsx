@@ -1,3 +1,4 @@
+
 'use client';
 
 import { BookMarked, LogOut, ShieldCheck, LayoutDashboard } from 'lucide-react';
@@ -33,18 +34,18 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-[100] w-full bg-background/5 backdrop-blur-3xl border-b border-black/5 dark:border-white/10 flex h-20 items-center gap-4 px-4 sm:px-6 md:px-12 transition-all">
-      <div className="flex items-center gap-4 sm:gap-8 py-2">
-        <Link href="/" className="flex items-center gap-2 sm:gap-3.5 group transition-opacity hover:opacity-80 py-1">
-          <div className="flex-shrink-0 p-1.5 sm:p-2 rounded-xl blue-gradient text-white shadow-md shadow-primary/20 transition-transform group-active:scale-95 aspect-square flex items-center justify-center">
-            <BookMarked className="h-4 w-4 sm:h-5 sm:w-5" />
+      <div className="flex items-center gap-3 sm:gap-4 py-2 w-full sm:w-auto">
+        <Link href="/" className="flex items-center gap-3 sm:gap-4 group transition-opacity hover:opacity-80 py-1">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-2xl blue-gradient text-white shadow-md flex items-center justify-center transition-transform group-active:scale-95">
+            <BookMarked className="h-6 w-6 sm:h-7 sm:w-7" />
           </div>
           <div className="flex flex-col justify-center">
-            <span className="text-sm sm:text-lg font-black leading-none tracking-tight text-blue-gradient">NEU Library</span>
-            <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-0">Access System</span>
+            <span className="text-2xl sm:text-3xl font-extrabold leading-tight text-blue-gradient">NEU Library</span>
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground mt-0">Access System</span>
           </div>
         </Link>
         
-        <div className="hidden lg:block h-8 w-[1px] bg-black/5 dark:bg-white/10" />
+        <div className="hidden sm:block h-10 w-px bg-black/5 dark:bg-white/10 ml-2 sm:ml-4" />
         
         <LiveClock />
       </div>
