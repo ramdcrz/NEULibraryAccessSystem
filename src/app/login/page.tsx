@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
@@ -58,7 +59,6 @@ function LoginContent() {
       setIsAuthenticating(false);
       console.error('Sign in failed:', error);
       
-      // Ensure we catch popup closures and other auth failures to show the requested popup
       toast({
         variant: "destructive",
         title: "Sorry. Sign In Again.",
@@ -88,8 +88,7 @@ function LoginContent() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 animate-in fade-in duration-1000">
       <div className="w-full max-w-md flex flex-col items-center justify-center gap-10">
-        <Card className="w-full glass border border-black/5 dark:border-white/20 animate-in zoom-in-95 duration-1000 shadow-2xl shadow-primary/20 relative overflow-hidden rounded-[2rem]">
-          <div className="absolute top-0 left-0 w-full h-2 blue-gradient" />
+        <Card className="w-full glass border border-black/5 dark:border-white/20 animate-in zoom-in-95 duration-1000 shadow-2xl shadow-primary/20 relative overflow-hidden rounded-[2.5rem]">
           <CardHeader className="text-center pb-12 pt-20 px-10 relative z-10">
             <div className="mx-auto mb-10 flex h-24 w-24 items-center justify-center rounded-2xl blue-gradient text-white animate-float shadow-xl shadow-primary/30">
               <BookMarked className="h-12 w-12" />
