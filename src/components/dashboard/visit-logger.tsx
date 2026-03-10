@@ -32,8 +32,7 @@ import {
   Stethoscope,
   Activity,
   Wind,
-  Globe,
-  Check
+  Globe
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -64,7 +63,6 @@ import { Separator } from '@/components/ui/separator';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { collection, query, where, orderBy, limit } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
-import { Progress } from '@/components/ui/progress';
 
 const visitReasons = [
   'Study / Read',
@@ -188,7 +186,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     return () => clearInterval(interval);
   }, [isLogged]);
 
-  const handleAutoSubmit = async () => {
+  const handleAutoSubmit = () => {
     const values = form.getValues();
     const reason = values.reason || 'Others';
     onSubmit({ reason });
@@ -229,70 +227,60 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     }
   }, [recentLogs, toast]);
 
-  async function handleCheckOut() {
+  const handleCheckOut = () => {
     if (!smartActiveLog || isSubmitting) return;
     setIsSubmitting(true);
-    try {
-      checkOutVisitLog(smartActiveLog.id, smartActiveLog.timestamp);
-      toast({
-        title: 'Check-Out Successful',
-        description: 'Your library session has been closed.',
-      });
-      setIsLogged(true);
-      onLogSuccess?.();
-      setTimeout(() => signOut(), 3000);
-    } catch (error) {
-      console.error('Check-out failed:', error);
-      setIsSubmitting(false);
-    }
+    
+    // BLAZINGLY FAST: Update Firestore without awaiting
+    checkOutVisitLog(smartActiveLog.id, smartActiveLog.timestamp);
+    
+    toast({
+      title: 'Check-Out Successful',
+      description: 'Your library session has been closed.',
+    });
+    
+    setIsLogged(true);
+    onLogSuccess?.();
+    setTimeout(() => signOut(), 3000);
   }
 
-  async function onSubmit(data: z.infer<typeof formSchema>) {
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
     if (isSubmitting || submitRef.current) return;
     submitRef.current = true;
     setIsSubmitting(true);
-    try {
-      const entryDate = new Date().toISOString().split('T')[0];
-      
-      addVisitLog({
-        uid: user.uid,
-        email: user.email!,
-        userType: user.user_type as 'Student' | 'Staff' | 'Employee',
-        college_office: user.college_office!,
-        reason: data.reason || 'Others',
-        entryDate: entryDate,
-      });
+    
+    const entryDate = new Date().toISOString().split('T')[0];
+    
+    // BLAZINGLY FAST: Add Log without awaiting. Firebase updates local cache instantly.
+    addVisitLog({
+      uid: user.uid,
+      email: user.email!,
+      userType: user.user_type as 'Student' | 'Staff' | 'Employee',
+      college_office: user.college_office!,
+      reason: data.reason || 'Others',
+      entryDate: entryDate,
+    });
 
-      if (user.role === 'admin') {
-        toast({
-          title: 'Log Finalized',
-          description: 'Access recorded. Opening analytics portal...',
-        });
-        onLogSuccess?.();
-        router.push('/admin');
-      } else {
-        toast({
-          title: 'Entry Confirmed',
-          description: 'Your campus visit has been successfully recorded.',
-        });
-        
-        setIsLogged(true);
-        onLogSuccess?.();
-        
-        setTimeout(() => {
-          signOut();
-        }, 3000);
-      }
-
-    } catch (error) {
-      console.error('Failed to log visit:', error);
-      setIsSubmitting(false);
-      submitRef.current = false;
+    if (user.role === 'admin') {
       toast({
-        variant: "destructive",
-        title: "Submission Failure",
-        description: "A database error occurred. Please refresh and try again.",
+        title: 'Log Finalized',
+        description: 'Access recorded. Opening analytics portal...',
       });
+      onLogSuccess?.();
+      // Navigate immediately for blazingly fast feel
+      router.push('/admin');
+    } else {
+      toast({
+        title: 'Entry Confirmed',
+        description: 'Your campus visit has been successfully recorded.',
+      });
+      
+      setIsLogged(true);
+      onLogSuccess?.();
+      
+      setTimeout(() => {
+        signOut();
+      }, 3000);
     }
   }
 

@@ -29,7 +29,7 @@ import { collection, query, orderBy } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { format, startOfDay, endOfDay, isAfter, isBefore, parseISO } from 'date-fns';
+import { format, startOfDay, endOfDay, isAfter, isBefore } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Calendar } from '@/components/ui/calendar';
@@ -228,7 +228,7 @@ export default function AdminDashboard() {
         styles: { fontSize: 8 },
       });
 
-      doc.save(`NEU_Library_Logs_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+      doc.save(`NEU_Logs_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
       toast({ title: "Report Exported", description: "PDF has been downloaded." });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Export Error", description: error.message });
@@ -262,12 +262,11 @@ export default function AdminDashboard() {
     <main className="flex-1 px-4 sm:px-6 md:px-12 py-8 sm:py-12 space-y-8 sm:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-in-out">
       <Tabs defaultValue="activity" className="space-y-8 sm:space-y-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8">
-          <div className="flex flex-col gap-2 sm:gap-3">
+          <div className="flex flex-col gap-2 sm:gap-3 text-left">
             <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.4em] text-[8px] sm:text-[10px] opacity-60">
               <ShieldCheck className="h-3.5 w-3.5" />
               Administrative Access System
             </div>
-            {/* pb-4 px-1 prevents descender/glyph clipping */}
             <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-blue-gradient pb-4 px-1">
               System Analytics
             </h1>
@@ -324,15 +323,15 @@ export default function AdminDashboard() {
                 <div className="absolute -bottom-8 -right-8 opacity-[0.15] group-hover:opacity-[0.22] transition-all duration-700 rotate-12 group-hover:rotate-6">
                   <stat.icon className="h-24 sm:h-32 w-24 sm:w-32 text-primary" />
                 </div>
-                <CardDescription className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] opacity-50 mb-2 sm:mb-3 relative z-10">{stat.label}</CardDescription>
-                <CardTitle className="text-4xl sm:text-5xl font-black tracking-tighter relative z-10">{stat.val}</CardTitle>
+                <CardDescription className="text-left text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] opacity-50 mb-2 sm:mb-3 relative z-10">{stat.label}</CardDescription>
+                <CardTitle className="text-left text-4xl sm:text-5xl font-black tracking-tighter relative z-10">{stat.val}</CardTitle>
               </Card>
             ))}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
             <Card className="glass rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5 animate-in slide-in-from-left-4 duration-1000">
-              <CardHeader className="p-0 mb-6 sm:mb-10">
+              <CardHeader className="p-0 mb-6 sm:mb-10 text-left">
                 <CardTitle className="text-xl sm:text-2xl font-black tracking-tight">Classification Distribution</CardTitle>
                 <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Visits by User Type</CardDescription>
               </CardHeader>
@@ -374,7 +373,7 @@ export default function AdminDashboard() {
             </Card>
 
             <Card className="glass rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5 animate-in slide-in-from-right-4 duration-1000">
-              <CardHeader className="p-0 mb-6 sm:mb-10">
+              <CardHeader className="p-0 mb-6 sm:mb-10 text-left">
                 <CardTitle className="text-xl sm:text-2xl font-black tracking-tight">Top Affiliations</CardTitle>
                 <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Most active colleges & offices</CardDescription>
               </CardHeader>
@@ -445,7 +444,7 @@ export default function AdminDashboard() {
               {showFilters && (
                 <div className="px-6 sm:px-10 py-6 border-b border-black/5 dark:border-white/10 bg-primary/5 dark:bg-blue-900/10 animate-in slide-in-from-top-4 duration-500">
                   <div className="flex flex-col lg:flex-row gap-6 items-end">
-                    <div className="flex-1 w-full space-y-2">
+                    <div className="flex-1 w-full space-y-2 text-left">
                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
                         <Search className="h-3.5 w-3.5" />
                         User Identity Search
@@ -459,7 +458,7 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="flex gap-4 w-full lg:w-auto">
-                      <div className="space-y-2 flex-1 lg:w-[180px]">
+                      <div className="space-y-2 flex-1 lg:w-[180px] text-left">
                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
                           <CalendarIcon className="h-3.5 w-3.5" />
                           Start Date
@@ -494,7 +493,7 @@ export default function AdminDashboard() {
                         </Popover>
                       </div>
 
-                      <div className="space-y-2 flex-1 lg:w-[180px]">
+                      <div className="space-y-2 flex-1 lg:w-[180px] text-left">
                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
                           <CalendarIcon className="h-3.5 w-3.5" />
                           End Date
@@ -573,7 +572,7 @@ export default function AdminDashboard() {
                           const isOngoing = !log.duration;
                           return (
                             <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10">
-                              <TableCell className="pl-10 py-6 whitespace-nowrap w-[160px]">
+                              <TableCell className="pl-10 py-6 whitespace-nowrap w-[160px] text-left">
                                 <div className="flex flex-col gap-1">
                                   <div className="text-[10px] font-black text-foreground/40 uppercase tracking-widest mb-1">
                                     {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy') : 'Pending...'}
@@ -591,7 +590,7 @@ export default function AdminDashboard() {
                                   {getStatusBadge(log.status || 'active')}
                                 </div>
                               </TableCell>
-                              <TableCell className="font-black text-foreground min-w-[250px]">
+                              <TableCell className="font-black text-foreground min-w-[250px] text-left">
                                 <div className="flex flex-col truncate">
                                   <span className="truncate block" title={log.email}>{log.email}</span>
                                   <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1 truncate block">{log.userType} • {log.college_office}</span>
@@ -611,7 +610,7 @@ export default function AdminDashboard() {
                                   </Badge>
                                 </div>
                               </TableCell>
-                              <TableCell className="min-w-[180px] font-bold text-foreground/80">
+                              <TableCell className="min-w-[180px] font-bold text-foreground/80 text-left">
                                 <span className="truncate block">{log.reason}</span>
                               </TableCell>
                               <TableCell className="text-center pr-10 w-[160px] shrink-0">
@@ -654,7 +653,7 @@ export default function AdminDashboard() {
                       return (
                         <Card key={log.id} className="glass border border-black/5 dark:border-white/15 rounded-2xl overflow-hidden shadow-sm animate-in zoom-in-95 duration-500">
                           <CardContent className="p-4 space-y-3">
-                            <div className="flex justify-between gap-4 items-start">
+                            <div className="flex justify-between gap-4 items-start text-left">
                               <div className="flex-1 min-w-0 space-y-1">
                                 <div className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">
                                   {dateStr.toUpperCase()}
@@ -679,7 +678,7 @@ export default function AdminDashboard() {
                             </div>
 
                             <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 flex items-center justify-between">
-                              <div className="space-y-0.5 flex-1">
+                              <div className="space-y-0.5 flex-1 text-left">
                                 <div className="flex items-center gap-1.5 text-[8px] font-black text-foreground/40 uppercase tracking-widest leading-none">
                                   <LogIn className="h-2.5 w-2.5" /> Time In
                                 </div>
@@ -698,7 +697,7 @@ export default function AdminDashboard() {
                               </div>
                             </div>
 
-                            <div className="text-[10px] font-black text-foreground/60 uppercase tracking-widest flex items-center gap-2 border-l-2 border-primary/20 pl-2.5 py-0.5">
+                            <div className="text-[10px] font-black text-foreground/60 uppercase tracking-widest flex items-center gap-2 border-l-2 border-primary/20 pl-2.5 py-0.5 text-left">
                               Purpose: {log.reason}
                             </div>
 

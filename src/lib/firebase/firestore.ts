@@ -58,6 +58,10 @@ export async function toggleUserBlock(uid: string) {
   }
 
   const userRef = doc(db, 'users', uid);
+  
+  // We still await the status check to determine the toggle, 
+  // but the update itself could be non-blocking. 
+  // However, for admin controls, a short await is often preferred for UI state sync.
   const userSnap = await getDoc(userRef);
   
   if (!userSnap.exists()) {
@@ -67,8 +71,16 @@ export async function toggleUserBlock(uid: string) {
   const currentStatus = !!userSnap.data().isBlocked;
   const newStatus = !currentStatus;
 
-  await updateDoc(userRef, {
+  updateDoc(userRef, {
     isBlocked: newStatus
+  }).catch(error => {
+    if (error.code === 'permission-denied') {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: userRef.path,
+        operation: 'update',
+        requestResourceData: { isBlocked: newStatus },
+      } satisfies SecurityRuleContext));
+    }
   });
 
   return newStatus;
@@ -84,6 +96,8 @@ export function addVisitLog(logData: VisitLogPayload) {
     timestamp: serverTimestamp(),
   };
 
+  // CRITICAL: Initiating write without awaiting. 
+  // Firebase updates local cache immediately.
   addDoc(visitLogsCollection, payload).catch(async (error) => {
     if (error.code === 'permission-denied') {
       const permissionError = new FirestorePermissionError({
@@ -92,14 +106,13 @@ export function addVisitLog(logData: VisitLogPayload) {
         requestResourceData: payload,
       } satisfies SecurityRuleContext);
       errorEmitter.emit('permission-error', permissionError);
-    } else {
-      console.warn("Firestore Write Conflict or System Error:", error);
     }
   });
 }
 
 /**
  * Checks out a user from an existing visit log and calculates duration.
+ * (Non-blocking)
  */
 export function checkOutVisitLog(logId: string, entryTimestamp: Timestamp | null) {
   const logRef = doc(db, 'visit_logs', logId);
@@ -122,15 +135,13 @@ export function checkOutVisitLog(logId: string, entryTimestamp: Timestamp | null
         operation: 'update',
         requestResourceData: updateData,
       } satisfies SecurityRuleContext));
-    } else {
-      console.warn("Firestore Check-out Sync Issue:", error);
     }
   });
 }
 
 /**
  * Institutional Policy: Library closes at 6:00 PM.
- * Auto-closes abandoned or end-of-day sessions.
+ * Auto-closes abandoned or end-of-day sessions. (Non-blocking)
  */
 export function autoCloseVisitLog(logId: string, entryTimestamp: Timestamp | null) {
   const logRef = doc(db, 'visit_logs', logId);
