@@ -32,19 +32,19 @@ export default function Header() {
   const isAdminPage = pathname?.startsWith('/admin');
 
   return (
-    <header className="sticky top-0 z-[100] w-full bg-background/5 backdrop-blur-3xl border-b border-black/5 dark:border-white/10 flex h-20 items-center gap-4 px-4 sm:px-6 md:px-12 transition-all">
-      <div className="flex items-center gap-3 sm:gap-4 py-2 w-full sm:w-auto">
-        <Link href="/" className="flex items-center gap-2.5 group transition-opacity hover:opacity-80 py-1">
-          <div className="w-10 h-10 shrink-0 rounded-xl blue-gradient text-white shadow-md flex items-center justify-center transition-transform group-active:scale-95">
-            <BookMarked className="h-5 w-5" />
+    <header className="sticky top-0 z-[100] w-full bg-background/5 backdrop-blur-3xl border-b border-black/5 dark:border-white/10 flex h-16 sm:h-20 items-center gap-4 px-4 sm:px-6 md:px-12 transition-all">
+      <div className="flex items-center gap-2 sm:gap-4 py-2 w-full sm:w-auto">
+        <Link href="/" className="flex items-center gap-2 sm:gap-3 group transition-opacity hover:opacity-80 py-1">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 rounded-xl blue-gradient text-white shadow-md flex items-center justify-center transition-transform group-active:scale-95">
+            <BookMarked className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
           <div className="flex flex-col justify-center">
-            <span className="text-xl font-extrabold leading-none text-blue-gradient">NEU Library</span>
-            <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground mt-0.5">Access System</span>
+            <span className="text-base sm:text-lg lg:text-xl font-extrabold leading-none text-blue-gradient w-max">NEU Library</span>
+            <span className="text-[7px] sm:text-[8px] lg:text-[9px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] lg:tracking-[0.28em] text-muted-foreground mt-0.5">Access System</span>
           </div>
         </Link>
         
-        <div className="hidden sm:block h-8 w-px bg-black/5 dark:bg-white/10 ml-3" />
+        <div className="hidden sm:block h-6 sm:h-8 w-px bg-black/5 dark:bg-white/10 ml-3" />
         
         <LiveClock />
       </div>
@@ -82,8 +82,8 @@ export default function Header() {
         ) : user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="flex h-9 w-9 sm:h-[42px] sm:w-[42px] items-center justify-center rounded-full blue-gradient cursor-pointer active:scale-95 transition-transform group shadow-md shadow-primary/10">
-                <div className="relative h-8 w-8 sm:h-[38px] sm:w-[38px] rounded-full overflow-hidden border-2 border-background bg-background flex items-center justify-center shadow-sm">
+              <div className="flex h-8 w-8 sm:h-[42px] sm:w-[42px] items-center justify-center rounded-full blue-gradient cursor-pointer active:scale-95 transition-transform group shadow-md shadow-primary/10">
+                <div className="relative h-7 w-7 sm:h-[38px] sm:w-[38px] rounded-full overflow-hidden border-2 border-background bg-background flex items-center justify-center shadow-sm">
                   <Avatar className="h-full w-full">
                     <AvatarImage src={user.photoURL ?? ''} alt={user.email ?? ''} />
                     <AvatarFallback className="blue-gradient text-white font-bold text-[10px] sm:text-xs">{getInitials(user.email)}</AvatarFallback>
