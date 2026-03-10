@@ -705,7 +705,7 @@ export default function AdminDashboard() {
           </Card>
         </TabsContent>
       </Tabs>
-      <div className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 py-4">
+      <div className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 py-8">
         2026 NEW ERA UNIVERSITY
       </div>
     </main>

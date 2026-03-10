@@ -101,7 +101,7 @@ function LoginContent() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 animate-in fade-in duration-1000">
-      <div className="w-full max-w-md flex flex-col items-center justify-center gap-6">
+      <div className="w-full max-w-md flex flex-col items-center justify-center gap-12">
         <Card className="w-full glass border border-black/5 dark:border-white/20 animate-in zoom-in-95 duration-1000 shadow-2xl shadow-primary/20 relative overflow-hidden rounded-[2.5rem]">
           <CardHeader className="text-center pb-12 pt-16 px-6 relative z-10">
             <div className="mx-auto mb-10 flex h-20 w-20 items-center justify-center rounded-2xl blue-gradient text-white animate-float shadow-xl shadow-primary/30">
@@ -134,7 +134,7 @@ function LoginContent() {
           </CardContent>
         </Card>
         
-        <div className="w-full text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center">
+        <div className="w-full text-[11px] font-black uppercase tracking-[0.4em] text-muted-foreground/50 text-center">
           2026 NEW ERA UNIVERSITY
         </div>
       </div>

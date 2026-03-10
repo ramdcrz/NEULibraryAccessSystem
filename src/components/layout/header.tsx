@@ -93,7 +93,7 @@ export default function Header() {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-64 sm:w-72 p-2 rounded-[1.5rem] sm:rounded-[2rem] border glass mt-4 shadow-2xl overflow-hidden border-white/20" align="end">
               <DropdownMenuLabel className="font-normal p-4 sm:p-5 pb-0">
-                <div className="flex items-center gap-3 sm:gap-4">
+                <div className="flex items-center gap-3 sm:gap-4 mb-4">
                   <Avatar className="h-10 w-10 sm:h-14 sm:w-14 border border-black/5 dark:border-white/10 shadow-sm">
                     <AvatarImage src={user.photoURL ?? ''} />
                     <AvatarFallback className="font-bold text-[10px] sm:text-xs bg-muted text-foreground">{getInitials(user.email)}</AvatarFallback>
@@ -108,8 +108,8 @@ export default function Header() {
                   </div>
                 </div>
                 {user.user_type && (
-                  <div className="mt-4 sm:mt-5 mb-2">
-                    <Badge variant="secondary" className="w-full justify-center py-3 sm:py-4 rounded-xl sm:rounded-2xl text-foreground/70 font-black uppercase text-[7px] sm:text-[8px] tracking-[0.25em] border-none bg-primary/10 hover:bg-primary/10 pointer-events-none shadow-none">
+                  <div className="mb-2">
+                    <Badge variant="secondary" className="w-full justify-center py-2 sm:py-3 rounded-xl text-foreground/70 font-black uppercase text-[7px] sm:text-[8px] tracking-[0.2em] border-none bg-primary/10 hover:bg-primary/10 pointer-events-none shadow-none">
                       Verified {user.user_type}
                     </Badge>
                   </div>

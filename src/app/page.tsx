@@ -121,7 +121,7 @@ export default function Home() {
           )}
         </div>
       </main>
-      <footer className="w-full py-12 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground/50">
+      <footer className="w-full py-12 text-center text-[11px] font-black uppercase tracking-[0.4em] text-muted-foreground/50">
         2026 NEW ERA UNIVERSITY
       </footer>
     </>

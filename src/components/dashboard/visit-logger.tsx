@@ -37,7 +37,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { format } from 'date-fns';
+import { format, isSameDay, differenceInHours } from 'date-fns';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -63,8 +63,8 @@ import type { AuthenticatedUser } from '@/contexts/auth-provider';
 import { Separator } from '@/components/ui/separator';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { collection, query, where, orderBy, limit } from 'firebase/firestore';
-import { isSameDay, differenceInHours } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { Progress } from '@/components/ui/progress';
 
 const visitReasons = [
   'Study / Read',
@@ -124,8 +124,14 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLogged, setIsLogged] = useState(false);
   const [smartActiveLog, setSmartActiveLog] = useState<any>(null);
-  const [timerProgress, setTimerProgress] = useState(100);
+  
+  // Smart Timer (60s)
   const [timeLeft, setTimeLeft] = useState(60);
+  const [timerProgress, setTimerProgress] = useState(100);
+  
+  // Confirmation Progress (3s)
+  const [confirmProgress, setConfirmProgress] = useState(100);
+  
   const submitRef = useRef<boolean>(false);
 
   const UserTypeIcon = getUserTypeIcon(user.user_type);
@@ -150,9 +156,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     }
   });
 
-  const selectedReason = form.watch('reason');
-
-  // Smart Timer Effect
+  // Decision Timer Logic
   useEffect(() => {
     if (logsLoading || smartActiveLog || isLogged || user.role === 'admin' || submitRef.current) return;
 
@@ -173,9 +177,20 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     return () => clearInterval(interval);
   }, [logsLoading, smartActiveLog, isLogged, user.role]);
 
+  // Confirmation Countdown Logic (3s)
+  useEffect(() => {
+    if (!isLogged) return;
+
+    const interval = setInterval(() => {
+      setConfirmProgress((prev) => Math.max(0, prev - (100 / 30))); // 3 seconds = 30 intervals of 100ms
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [isLogged]);
+
   const handleAutoSubmit = async () => {
     const values = form.getValues();
-    const reason = values.reason || 'Unidentified';
+    const reason = values.reason || 'Others';
     onSubmit({ reason });
   };
 
@@ -296,11 +311,17 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
         <Button 
           variant="ghost" 
           onClick={() => signOut()}
-          className="h-11 px-8 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm hover:bg-primary/10 hover:text-primary mx-auto"
+          className="h-11 px-8 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm hover:bg-primary/10 hover:text-primary mx-auto mb-8"
         >
           <LogOut className="h-4 w-4 mr-2" />
           End Session
         </Button>
+        <div className="absolute bottom-0 left-0 w-full h-2 bg-black/5">
+          <div 
+            className="h-full bg-green-500 transition-all duration-100 ease-linear"
+            style={{ width: `${confirmProgress}%` }}
+          />
+        </div>
       </Card>
     );
   }
@@ -364,7 +385,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
 
   return (
     <Card className="glass rounded-[3rem] overflow-hidden border border-black/5 dark:border-white/20 shadow-2xl shadow-primary/10 relative">
-      <CardHeader className="bg-white/5 dark:bg-white/5 pb-10 pt-10 px-10 border-b border-black/5 dark:border-white/10">
+      <CardHeader className="bg-white/5 pb-10 pt-10 px-10 border-b border-black/5 dark:border-white/10">
         <div className="flex items-center gap-5">
           <div className="p-3.5 rounded-2xl blue-gradient text-white border border-black/5 dark:border-white/20 shadow-inner">
             <Library className="h-8 w-8" />
@@ -453,9 +474,9 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
         </Form>
       </CardContent>
 
-      {/* Decision Nudge Timer Bar */}
+      {/* Decision Timer Progress Bar */}
       {timeLeft > 0 && !isSubmitting && !logsLoading && !smartActiveLog && !isLogged && user.role !== 'admin' && (
-        <div className="absolute bottom-0 left-0 w-full h-1.5 bg-black/5">
+        <div className="absolute bottom-0 left-0 w-full h-2 bg-black/5">
           <div 
             className={cn(
               "h-full transition-all duration-1000 ease-linear",
