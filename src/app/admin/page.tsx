@@ -150,6 +150,8 @@ export default function AdminDashboard() {
     return map;
   }, [allUsers]);
 
+  const isFiltered = searchQuery !== '' || startDate !== undefined || endDate !== undefined;
+
   const filteredLogs = useMemo(() => {
     if (!allLogs) return [];
     
@@ -337,17 +339,6 @@ export default function AdminDashboard() {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
             <TabsList className="h-12 p-1 border border-black/5 dark:border-white/10 rounded-full w-full sm:w-[280px] grid grid-cols-2 bg-transparent shadow-sm">
               <TabsTrigger 
-                value="analytics" 
-                className={cn(
-                  "rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2",
-                  "text-muted-foreground bg-transparent", 
-                  "data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 data-[state=active]:ring-2 data-[state=active]:ring-primary/20" 
-                )}
-              >
-                <PieChartIcon className="h-3.5 w-3.5" />
-                Analytics
-              </TabsTrigger>
-              <TabsTrigger 
                 value="activity" 
                 className={cn(
                   "rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2",
@@ -357,6 +348,17 @@ export default function AdminDashboard() {
               >
                 <Activity className="h-3.5 w-3.5" />
                 Activity
+              </TabsTrigger>
+              <TabsTrigger 
+                value="analytics" 
+                className={cn(
+                  "rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2",
+                  "text-muted-foreground bg-transparent", 
+                  "data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 data-[state=active]:ring-2 data-[state=active]:ring-primary/20" 
+                )}
+              >
+                <PieChartIcon className="h-3.5 w-3.5" />
+                Analytics
               </TabsTrigger>
             </TabsList>
 
@@ -371,23 +373,23 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
-          {[
-            { label: 'Total Visits', val: stats.total, icon: BarChart3 },
-            { label: 'Today', val: stats.today, icon: Clock },
-            { label: 'Verified Reach', val: stats.unique, icon: Users }
-          ].map((stat, i) => (
-            <Card key={i} className="glass rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 relative overflow-hidden group border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
-              <div className="absolute -bottom-8 -right-8 opacity-[0.15] group-hover:opacity-[0.22] transition-all duration-700 rotate-12 group-hover:rotate-6">
-                <stat.icon className="h-24 sm:h-32 w-24 sm:w-32 text-primary" />
-              </div>
-              <CardDescription className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] opacity-50 mb-2 sm:mb-3 relative z-10">{stat.label}</CardDescription>
-              <CardTitle className="text-4xl sm:text-5xl font-black tracking-tighter relative z-10">{stat.val}</CardTitle>
-            </Card>
-          ))}
-        </div>
-
         <TabsContent value="analytics" className="space-y-8 sm:space-y-12 mt-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
+            {[
+              { label: 'Total Visits', val: stats.total, icon: BarChart3 },
+              { label: 'Today', val: stats.today, icon: Clock },
+              { label: 'Verified Reach', val: stats.unique, icon: Users }
+            ].map((stat, i) => (
+              <Card key={i} className="glass rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 relative overflow-hidden group border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
+                <div className="absolute -bottom-8 -right-8 opacity-[0.15] group-hover:opacity-[0.22] transition-all duration-700 rotate-12 group-hover:rotate-6">
+                  <stat.icon className="h-24 sm:h-32 w-24 sm:w-32 text-primary" />
+                </div>
+                <CardDescription className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] opacity-50 mb-2 sm:mb-3 relative z-10">{stat.label}</CardDescription>
+                <CardTitle className="text-4xl sm:text-5xl font-black tracking-tighter relative z-10">{stat.val}</CardTitle>
+              </Card>
+            ))}
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
             <Card className="glass rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
               <CardHeader className="p-0 mb-6 sm:mb-10">
@@ -471,7 +473,7 @@ export default function AdminDashboard() {
           <Card className="glass overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
             <CardHeader className="p-6 sm:p-10 border-b border-black/5 dark:border-white/10 flex flex-col xs:flex-row items-start xs:items-center justify-between gap-4">
               <div className="flex items-center gap-4 sm:gap-5">
-                <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-primary/10 text-primary border border-black/5 dark:border-white/10 shadow-inner">
+                <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl blue-gradient text-white shadow-inner">
                   <Activity className="h-5 w-5 sm:h-7 sm:w-7" />
                 </div>
                 <div>
@@ -479,7 +481,7 @@ export default function AdminDashboard() {
                     Activity Stream
                   </CardTitle>
                   <CardDescription className="text-xs sm:text-sm font-bold opacity-60 mt-0.5 sm:mt-1">
-                    {filteredLogs.length} matching entries found in system
+                    Showing {filteredLogs.length} {isFiltered ? 'matching' : 'total'} records
                   </CardDescription>
                 </div>
               </div>

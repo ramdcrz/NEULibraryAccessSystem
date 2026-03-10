@@ -34,7 +34,7 @@ import {
   Wind,
   Globe
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
@@ -53,24 +53,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { addVisitLog, checkOutVisitLog, autoCloseVisitLog } from '@/lib/firebase/firestore';
 import { useAuth } from '@/hooks/use-auth';
 import type { AuthenticatedUser } from '@/contexts/auth-provider';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { collection, query, where, orderBy, limit } from 'firebase/firestore';
-import { format, isSameDay, differenceInHours } from 'date-fns';
+import { isSameDay, differenceInHours } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 const visitReasons = [
-  'Reading',
+  'Study / Read',
   'Research',
+  'Print / Scan',
   'Computer Use',
-  'Studying',
+  'Borrow / Return Book',
+  'Work',
   'Others',
 ];
 
@@ -78,18 +78,8 @@ const formSchema = z.object({
   reason: z.string({
     required_error: 'Please select a reason for your visit.',
   }),
-  otherReason: z.string().optional(),
-}).refine((data) => {
-  if (data.reason === 'Others') {
-    return data.otherReason && data.otherReason.trim().length > 3;
-  }
-  return true;
-}, {
-  message: "Please specify your reason (minimum 4 characters).",
-  path: ["otherReason"],
 });
 
-// Icon Mapping Helpers for elite branding
 function getUserTypeIcon(type: string | null | undefined) {
   switch (type) {
     case 'Student': return GraduationCap;
@@ -132,12 +122,13 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLogged, setIsLogged] = useState(false);
   const [smartActiveLog, setSmartActiveLog] = useState<any>(null);
-  const [progress, setProgress] = useState(100);
+  const [timerProgress, setTimerProgress] = useState(100);
+  const [timeLeft, setTimeLeft] = useState(60);
+  const submitRef = useRef<boolean>(false);
 
   const UserTypeIcon = getUserTypeIcon(user.user_type);
   const AffiliationIcon = getAffiliationIcon(user.college_office);
 
-  // Check for active session
   const activeSessionQuery = useMemoFirebase(() => {
     if (!firestore || !user?.uid) return null;
     return query(
@@ -150,17 +141,42 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
 
   const { data: recentLogs, isLoading: logsLoading } = useCollection(activeSessionQuery);
 
-  // Session Progress Timer Effect
-  useEffect(() => {
-    if (isLogged) {
-      const interval = setInterval(() => {
-        setProgress((prev) => Math.max(0, prev - (100 / 30))); // 3 seconds = 30 intervals of 100ms
-      }, 100);
-      return () => clearInterval(interval);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      reason: '',
     }
-  }, [isLogged]);
+  });
 
-  // Smart Evaluation Logic
+  const selectedReason = form.watch('reason');
+
+  // Smart Timer Effect
+  useEffect(() => {
+    if (logsLoading || smartActiveLog || isLogged || user.role === 'admin' || submitRef.current) return;
+
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          if (!submitRef.current) {
+            handleAutoSubmit();
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+      setTimerProgress((prev) => Math.max(0, prev - (100 / 60)));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [logsLoading, smartActiveLog, isLogged, user.role]);
+
+  const handleAutoSubmit = async () => {
+    const values = form.getValues();
+    const reason = values.reason || 'Unidentified';
+    onSubmit({ reason });
+  };
+
   useEffect(() => {
     if (recentLogs && recentLogs.length > 0) {
       const lastLog = recentLogs[0];
@@ -189,16 +205,6 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     }
   }, [recentLogs, toast]);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      reason: '',
-      otherReason: '',
-    }
-  });
-
-  const selectedReason = form.watch('reason');
-
   async function handleCheckOut() {
     if (!smartActiveLog || isSubmitting) return;
     setIsSubmitting(true);
@@ -218,18 +224,18 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   }
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    if (isSubmitting) return;
+    if (isSubmitting || submitRef.current) return;
+    submitRef.current = true;
     setIsSubmitting(true);
     try {
       const entryDate = new Date().toISOString().split('T')[0];
-      const finalReason = data.reason === 'Others' ? data.otherReason!.trim() : data.reason;
-
+      
       addVisitLog({
         uid: user.uid,
         email: user.email!,
         userType: user.user_type as 'Student' | 'Staff' | 'Employee',
         college_office: user.college_office!,
-        reason: finalReason,
+        reason: data.reason,
         entryDate: entryDate,
       });
 
@@ -257,6 +263,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     } catch (error) {
       console.error('Failed to log visit:', error);
       setIsSubmitting(false);
+      submitRef.current = false;
       toast({
         variant: "destructive",
         title: "Submission Failure",
@@ -292,12 +299,6 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
           <LogOut className="h-4 w-4 mr-2" />
           End Session
         </Button>
-        <div className="absolute bottom-0 left-0 w-full h-1.5 bg-primary/10">
-          <div 
-            className="h-full bg-primary transition-all duration-100 ease-linear"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
       </Card>
     );
   }
@@ -349,7 +350,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
           >
             {isSubmitting ? <LoaderCircle className="h-8 w-8 animate-spin" /> : (
               <div className="flex items-center justify-center gap-3">
-                Finalize & Check-Out
+                Check Out
                 <MoveRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
               </div>
             )}
@@ -360,7 +361,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   }
 
   return (
-    <Card className="glass rounded-[3rem] overflow-hidden border border-black/5 dark:border-white/20 shadow-2xl shadow-primary/10">
+    <Card className="glass rounded-[3rem] overflow-hidden border border-black/5 dark:border-white/20 shadow-2xl shadow-primary/10 relative">
       <CardHeader className="bg-white/5 dark:bg-white/5 pb-10 pt-10 px-10 border-b border-black/5 dark:border-white/10">
         <div className="flex items-center gap-5">
           <div className="p-3.5 rounded-2xl blue-gradient text-white border border-black/5 dark:border-white/20 shadow-inner">
@@ -432,25 +433,6 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
               )}
             />
 
-            {selectedReason === 'Others' && (
-              <FormField
-                control={form.control}
-                name="otherReason"
-                render={({ field }) => (
-                  <FormItem className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <FormControl>
-                      <Input 
-                        {...field} 
-                        placeholder="Please specify..." 
-                        className="h-16 text-lg font-bold border-2 bg-white/5 focus:border-primary/50 rounded-2xl px-6 text-foreground"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
             <Button 
               type="submit" 
               className="w-full h-20 font-black uppercase tracking-[0.25em] text-sm rounded-2xl transition-all hover:scale-[1.01] active:scale-[0.99] group blue-gradient text-white shadow-lg shadow-primary/20 border-none" 
@@ -468,6 +450,19 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
           </form>
         </Form>
       </CardContent>
+
+      {/* Decision Nudge Timer Bar */}
+      {timeLeft > 0 && !isSubmitting && !logsLoading && !smartActiveLog && !isLogged && user.role !== 'admin' && (
+        <div className="absolute bottom-0 left-0 w-full h-1.5 bg-black/5">
+          <div 
+            className={cn(
+              "h-full transition-all duration-1000 ease-linear",
+              timeLeft > 15 ? "bg-primary" : "bg-amber-500"
+            )}
+            style={{ width: `${timerProgress}%` }}
+          />
+        </div>
+      )}
     </Card>
   );
 }

@@ -35,7 +35,7 @@ export default function Header() {
     <header className="sticky top-0 z-[100] w-full bg-background/5 backdrop-blur-3xl border-b border-black/5 dark:border-white/10 flex h-20 items-center gap-4 px-4 sm:px-6 md:px-12 transition-all">
       <div className="flex items-center gap-4 sm:gap-8 py-2">
         <Link href="/" className="flex items-center gap-2 sm:gap-3.5 group transition-opacity hover:opacity-80 py-1">
-          <div className="flex-shrink-0 p-1.5 sm:p-2 rounded-lg sm:rounded-xl blue-gradient text-white shadow-md shadow-primary/20 transition-transform group-active:scale-95">
+          <div className="flex-shrink-0 p-1.5 sm:p-2 rounded-xl blue-gradient text-white shadow-md shadow-primary/20 transition-transform group-active:scale-95">
             <BookMarked className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
           <div className="flex flex-col">

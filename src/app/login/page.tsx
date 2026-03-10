@@ -116,7 +116,7 @@ function LoginContent() {
             <Button
               onClick={handleSignIn}
               disabled={isAuthenticating}
-              className="w-full h-14 transition-all blue-gradient border-none rounded-2xl gap-3 sm:gap-4 active:scale-95 shadow-lg shadow-primary/20 px-4"
+              className="w-full h-14 transition-all blue-gradient border-none rounded-2xl gap-3 sm:gap-4 active:scale-95 hover:scale-[1.02] hover:opacity-90 shadow-lg shadow-primary/20 px-4"
               variant="default"
             >
               <div className="flex items-center justify-center bg-white rounded-lg p-1 mr-1">
@@ -134,8 +134,8 @@ function LoginContent() {
           </CardContent>
         </Card>
         
-        <div className="w-full p-5 rounded-[1.5rem] glass shadow-sm border border-black/5 dark:border-white/10 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center">
-          New Era University • Library Systems
+        <div className="w-full text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center">
+          2026 NEW ERA UNIVERSITY
         </div>
       </div>
     </main>

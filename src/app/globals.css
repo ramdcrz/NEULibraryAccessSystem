@@ -91,9 +91,9 @@
 }
 
 .text-blue-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-br from-primary to-[#1e40af];
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-primary to-[#1e40af] !important;
   display: inline-block;
-  -webkit-background-clip: text;
+  -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent;
   padding-bottom: 0.12em;
   margin-bottom: -0.12em;

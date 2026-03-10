@@ -122,7 +122,7 @@ export default function Home() {
         </div>
       </main>
       <footer className="w-full py-12 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground/50">
-        NEU Library Access System
+        2026 NEW ERA UNIVERSITY
       </footer>
     </>
   );
