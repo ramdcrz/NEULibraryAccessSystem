@@ -76,7 +76,7 @@ function LoginContent() {
         title: "Access System Error",
         description: isDomainError 
           ? "This web domain is not authorized. Please add this URL to 'Authorized Domains' in your Firebase Console Authentication settings."
-          : "Authentication failed. Sorry. Sign In Again.",
+          : "Sorry. Sign In Again.",
         className: "rounded-2xl border-2 shadow-2xl font-black",
       });
     }
@@ -116,16 +116,18 @@ function LoginContent() {
             <Button
               onClick={handleSignIn}
               disabled={isAuthenticating}
-              className="w-full h-14 transition-all hover:bg-primary/[0.05] hover:border-primary/20 border-2 rounded-2xl gap-3 sm:gap-4 active:scale-95 shadow-sm px-4"
-              variant="outline"
+              className="w-full h-14 transition-all blue-gradient border-none rounded-2xl gap-3 sm:gap-4 active:scale-95 shadow-lg shadow-primary/20 px-4"
+              variant="default"
             >
-              <GoogleIcon />
-              <span className="text-[10px] xs:text-xs sm:text-sm font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-blue-gradient whitespace-nowrap overflow-hidden text-ellipsis">
-                Official University Sign In
+              <div className="flex items-center justify-center bg-white rounded-lg p-1 mr-1">
+                <GoogleIcon />
+              </div>
+              <span className="text-sm sm:text-base font-black uppercase tracking-[0.2em] text-white">
+                Sign In
               </span>
             </Button>
             
-            <div className="mt-12 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+            <div className="mt-12 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 text-center">
               <ShieldCheck className="h-3 w-3" />
               Authorized Personnel & Students Only
             </div>
