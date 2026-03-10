@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -528,7 +527,7 @@ export default function AdminDashboard() {
                             <Button
                               variant="outline"
                               className={cn(
-                                "w-full h-11 justify-start text-left font-bold rounded-xl border-2 bg-background/50 hover:bg-black/5 transition-colors",
+                                "w-full h-11 justify-start text-left font-bold rounded-xl border-2 bg-background/50 transition-all hover:bg-primary/5 hover:text-primary hover:border-primary/20",
                                 !startDate && "text-muted-foreground"
                               )}
                             >
@@ -563,7 +562,7 @@ export default function AdminDashboard() {
                             <Button
                               variant="outline"
                               className={cn(
-                                "w-full h-11 justify-start text-left font-bold rounded-xl border-2 bg-background/50 hover:bg-black/5 transition-colors",
+                                "w-full h-11 justify-start text-left font-bold rounded-xl border-2 bg-background/50 transition-all hover:bg-primary/5 hover:text-primary hover:border-primary/20",
                                 !endDate && "text-muted-foreground"
                               )}
                             >
