@@ -313,7 +313,7 @@ export default function AdminDashboard() {
                 <Filter className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-2" />
                 {showFilters ? 'Hide Filters' : 'Filter View'}
               </Button>
-            </Header>
+            </CardHeader>
             
             <CardContent className="p-0 pb-12">
               {showFilters && (
@@ -431,7 +431,7 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* High-Density Mobile View */}
-                  <div className="xl:hidden space-y-4 p-4 pb-12">
+                  <div className="xl:hidden space-y-4 p-4 pb-6">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
