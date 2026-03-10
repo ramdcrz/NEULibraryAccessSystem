@@ -31,7 +31,7 @@ function LoginContent() {
           title: "Session Reset",
           description: (
             <div className="flex items-center gap-2">
-              <Info className="h-4 w-4 text-primary" />
+              <span className="flex items-center justify-center bg-blue-500 text-white rounded-full w-4 h-4 text-[9px]">!</span>
               <span>The previous session was closed due to inactivity.</span>
             </div>
           ),
@@ -61,8 +61,7 @@ function LoginContent() {
         toast({
           variant: "destructive",
           title: "Sign In Cancelled",
-          description: "Sorry. Sign In Again.",
-          className: "rounded-2xl border-2 shadow-2xl font-black",
+          description: "Please complete the authentication process to continue.",
         });
         return;
       }
@@ -75,9 +74,8 @@ function LoginContent() {
         variant: "destructive",
         title: "Access System Error",
         description: isDomainError 
-          ? "This web domain is not authorized. Please add this URL to 'Authorized Domains' in your Firebase Console Authentication settings."
-          : "Sorry. Sign In Again.",
-        className: "rounded-2xl border-2 shadow-2xl font-black",
+          ? "Unauthorized web domain. Please verify your system settings."
+          : "Authentication failed. Please contact university security.",
       });
     }
   };

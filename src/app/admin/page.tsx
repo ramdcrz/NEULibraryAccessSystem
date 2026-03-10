@@ -615,14 +615,13 @@ export default function AdminDashboard() {
                 </div>
               ) : (
                 <>
-                  {/* Desktop Table View - Refined for Responsiveness */}
                   <div className="hidden md:block w-full overflow-x-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
                     <Table className="min-w-[1000px] border-collapse">
                       <TableHeader className="border-b border-black/5 dark:border-white/10">
                         <TableRow className="hover:bg-transparent border-none">
                           <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10 text-foreground w-[160px]">Timeline</TableHead>
                           <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground text-center w-[140px]">Status</TableHead>
-                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground flex-1 min-w-[250px]">Verified Identity</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground min-w-[250px]">Verified Identity</TableHead>
                           <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground text-center w-[130px]">Duration</TableHead>
                           <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground min-w-[180px]">Purpose</TableHead>
                           <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10 text-foreground w-[160px] shrink-0">Control</TableHead>
@@ -652,7 +651,7 @@ export default function AdminDashboard() {
                                   {getStatusBadge(log.status || 'active')}
                                 </div>
                               </TableCell>
-                              <TableCell className="font-black text-foreground flex-1 min-w-[250px] max-w-[400px]">
+                              <TableCell className="font-black text-foreground min-w-[250px]">
                                 <div className="flex flex-col truncate">
                                   <span className="truncate block" title={log.email}>{log.email}</span>
                                   <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1 truncate block">{log.userType} • {log.college_office}</span>
@@ -672,7 +671,7 @@ export default function AdminDashboard() {
                                   </Badge>
                                 </div>
                               </TableCell>
-                              <TableCell className="min-w-[180px] max-w-[250px] font-bold text-foreground/80">
+                              <TableCell className="min-w-[180px] font-bold text-foreground/80">
                                 <span className="truncate block">{log.reason}</span>
                               </TableCell>
                               <TableCell className="text-center pr-10 w-[160px] shrink-0">
@@ -692,7 +691,7 @@ export default function AdminDashboard() {
                                   ) : isBlocked ? (
                                     <><UserCheck className="h-3.5 w-3.5 mr-2" />Restore</>
                                   ) : (
-                                    <><UserX className="h-3.5 w-3.5 mr-2" />Block User</>
+                                    <><UserX className="h-3.5 w-3.5 mr-2" />Block</>
                                   )}
                                 </Button>
                               </TableCell>
@@ -703,7 +702,6 @@ export default function AdminDashboard() {
                     </Table>
                   </div>
 
-                  {/* High-Density Mobile Card View - Strictly Responsive */}
                   <div className="md:hidden space-y-2 p-2">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
@@ -778,9 +776,9 @@ export default function AdminDashboard() {
                               {blockingUid === log.uid ? (
                                 <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
                               ) : isBlocked ? (
-                                <><UserCheck className="h-3 w-3" /> Restore User</>
+                                <><UserCheck className="h-3 w-3" /> Restore</>
                               ) : (
-                                <><UserX className="h-3 w-3" /> Block User</>
+                                <><UserX className="h-3 w-3" /> Block</>
                               )}
                             </Button>
                           </CardContent>
