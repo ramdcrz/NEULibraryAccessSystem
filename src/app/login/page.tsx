@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
@@ -92,10 +93,10 @@ function LoginContent() {
               <BookMarked className="h-12 w-12" />
             </div>
             <CardTitle className="mb-2">
-              <span className="text-5xl font-black tracking-tighter text-blue-gradient">NEU Library</span>
+              <span className="text-4xl font-black tracking-tighter text-blue-gradient">NEU Library Access System</span>
             </CardTitle>
             <CardDescription className="text-muted-foreground text-lg font-medium px-4">
-              Access Management Terminal
+              Authorized Terminal
             </CardDescription>
           </CardHeader>
           <CardContent className="px-10 pb-16 relative z-10">

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { BookMarked, LogOut, ShieldCheck, LayoutDashboard } from 'lucide-react';
@@ -40,7 +41,7 @@ export default function Header() {
           </div>
           <div className="flex flex-col">
             <span className="text-lg font-black leading-none tracking-tight text-blue-gradient">NEU Library</span>
-            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-1">Terminal</span>
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-1">Access System</span>
           </div>
         </Link>
         

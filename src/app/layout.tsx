@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { AuthProvider } from '@/contexts/auth-provider';
 import { ThemeProvider } from '@/contexts/theme-provider';

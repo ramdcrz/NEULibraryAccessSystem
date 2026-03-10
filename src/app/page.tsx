@@ -127,7 +127,7 @@ export default function Home() {
         </div>
       </main>
       <footer className="w-full py-12 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground/50">
-        New Era University • Library Systems
+        NEU Library Access System
       </footer>
     </>
   );
