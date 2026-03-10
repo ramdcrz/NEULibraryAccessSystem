@@ -180,11 +180,21 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     if (!isLogged) return;
 
     const interval = setInterval(() => {
-      setConfirmProgress((prev) => Math.max(0, prev - (100 / 30))); 
-    }, 100);
+      setConfirmProgress((prev) => {
+        const nextVal = Math.max(0, prev - (100 / 60)); // Decrement over 60 steps of 50ms = 3000ms
+        return nextVal;
+      });
+    }, 50);
 
     return () => clearInterval(interval);
   }, [isLogged]);
+
+  // Handle actual logout when progress hits zero
+  useEffect(() => {
+    if (isLogged && confirmProgress <= 0) {
+      signOut();
+    }
+  }, [isLogged, confirmProgress, signOut]);
 
   const handleAutoSubmit = () => {
     const values = form.getValues();
@@ -241,7 +251,6 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     
     setIsLogged(true);
     onLogSuccess?.();
-    setTimeout(() => signOut(), 3000);
   }
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
@@ -267,7 +276,6 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
         description: 'Access recorded. Opening analytics portal...',
       });
       onLogSuccess?.();
-      // Navigate immediately for blazingly fast feel
       router.push('/admin');
     } else {
       toast({
@@ -277,10 +285,6 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
       
       setIsLogged(true);
       onLogSuccess?.();
-      
-      setTimeout(() => {
-        signOut();
-      }, 3000);
     }
   }
 
@@ -306,7 +310,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
         <Button 
           variant="ghost" 
           onClick={() => signOut()}
-          className="h-11 px-8 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm hover:bg-primary/10 hover:text-primary mx-auto mb-8"
+          className="h-11 px-8 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm hover:bg-primary hover:text-white mx-auto mb-8"
         >
           <LogOut className="h-4 w-4 mr-2" />
           End Session

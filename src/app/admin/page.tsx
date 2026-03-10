@@ -430,7 +430,7 @@ export default function AdminDashboard() {
                 onClick={() => setShowFilters(!showFilters)}
                 className={cn(
                   "h-10 sm:h-11 px-4 sm:px-6 font-black text-[8px] sm:text-[9px] uppercase tracking-widest rounded-full transition-all border shadow-sm",
-                  "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
+                  "bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-white"
                 )}
               >
                 <Filter className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-2" />
@@ -438,7 +438,7 @@ export default function AdminDashboard() {
               </Button>
             </CardHeader>
             
-            <CardContent className="p-0">
+            <CardContent className="p-0 pb-16">
               {showFilters && (
                 <div className="px-6 sm:px-10 py-6 border-b border-black/5 dark:border-white/10 bg-primary/5 dark:bg-blue-900/10 animate-in slide-in-from-top-4 duration-500">
                   <div className="flex flex-col lg:flex-row gap-6 items-end">
@@ -617,8 +617,8 @@ export default function AdminDashboard() {
                                   className={cn(
                                     "h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border shadow-sm",
                                     isBlocked 
-                                      ? "text-green-600 dark:text-green-400 bg-green-500/10 border-green-500/20 hover:bg-green-600 dark:hover:bg-green-400 hover:text-white dark:hover:text-green-950" 
-                                      : "text-destructive dark:text-red-400 bg-destructive/5 border-destructive/10 hover:bg-destructive dark:hover:bg-red-400 hover:text-white dark:hover:text-red-950"
+                                      ? "text-green-600 dark:text-green-400 bg-green-500/10 border-green-500/20 hover:bg-green-600 dark:hover:bg-green-400 hover:text-white dark:hover:text-green-950 dark:hover:font-black" 
+                                      : "text-destructive dark:text-red-400 bg-destructive/5 border-destructive/10 hover:bg-destructive dark:hover:bg-red-400 hover:text-white dark:hover:text-red-950 dark:hover:font-black"
                                     )}
                                   onClick={() => handleToggleBlock(log.uid, log.email)}
                                   disabled={blockingUid === log.uid}
@@ -704,8 +704,8 @@ export default function AdminDashboard() {
                               className={cn(
                                 "w-full h-11 font-black text-[9px] uppercase tracking-[0.2em] rounded-xl transition-all border shadow-sm flex items-center justify-center gap-2.5",
                                 isBlocked 
-                                  ? "text-green-600 dark:text-green-400 bg-green-500/10 border-green-500/20 hover:bg-green-600 dark:hover:bg-green-400 hover:text-white dark:hover:text-green-950" 
-                                  : "text-destructive dark:text-red-400 bg-destructive/5 border-destructive/10 hover:bg-destructive dark:hover:bg-red-400 hover:text-white dark:hover:text-red-950"
+                                  ? "text-green-600 dark:text-green-400 bg-green-500/10 border-green-500/20 hover:bg-green-600 dark:hover:bg-green-400 hover:text-white dark:hover:text-green-950 dark:hover:font-black" 
+                                  : "text-destructive dark:text-red-400 bg-destructive/5 border-destructive/10 hover:bg-destructive dark:hover:bg-red-400 hover:text-white dark:hover:text-red-950 dark:hover:font-black"
                                 )}
                               onClick={() => handleToggleBlock(log.uid, log.email)}
                               disabled={blockingUid === log.uid}
