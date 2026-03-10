@@ -182,7 +182,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     if (!isLogged) return;
 
     const interval = setInterval(() => {
-      setConfirmProgress((prev) => Math.max(0, prev - (100 / 30))); // 3 seconds = 30 intervals of 100ms
+      setConfirmProgress((prev) => Math.max(0, prev - (100 / 30))); 
     }, 100);
 
     return () => clearInterval(interval);
@@ -259,7 +259,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
         email: user.email!,
         userType: user.user_type as 'Student' | 'Staff' | 'Employee',
         college_office: user.college_office!,
-        reason: data.reason,
+        reason: data.reason || 'Others',
         entryDate: entryDate,
       });
 
@@ -351,7 +351,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
         </CardHeader>
         <CardContent className="pt-10 px-10 pb-12 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="p-8 rounded-3xl glass border border-black/5 dark:border-white/20 bg-primary/5">
+            <div className="p-8 rounded-3xl glass border border-black/5 dark:border-white/20 bg-primary/5 text-left">
               <div className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-3 flex items-center gap-2">
                 <Library className="h-3 w-3" /> Started Entry
               </div>
@@ -362,7 +362,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
                 {smartActiveLog.timestamp ? format(smartActiveLog.timestamp.toDate(), 'PP') : 'Pending...'}
               </p>
             </div>
-            <div className="p-8 rounded-3xl glass border border-black/5 dark:border-white/20 bg-primary/5">
+            <div className="p-8 rounded-3xl glass border border-black/5 dark:border-white/20 bg-primary/5 text-left">
               <div className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-3 flex items-center gap-2">
                 <Clock className="h-3 w-3" /> Purpose
               </div>
@@ -397,7 +397,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
           <div className="p-3.5 rounded-2xl blue-gradient text-white border border-black/5 dark:border-white/20 shadow-inner">
             <Library className="h-8 w-8" />
           </div>
-          <div>
+          <div className="text-left">
             <CardTitle className="leading-none">
               <span className="text-3xl font-black tracking-tighter text-blue-gradient">Visit Log</span>
             </CardTitle>
@@ -420,7 +420,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
                 </div>
                 <p className="text-lg font-black text-foreground relative z-10">{user.user_type}</p>
               </div>
-              <div className="md:col-span-3 p-6 rounded-3xl glass border border-black/5 dark:border-white/20 hover:bg-black/5 transition-all relative overflow-hidden group">
+              <div className="md:col-span-3 p-6 rounded-3xl glass border border-black/5 dark:border-white/20 hover:bg-black/5 transition-all relative overflow-hidden group text-left">
                 <div className="absolute -bottom-20 -right-20 opacity-[0.1] group-hover:opacity-[0.15] transition-all duration-700 rotate-12 group-hover:rotate-6">
                   <AffiliationIcon className="h-40 w-40 text-primary" />
                 </div>
@@ -440,7 +440,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
               control={form.control}
               name="reason"
               render={({ field }) => (
-                <FormItem className="space-y-4">
+                <FormItem className="space-y-4 text-left">
                   <FormLabel className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
                     Primary Purpose of Entry
                   </FormLabel>

@@ -108,7 +108,7 @@ function LoginContent() {
               <BookMarked className="h-10 w-10" />
             </div>
             <div className="flex flex-col gap-2 mb-6">
-              <h1 className="text-4xl sm:text-5xl font-black tracking-tighter text-blue-gradient pb-4 px-1">NEU Library</h1>
+              <h1 className="text-4xl sm:text-5xl font-black tracking-tighter text-blue-gradient pb-4 px-1 leading-tight">NEU Library</h1>
               <p className="text-sm font-black uppercase tracking-[0.3em] text-muted-foreground/60">Access System</p>
             </div>
           </CardHeader>
