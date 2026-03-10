@@ -330,7 +330,6 @@ export default function AdminDashboard() {
               </Card>
             ))}
           </div>
-          {/* Charts... */}
         </TabsContent>
 
         <TabsContent value="activity" className="space-y-8 sm:space-y-12 mt-0">
@@ -379,7 +378,6 @@ export default function AdminDashboard() {
                         className="h-11 rounded-xl border-2 bg-background/50 dark:bg-blue-900/20 transition-all text-sm font-bold focus:border-primary/30 border-primary/10"
                       />
                     </div>
-                    {/* Date Filters... */}
                     <Button 
                       variant="ghost" 
                       onClick={clearFilters}
