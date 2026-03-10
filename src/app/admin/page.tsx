@@ -196,8 +196,10 @@ export default function AdminDashboard() {
 
   const getStatusBadge = (status: string, isMobile = false) => {
     const baseClasses = cn(
-      "rounded-2xl border font-black text-[9px] px-3 py-1.5 flex gap-1.5 items-center justify-center pointer-events-none",
-      isMobile ? "shadow-none w-28 text-[8px]" : "w-32 mx-auto"
+      "rounded-2xl border font-black flex gap-1.5 items-center justify-center pointer-events-none",
+      isMobile 
+        ? "shadow-none w-28 text-[8px] px-2 py-0 h-4" 
+        : "text-[9px] px-3 py-1.5 w-32 mx-auto"
     );
     switch(status) {
       case 'active':
@@ -212,7 +214,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <main className="flex-1 px-4 sm:px-6 md:px-12 py-8 sm:py-12 space-y-8 sm:py-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-in-out">
+    <main className="flex-1 px-4 sm:px-6 md:px-12 py-8 sm:py-12 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-in-out">
       <Tabs defaultValue="activity" className="space-y-8 sm:space-y-12">
         <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 sm:gap-8">
           <div className="flex flex-col gap-2 sm:gap-3 text-left">
@@ -429,7 +431,7 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* High-Density Mobile View */}
-                  <div className="xl:hidden space-y-4 p-4 pb-12">
+                  <div className="xl:hidden space-y-4 p-4 pb-6">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
@@ -452,7 +454,7 @@ export default function AdminDashboard() {
                               <div className="flex flex-col items-end gap-2 shrink-0">
                                 {getStatusBadge(log.status || 'active', true)}
                                 <Badge className={cn(
-                                  "rounded-xl font-black text-[8px] py-1 px-2 border-none shadow-none uppercase shrink-0 w-28 justify-center text-center pointer-events-none",
+                                  "rounded-xl font-black text-[8px] py-0 h-4 border-none shadow-none uppercase shrink-0 w-28 justify-center text-center pointer-events-none",
                                   isOngoing ? "bg-sky-500/15 text-sky-600 dark:text-sky-400" : "bg-primary/10 text-primary"
                                 )}>
                                   {formatDuration(log.duration)}
