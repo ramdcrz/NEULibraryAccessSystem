@@ -40,7 +40,7 @@ export default function Header() {
           </div>
           <div className="flex flex-col">
             <span className="text-sm sm:text-lg font-black leading-none tracking-tight text-blue-gradient">NEU Library</span>
-            <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-0.5 sm:mt-1">Access System</span>
+            <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-0">Access System</span>
           </div>
         </Link>
         

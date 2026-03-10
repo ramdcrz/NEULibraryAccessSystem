@@ -639,7 +639,7 @@ export default function AdminDashboard() {
                     </Table>
                   </div>
 
-                  <div className="md:hidden space-y-4 p-4 pb-12">
+                  <div className="md:hidden space-y-4 p-4 pb-24">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
@@ -656,10 +656,10 @@ export default function AdminDashboard() {
                                 <div className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">
                                   {dateStr.toUpperCase()}
                                 </div>
-                                <div className="text-base font-bold text-foreground block truncate leading-tight">
+                                <div className="text-sm font-bold text-foreground block truncate leading-tight">
                                   {log.email}
                                 </div>
-                                <div className="text-[9px] font-black text-primary uppercase tracking-widest mt-1">
+                                <div className="text-[8px] font-black text-primary uppercase tracking-widest mt-1">
                                   {log.userType} • {log.college_office}
                                 </div>
                               </div>
@@ -668,7 +668,7 @@ export default function AdminDashboard() {
                                 {getStatusBadge(log.status || 'active', true)}
                                 <Badge className={cn(
                                   "rounded-xl font-black text-[8px] py-1 px-2 border-none shadow-none uppercase shrink-0 w-28 justify-center text-center pointer-events-none",
-                                  isOngoing ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"
+                                  isOngoing ? "bg-sky-500/15 text-sky-600 dark:text-sky-400" : "bg-primary/10 text-primary"
                                 )}>
                                   {durationStr}
                                 </Badge>
