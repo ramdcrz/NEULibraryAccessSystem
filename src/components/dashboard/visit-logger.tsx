@@ -122,7 +122,6 @@ function getAffiliationIcon(name: string | null | undefined) {
     'School of International Relations': Globe,
   };
 
-  // If it's a college, return the specific icon, otherwise return the school logo for offices
   return iconMap[name] || BookMarked;
 }
 
@@ -273,7 +272,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
         </div>
         <CardTitle className="text-4xl font-black mb-4 tracking-tighter text-foreground">Access Managed</CardTitle>
         <CardDescription className="text-lg font-medium mb-10 text-muted-foreground px-4 leading-relaxed">
-          The terminal is now preparing for the next user.
+          The system is now preparing for the next user.
         </CardDescription>
         <Button 
           variant="ghost" 
@@ -356,7 +355,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
               <CardTitle className="leading-none">
                 <span className="text-3xl font-black tracking-tighter text-blue-gradient">Visit Log</span>
               </CardTitle>
-              <CardDescription className="text-sm font-medium opacity-60 tracking-tight text-muted-foreground mt-1">Identity verification terminal</CardDescription>
+              <CardDescription className="text-sm font-medium opacity-60 tracking-tight text-muted-foreground mt-1">Identity verification system</CardDescription>
             </div>
           </div>
           <Badge className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.25em] blue-gradient text-white rounded-full shadow-lg shadow-primary/20 border-none">
@@ -450,7 +449,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
                 <LoaderCircle className="h-8 w-8 animate-spin" />
               ) : (
                 <div className="flex items-center justify-center gap-3">
-                  Log Terminal Entry
+                  Log Entry
                   <ChevronRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
                 </div>
               )}

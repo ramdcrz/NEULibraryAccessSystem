@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -106,7 +105,7 @@ export default function Home() {
           <div className="w-full max-w-4xl text-center space-y-6">
             <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-secondary text-foreground/70 text-[10px] font-bold uppercase tracking-[0.25em] border border-border mb-2">
               <BookCheck className="h-3.5 w-3.5" />
-              University Terminal
+              University Access System
             </div>
             <h1 className="text-6xl font-extrabold tracking-tight sm:text-7xl md:text-8xl text-foreground">
               Hello, <span className="text-blue-gradient">{getFirstName()}!</span>

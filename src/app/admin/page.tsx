@@ -250,7 +250,6 @@ export default function AdminDashboard() {
             log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--',
             log.email,
             log.userType,
-            // Premium Suggestion: Wrap "Ongoing" in a styled cell object
             isOngoing ? { content: 'Ongoing', styles: { textColor: [22, 163, 74], fontStyle: 'bold' } } : durationStr,
             log.reason
           ];
@@ -270,14 +269,12 @@ export default function AdminDashboard() {
             3: { cellWidth: 20 },
             4: { cellWidth: 35 },
           },
-          // Standard autoTable handling for page breaks
         });
 
-        // @ts-ignore - Update currentY for the next table
+        // @ts-ignore
         currentY = doc.lastAutoTable.finalY + 15;
       });
 
-      // Premium Suggestion: Global Footer for all pages
       const pageCount = doc.internal.getNumberOfPages();
       const generationDate = format(new Date(), 'MMMM d, yyyy HH:mm');
       
@@ -286,16 +283,13 @@ export default function AdminDashboard() {
         doc.setFontSize(8);
         doc.setTextColor(150, 150, 150);
         
-        // Left: Generation Timestamp
         doc.text(`Generated on: ${generationDate}`, 14, pageHeight - 10);
         
-        // Center: Page Numbering
         const pageLabel = `Page ${i} of ${pageCount}`;
         const labelWidth = doc.getTextWidth(pageLabel);
         doc.text(pageLabel, (pageWidth - labelWidth) / 2, pageHeight - 10);
         
-        // Right: System Identifier
-        const systemId = "NEU Library Terminal v1.0";
+        const systemId = "NEU Library Access System v1.0";
         const idWidth = doc.getTextWidth(systemId);
         doc.text(systemId, pageWidth - idWidth - 14, pageHeight - 10);
       }
@@ -335,7 +329,7 @@ export default function AdminDashboard() {
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.4em] text-[10px] opacity-60">
               <ShieldCheck className="h-3.5 w-3.5" />
-              Administrative Terminal
+              Administrative Access System
             </div>
             <h1 className="text-6xl font-black tracking-tighter py-2 pb-4">
               System <span className="text-blue-gradient">Analytics</span>
@@ -589,7 +583,7 @@ export default function AdminDashboard() {
                       Activity Stream
                     </CardTitle>
                     <CardDescription className="text-sm font-bold opacity-60 mt-1">
-                      {filteredLogs.length} matching entries found in terminal
+                      {filteredLogs.length} matching entries found in system
                     </CardDescription>
                   </div>
                 </div>
@@ -619,7 +613,7 @@ export default function AdminDashboard() {
                     <Search className="h-12 w-12 text-muted-foreground opacity-20" />
                     <div className="space-y-2">
                       <h3 className="text-2xl font-black tracking-tight">No Activity Detected</h3>
-                      <p className="text-muted-foreground font-bold">Adjust filters to display terminal data.</p>
+                      <p className="text-muted-foreground font-bold">Adjust filters to display system data.</p>
                     </div>
                   </div>
                 ) : (

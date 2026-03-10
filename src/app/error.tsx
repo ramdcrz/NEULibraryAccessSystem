@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -45,8 +44,8 @@ export default function GlobalError({
           {(isPermissionError || isIndexError) && (
             <div className="text-sm text-blue-700 dark:text-blue-300 bg-blue-50/50 dark:bg-blue-900/20 p-6 rounded-2xl border border-blue-200 dark:border-blue-800 shadow-sm animate-in fade-in slide-in-from-top-2 duration-700">
               <p className="font-black text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2">
-                <Info className="h-3.5 w-3.5" />
-                Critical Troubleshooting Tip
+                <span className="flex items-center justify-center bg-blue-500 text-white rounded-full w-4 h-4 text-[9px]">!</span>
+                System Troubleshooting
               </p>
               <p className="font-medium mb-3">If you see a link starting with <code>https://console.firebase.google.com...</code> in the terminal console (F12), the system needs a **Composite Index**.</p>
               <ol className="list-decimal pl-5 space-y-2 text-xs font-bold opacity-80">
@@ -63,7 +62,7 @@ export default function GlobalError({
             className="w-full sm:flex-1 h-14 text-sm font-black rounded-2xl blue-gradient text-white border-none shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
           >
             <RotateCcw className="h-4 w-4 mr-2" />
-            Reload Terminal
+            Reload Access System
           </Button>
           <Button 
             asChild
