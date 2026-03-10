@@ -28,10 +28,12 @@ export default function LiveClock() {
       <Clock className="h-4 w-4 text-primary opacity-60" />
       <div className="flex items-center gap-3">
         <span className="font-bold">{format(currentTime, 'EEEE, MMM d')}</span>
-        <span className="text-primary/20 font-black">|</span>
-        <span className="text-foreground font-black tabular-nums tracking-normal text-xs">
-          {format(currentTime, 'hh:mm:ss a')}
-        </span>
+        <div className="hidden sm:flex items-center">
+          <span className="text-primary/20 font-black mx-3">|</span>
+          <span className="text-foreground font-black tabular-nums tracking-normal text-xs">
+            {format(currentTime, 'hh:mm:ss a')}
+          </span>
+        </div>
       </div>
     </div>
   );
