@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { BookMarked, LoaderCircle, ShieldCheck, Info } from 'lucide-react';
+import { BookMarked, LoaderCircle, ShieldCheck } from 'lucide-react';
 
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
@@ -29,13 +29,8 @@ function LoginContent() {
         toast({
           variant: "default",
           title: "Session Reset",
-          description: (
-            <div className="flex items-center gap-2">
-              <span className="flex items-center justify-center bg-blue-500 text-white rounded-full w-4 h-4 text-[9px]">!</span>
-              <span>The previous session was closed due to inactivity.</span>
-            </div>
-          ),
-          className: "bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-900 border-2 font-bold",
+          description: "The previous session was closed due to inactivity.",
+          className: "bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-900 border-2 font-bold rounded-2xl",
           duration: 5000,
         });
         
@@ -67,15 +62,10 @@ function LoginContent() {
       }
 
       console.error('Sign in failed:', error);
-      
-      const isDomainError = error.code === 'auth/unauthorized-domain';
-      
       toast({
         variant: "destructive",
         title: "Access System Error",
-        description: isDomainError 
-          ? "Unauthorized web domain. Please verify your system settings."
-          : "Authentication failed. Please contact university security.",
+        description: "Authentication failed. Please contact university security.",
       });
     }
   };
@@ -106,6 +96,7 @@ function LoginContent() {
               <BookMarked className="h-10 w-10" />
             </div>
             <div className="flex flex-col gap-2 mb-6">
+              {/* pb-4 px-1 prevents descender/glyph clipping */}
               <h1 className="text-4xl sm:text-5xl font-black tracking-tighter text-blue-gradient pb-4 px-1 leading-tight">NEU Library</h1>
               <p className="text-sm font-black uppercase tracking-[0.3em] text-muted-foreground/60">Access System</p>
             </div>
@@ -114,10 +105,10 @@ function LoginContent() {
             <Button
               onClick={handleSignIn}
               disabled={isAuthenticating}
-              className="w-full h-14 transition-all blue-gradient border-none rounded-2xl gap-3 sm:gap-4 active:scale-95 hover:scale-[1.02] hover:opacity-90 shadow-lg shadow-primary/20 px-4"
+              className="w-full h-14 transition-all blue-gradient border-none rounded-2xl gap-4 active:scale-95 hover:scale-[1.02] hover:opacity-90 shadow-lg shadow-primary/20"
               variant="default"
             >
-              <div className="flex items-center justify-center bg-white rounded-lg p-1 mr-1">
+              <div className="flex items-center justify-center bg-white rounded-lg p-1">
                 <GoogleIcon />
               </div>
               <span className="text-sm sm:text-base font-black uppercase tracking-[0.2em] text-white">

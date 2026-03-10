@@ -206,93 +206,32 @@ export default function AdminDashboard() {
     setIsExporting(true);
     try {
       const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      
       doc.setFontSize(22);
       doc.setTextColor(37, 99, 235);
       doc.text('NEU Library Access System', 14, 22);
       
-      doc.setFontSize(14);
-      doc.setTextColor(60, 60, 60);
-      doc.text('University Library Visit Activity Report', 14, 32);
-      
-      const groupedByDate: Record<string, typeof filteredLogs> = {};
-      filteredLogs.forEach(log => {
-        const dateKey = log.entryDate || (log.timestamp ? format(log.timestamp.toDate(), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'));
-        if (!groupedByDate[dateKey]) groupedByDate[dateKey] = [];
-        groupedByDate[dateKey].push(log);
+      const tableRows = filteredLogs.map(log => [
+        log.timestamp ? format(log.timestamp.toDate(), 'yyyy-MM-dd hh:mm a') : 'Pending...',
+        log.email,
+        log.userType,
+        log.college_office,
+        log.reason,
+        log.status?.toUpperCase() || 'ACTIVE'
+      ]);
+
+      autoTable(doc, {
+        head: [['Time In', 'Email', 'Type', 'Affiliation', 'Purpose', 'Status']],
+        body: tableRows,
+        startY: 35,
+        theme: 'grid',
+        headStyles: { fillColor: [37, 99, 235] },
+        styles: { fontSize: 8 },
       });
 
-      const sortedDates = Object.keys(groupedByDate).sort((a, b) => b.localeCompare(a));
-
-      let currentY = 45;
-
-      sortedDates.forEach((dateStr) => {
-        const logsForDate = groupedByDate[dateStr];
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(37, 99, 235);
-        const formattedDate = format(parseISO(dateStr), 'EEEE, MMMM d, yyyy');
-        doc.text(formattedDate.toUpperCase(), 14, currentY);
-        currentY += 6;
-
-        const tableRows = logsForDate.map(log => {
-          const durationStr = formatDuration(log.duration, 'Ongoing', false);
-          const isOngoing = durationStr === 'Ongoing';
-
-          return [
-            log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : 'Pending...',
-            log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--',
-            log.email,
-            log.userType,
-            isOngoing ? { content: 'Ongoing', styles: { textColor: [22, 163, 74], fontStyle: 'bold' } } : durationStr,
-            log.reason
-          ];
-        });
-
-        autoTable(doc, {
-          startY: currentY,
-          head: [['Time In', 'Time Out', 'User', 'Type', 'Duration', 'Purpose']],
-          body: tableRows,
-          theme: 'grid',
-          headStyles: { fillColor: [37, 99, 235], textColor: 255, fontSize: 8, fontStyle: 'bold' },
-          styles: { fontSize: 7, cellPadding: 2.5 },
-          margin: { bottom: 20 },
-          columnStyles: {
-            0: { cellWidth: 20 },
-            1: { cellWidth: 20 },
-            3: { cellWidth: 20 },
-            4: { cellWidth: 35 },
-          },
-        });
-
-        // @ts-ignore
-        currentY = doc.lastAutoTable.finalY + 15;
-      });
-
-      const pageCount = doc.internal.getNumberOfPages();
-      const generationDate = format(new Date(), 'MMMM d, yyyy HH:mm');
-      
-      for(let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFontSize(8);
-        doc.setTextColor(150, 150, 150);
-        doc.text(`Generated on: ${generationDate}`, 14, pageHeight - 10);
-        const pageLabel = `Page ${i} of ${pageCount}`;
-        const labelWidth = doc.getTextWidth(pageLabel);
-        doc.text(pageLabel, (pageWidth - labelWidth) / 2, pageHeight - 10);
-        const systemId = "NEU Library Access System";
-        const idWidth = doc.getTextWidth(systemId);
-        doc.text(systemId, pageWidth - idWidth - 14, pageHeight - 10);
-      }
-
-      doc.save(`NEULibrary_Audit_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
-      toast({ title: "Report Finalized", description: "Audit documentation downloaded." });
+      doc.save(`NEU_Library_Logs_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+      toast({ title: "Report Exported", description: "PDF has been downloaded." });
     } catch (error: any) {
-      console.error('Export error:', error);
-      toast({ variant: "destructive", title: "Export Error", description: "System failed to render PDF." });
+      toast({ variant: "destructive", title: "Export Error", description: error.message });
     } finally {
       setIsExporting(false);
     }
@@ -328,6 +267,7 @@ export default function AdminDashboard() {
               <ShieldCheck className="h-3.5 w-3.5" />
               Administrative Access System
             </div>
+            {/* pb-4 px-1 prevents descender/glyph clipping */}
             <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-blue-gradient pb-4 px-1">
               System Analytics
             </h1>
@@ -380,7 +320,7 @@ export default function AdminDashboard() {
               { label: 'Today', val: stats.today, icon: Clock },
               { label: 'Verified Reach', val: stats.unique, icon: Users }
             ].map((stat, i) => (
-              <Card key={i} className="glass rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 relative overflow-hidden group border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
+              <Card key={i} className="glass rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 relative overflow-hidden group border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5 animate-in zoom-in-95 duration-700">
                 <div className="absolute -bottom-8 -right-8 opacity-[0.15] group-hover:opacity-[0.22] transition-all duration-700 rotate-12 group-hover:rotate-6">
                   <stat.icon className="h-24 sm:h-32 w-24 sm:w-32 text-primary" />
                 </div>
@@ -391,7 +331,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-            <Card className="glass rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
+            <Card className="glass rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5 animate-in slide-in-from-left-4 duration-1000">
               <CardHeader className="p-0 mb-6 sm:mb-10">
                 <CardTitle className="text-xl sm:text-2xl font-black tracking-tight">Classification Distribution</CardTitle>
                 <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Visits by User Type</CardDescription>
@@ -433,7 +373,7 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="glass rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
+            <Card className="glass rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5 animate-in slide-in-from-right-4 duration-1000">
               <CardHeader className="p-0 mb-6 sm:mb-10">
                 <CardTitle className="text-xl sm:text-2xl font-black tracking-tight">Top Affiliations</CardTitle>
                 <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Most active colleges & offices</CardDescription>
@@ -470,7 +410,7 @@ export default function AdminDashboard() {
         </TabsContent>
 
         <TabsContent value="activity" className="space-y-8 sm:space-y-12 mt-0">
-          <Card className="glass overflow-hidden rounded-[2.5rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
+          <Card className="glass overflow-hidden rounded-[2.5rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5 animate-in fade-in duration-1000">
             <CardHeader className="p-6 sm:p-10 border-b border-black/5 dark:border-white/10 flex flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4 sm:gap-5 text-left">
                 <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl blue-gradient text-white shadow-inner flex-shrink-0 aspect-square flex items-center justify-center">
@@ -712,7 +652,7 @@ export default function AdminDashboard() {
                       const durationStr = formatDuration(log.duration);
 
                       return (
-                        <Card key={log.id} className="glass border border-black/5 dark:border-white/15 rounded-2xl overflow-hidden shadow-sm">
+                        <Card key={log.id} className="glass border border-black/5 dark:border-white/15 rounded-2xl overflow-hidden shadow-sm animate-in zoom-in-95 duration-500">
                           <CardContent className="p-4 space-y-3">
                             <div className="flex justify-between gap-4 items-start">
                               <div className="flex-1 min-w-0 space-y-1">

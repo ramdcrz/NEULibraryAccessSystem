@@ -116,3 +116,14 @@
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-btn {
+  background: linear-gradient(90deg, #2563eb, #3b82f6, #2563eb);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite linear;
+}

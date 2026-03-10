@@ -102,11 +102,12 @@ export default function Home() {
     <>
       <main className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center gap-12 px-6 md:px-12 py-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-in-out relative">
         {!hasLogged && (
-          <div className="w-full max-w-4xl text-center space-y-6">
-            <h1 className="text-6xl font-extrabold tracking-tight sm:text-7xl md:text-8xl text-foreground">
+          <div className="w-full max-w-4xl text-center space-y-6 animate-in slide-in-from-top-4 duration-700">
+            {/* pb-4 px-1 prevents descender/glyph clipping */}
+            <h1 className="text-6xl font-extrabold tracking-tight sm:text-7xl md:text-8xl text-foreground pb-4 px-1">
               Hello, <span className="text-blue-gradient">{getFirstName()}!</span>
             </h1>
-            <p className="mx-auto max-w-4xl text-xl font-medium text-muted-foreground md:text-2xl leading-relaxed tracking-tight">
+            <p className="mx-auto max-w-4xl text-xl font-medium text-muted-foreground md:text-2xl leading-relaxed tracking-tight opacity-70">
               {needsOnboarding 
                 ? "Verify your university affiliation to begin recording access logs." 
                 : "Your official gateway to a smarter, safer university experience."}
