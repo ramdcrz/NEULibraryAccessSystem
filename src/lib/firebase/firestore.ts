@@ -1,4 +1,3 @@
-
 import {
   doc,
   getDoc,
@@ -12,6 +11,7 @@ import { db } from './config';
 import type { UserProfile, VisitLogPayload } from '@/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
+import { setHours, setMinutes } from 'date-fns';
 
 // Fetch a user document from Firestore
 export async function getUserDoc(uid: string): Promise<UserProfile | null> {
@@ -93,8 +93,6 @@ export function addVisitLog(logData: VisitLogPayload) {
       } satisfies SecurityRuleContext);
       errorEmitter.emit('permission-error', permissionError);
     } else {
-      // Log non-permission errors (like already exists or network issues) to console
-      // but do not trigger the global permission error listener
       console.warn("Firestore Write Conflict or System Error:", error);
     }
   });
@@ -131,18 +129,23 @@ export function checkOutVisitLog(logId: string, entryTimestamp: Timestamp | null
 }
 
 /**
- * Silently auto-closes an abandoned log (3 hours duration).
+ * Institutional Policy: Library closes at 6:00 PM.
+ * Auto-closes abandoned or end-of-day sessions.
  */
 export function autoCloseVisitLog(logId: string, entryTimestamp: Timestamp | null) {
   const logRef = doc(db, 'visit_logs', logId);
   
-  // Rule: Auto-close sets a default 180 minute stay (3 hours)
   const entryDate = entryTimestamp ? entryTimestamp.toDate() : new Date();
-  const exitDate = new Date(entryDate.getTime() + (3 * 60 * 60 * 1000));
+  
+  // Rule: Final exit time is set to 6:00 PM of the visit day
+  const closingDate = setMinutes(setHours(entryDate, 18), 0);
+  
+  const durationMs = Math.max(0, closingDate.getTime() - entryDate.getTime());
+  const durationMinutes = Math.round(durationMs / (1000 * 60));
 
   const updateData = {
-    exitTimestamp: Timestamp.fromDate(exitDate),
-    duration: 180,
+    exitTimestamp: Timestamp.fromDate(closingDate),
+    duration: durationMinutes || 180, // Fallback to 3h if math yields 0
     status: 'auto-closed'
   };
 

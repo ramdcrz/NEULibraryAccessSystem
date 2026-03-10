@@ -328,8 +328,9 @@ export default function AdminDashboard() {
               <ShieldCheck className="h-3.5 w-3.5" />
               Administrative Access System
             </div>
-            <h1 className="text-4xl sm:text-6xl font-black tracking-tighter py-1 sm:py-2 pb-2 sm:pb-4">
-              System <span className="text-blue-gradient">Analytics</span>
+            {/* Added pb-2 and px-1 to prevent 's' clipping */}
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-blue-gradient pb-2 px-1">
+              System Analytics
             </h1>
             <p className="text-muted-foreground text-lg sm:text-xl font-bold opacity-70 tracking-tight">
               Real-time monitoring and security reporting.
@@ -471,7 +472,7 @@ export default function AdminDashboard() {
 
         <TabsContent value="activity" className="space-y-8 sm:space-y-12 mt-0">
           <Card className="glass overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5">
-            <CardHeader className="p-6 sm:p-10 border-b border-black/5 dark:border-white/10 flex flex-row items-center justify-between gap-4">
+            <CardHeader className="p-6 sm:p-10 border-b border-black/5 dark:border-white/10 flex flex-row items-center justify-between gap-4 text-left">
               <div className="flex items-center gap-4 sm:gap-5">
                 <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl blue-gradient text-white shadow-inner">
                   <Activity className="h-5 w-5 sm:h-7 sm:w-7" />
@@ -614,29 +615,108 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader className="border-b border-black/5 dark:border-white/10">
-                      <TableRow className="hover:bg-transparent border-none">
-                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10 text-foreground">Timeline</TableHead>
-                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground text-center">Status</TableHead>
-                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Verified Identity</TableHead>
-                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground text-center">Duration</TableHead>
-                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Purpose</TableHead>
-                        <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10 text-foreground">Control</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredLogs.map((log) => {
-                        const isBlocked = userStatusMap[log.uid] || false;
-                        const isOngoing = !log.duration;
-                        return (
-                          <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10">
-                            <TableCell className="pl-10 py-6 whitespace-nowrap">
-                              <div className="flex flex-col gap-1">
-                                <div className="text-[10px] font-black text-foreground/40 uppercase tracking-widest mb-1">
-                                  {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy') : 'Pending...'}
+                <>
+                  {/* Desktop Table View */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <Table>
+                      <TableHeader className="border-b border-black/5 dark:border-white/10">
+                        <TableRow className="hover:bg-transparent border-none">
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 pl-10 text-foreground">Timeline</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground text-center">Status</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Verified Identity</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground text-center">Duration</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground">Purpose</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10 text-foreground">Control</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredLogs.map((log) => {
+                          const isBlocked = userStatusMap[log.uid] || false;
+                          const isOngoing = !log.duration;
+                          return (
+                            <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10">
+                              <TableCell className="pl-10 py-6 whitespace-nowrap">
+                                <div className="flex flex-col gap-1">
+                                  <div className="text-[10px] font-black text-foreground/40 uppercase tracking-widest mb-1">
+                                    {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy') : 'Pending...'}
+                                  </div>
+                                  <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase">
+                                    <LogIn className="h-3 w-3" /> {log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--'}
+                                  </div>
+                                  <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase opacity-40">
+                                    <LogOut className="h-3 w-3" /> {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--'}
+                                  </div>
                                 </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex justify-center">
+                                  {getStatusBadge(log.status || 'active')}
+                                </div>
+                              </TableCell>
+                              <TableCell className="font-black text-foreground">
+                                <div className="flex flex-col">
+                                  <span>{log.email}</span>
+                                  <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1">{log.userType} • {log.college_office}</span>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex justify-center">
+                                  <Badge 
+                                    className={cn(
+                                      "rounded-2xl font-black text-[10px] py-1.5 px-4 w-32 flex justify-center border-none pointer-events-none shadow-none uppercase",
+                                      isOngoing 
+                                        ? "bg-sky-500/15 text-sky-600 dark:text-sky-400" 
+                                        : "bg-primary/10 text-primary hover:bg-primary/10"
+                                    )}
+                                  >
+                                    {formatDuration(log.duration)}
+                                  </Badge>
+                                </div>
+                              </TableCell>
+                              <TableCell className="max-w-[150px] truncate font-bold text-foreground/80">
+                                {log.reason}
+                              </TableCell>
+                              <TableCell className="text-center pr-10">
+                                <Button
+                                  variant="ghost"
+                                  className={cn(
+                                    "h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border shadow-sm",
+                                    isBlocked 
+                                      ? "text-green-600 dark:text-green-400 bg-green-500/10 border-green-500/20 hover:bg-green-600 hover:text-white" 
+                                      : "text-destructive dark:text-red-400 bg-destructive/5 border-destructive/10 hover:bg-destructive hover:text-white"
+                                    )}
+                                  onClick={() => handleToggleBlock(log.uid, log.email)}
+                                  disabled={blockingUid === log.uid}
+                                >
+                                  {blockingUid === log.uid ? (
+                                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                                  ) : isBlocked ? (
+                                    <><UserCheck className="h-3.5 w-3.5 mr-2" />Restore</>
+                                  ) : (
+                                    <><UserX className="h-3.5 w-3.5 mr-2" />Block</>
+                                  )}
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Mobile Activity Cards View */}
+                  <div className="md:hidden divide-y divide-black/5 dark:divide-white/10">
+                    {filteredLogs.map((log) => {
+                      const isBlocked = userStatusMap[log.uid] || false;
+                      const isOngoing = !log.duration;
+                      return (
+                        <div key={log.id} className="p-6 space-y-4 hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors">
+                          <div className="flex justify-between items-start">
+                            <div className="space-y-1">
+                              <div className="text-[10px] font-black text-foreground/40 uppercase tracking-widest">
+                                {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy') : 'Pending...'}
+                              </div>
+                              <div className="flex flex-col gap-1">
                                 <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase">
                                   <LogIn className="h-3 w-3" /> {log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--'}
                                 </div>
@@ -644,62 +724,57 @@ export default function AdminDashboard() {
                                   <LogOut className="h-3 w-3" /> {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--'}
                                 </div>
                               </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex justify-center">
-                                {getStatusBadge(log.status || 'active')}
-                              </div>
-                            </TableCell>
-                            <TableCell className="font-black text-foreground">
-                              <div className="flex flex-col">
-                                <span>{log.email}</span>
-                                <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1">{log.userType} • {log.college_office}</span>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex justify-center">
-                                <Badge 
-                                  className={cn(
-                                    "rounded-2xl font-black text-[10px] py-1.5 px-4 w-32 flex justify-center border-none pointer-events-none shadow-none uppercase",
-                                    isOngoing 
-                                      ? "bg-sky-500/15 text-sky-600 dark:text-sky-400" 
-                                      : "bg-primary/10 text-primary hover:bg-primary/10"
-                                  )}
-                                >
-                                  {formatDuration(log.duration)}
-                                </Badge>
-                              </div>
-                            </TableCell>
-                            <TableCell className="max-w-[150px] truncate font-bold text-foreground/80">
+                            </div>
+                            {getStatusBadge(log.status || 'active', true)}
+                          </div>
+
+                          <div className="space-y-1">
+                            <div className="font-black text-sm text-foreground truncate">{log.email}</div>
+                            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">
+                              {log.userType} • {log.college_office}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between gap-4 pt-2">
+                            <Badge 
+                              className={cn(
+                                "rounded-2xl font-black text-[9px] py-1.5 px-3 border-none shadow-none uppercase flex-1 justify-center",
+                                isOngoing 
+                                  ? "bg-sky-500/15 text-sky-600" 
+                                  : "bg-primary/10 text-primary"
+                              )}
+                            >
+                              {formatDuration(log.duration)}
+                            </Badge>
+                            <Badge variant="outline" className="flex-1 justify-center py-1.5 text-[9px] font-bold rounded-2xl border-black/10 truncate">
                               {log.reason}
-                            </TableCell>
-                            <TableCell className="text-center pr-10">
-                              <Button
-                                variant="ghost"
-                                className={cn(
-                                  "h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border shadow-sm",
-                                  isBlocked 
-                                    ? "text-green-600 dark:text-green-400 bg-green-500/10 border-green-500/20 hover:bg-green-600 hover:text-white" 
-                                    : "text-destructive dark:text-red-400 bg-destructive/5 border-destructive/10 hover:bg-destructive hover:text-white"
-                                  )}
-                                onClick={() => handleToggleBlock(log.uid, log.email)}
-                                disabled={blockingUid === log.uid}
-                              >
-                                {blockingUid === log.uid ? (
-                                  <LoaderCircle className="h-4 w-4 animate-spin" />
-                                ) : isBlocked ? (
-                                  <><UserCheck className="h-3.5 w-3.5 mr-2" />Restore</>
-                                ) : (
-                                  <><UserX className="h-3.5 w-3.5 mr-2" />Block</>
-                                )}
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </div>
+                            </Badge>
+                          </div>
+
+                          <Button
+                            variant="ghost"
+                            className={cn(
+                              "w-full h-11 font-black text-[9px] uppercase tracking-widest rounded-xl transition-all border shadow-sm",
+                              isBlocked 
+                                ? "text-green-600 bg-green-500/10 border-green-500/20" 
+                                : "text-destructive bg-destructive/5 border-destructive/10"
+                              )}
+                            onClick={() => handleToggleBlock(log.uid, log.email)}
+                            disabled={blockingUid === log.uid}
+                          >
+                            {blockingUid === log.uid ? (
+                              <LoaderCircle className="h-4 w-4 animate-spin" />
+                            ) : isBlocked ? (
+                              <><UserCheck className="h-3 w-3 mr-2" />Restore User</>
+                            ) : (
+                              <><UserX className="h-3 w-3 mr-2" />Block User</>
+                            )}
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
               )}
             </CardContent>
           </Card>

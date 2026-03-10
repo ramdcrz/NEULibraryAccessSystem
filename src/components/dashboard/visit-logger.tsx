@@ -37,7 +37,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { format, isSameDay, differenceInHours } from 'date-fns';
+import { format, isSameDay, differenceInHours, isAfter, setHours, setMinutes } from 'date-fns';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -204,16 +204,23 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
 
         const now = new Date();
         const sameDay = isSameDay(entryTime, now);
+        
+        // Institutional Closing Time Rule: 6:00 PM
+        const closingTime = setMinutes(setHours(entryTime, 18), 0);
+        const isPastClosing = isAfter(now, closingTime);
         const hoursDiff = differenceInHours(now, entryTime);
 
-        if (sameDay && hoursDiff < 3) {
+        // Auto-close if past 6 PM of visit date OR if session is older than 3 hours
+        if (sameDay && !isPastClosing && hoursDiff < 3) {
           setSmartActiveLog(lastLog);
         } else {
           autoCloseVisitLog(lastLog.id, lastLog.timestamp);
           setSmartActiveLog(null);
           toast({
             title: "Session Reset",
-            description: "A previous abandoned visit has been auto-closed.",
+            description: isPastClosing 
+              ? "Your session was closed at the library's 6 PM closing time."
+              : "A previous abandoned visit has been auto-closed.",
           });
         }
       } else {
