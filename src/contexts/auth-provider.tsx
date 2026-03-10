@@ -84,12 +84,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           } else {
             // New Profile Creation Flow
             const localPart = email.split('@')[0];
-            
-            // Backdoor emails are NEVER auto-assigned Student status
             const isStudent = !isBackdoor && localPart.includes('.');
             const derivedUserType = isStudent ? 'Student' : null;
-            
-            // Hardcoded Admin Logic
             const isTargetAdmin = email === 'ramiljr.deocariza@neu.edu.ph';
 
             const newUserProfileData = {
@@ -102,9 +98,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               createdAt: serverTimestamp(),
             };
             
-            setDoc(userRef, newUserProfileData).catch(err => {
-               console.error("Error creating user profile document:", err);
-            });
+            setDoc(userRef, newUserProfileData)
+              .then(() => {
+                // onSnapshot will trigger again and set loading: false
+              })
+              .catch(err => {
+                 console.error("Error creating user profile document:", err);
+                 setLoading(false);
+              });
           }
         }, (error) => {
           console.error("User document listener error:", error);
@@ -135,10 +136,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       await signInWithPopup(auth, provider);
     } catch (error: any) {
-      // Re-throw to allow the login page to handle UI feedback (e.g. "Sorry. Sign In Again.")
-      throw error;
-    } finally {
       setLoading(false);
+      throw error;
     }
   };
 

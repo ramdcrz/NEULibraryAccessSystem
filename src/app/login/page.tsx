@@ -3,7 +3,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { BookMarked, LoaderCircle, ShieldCheck, Info, AlertTriangle } from 'lucide-react';
+import { BookMarked, LoaderCircle, ShieldCheck, Info } from 'lucide-react';
 
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
@@ -55,7 +55,8 @@ function LoginContent() {
     setIsAuthenticating(true);
     try {
       await signInWithGoogle();
-      // If successful, AuthProvider's onAuthStateChanged handles state updates
+      // On successful return, the AuthProvider state will eventually trigger the redirect.
+      // We keep isAuthenticating true until unmount or state change.
     } catch (error: any) {
       setIsAuthenticating(false);
       
@@ -65,7 +66,7 @@ function LoginContent() {
         toast({
           variant: "destructive",
           title: "Sign In Cancelled",
-          description: "Please complete the authentication process to access the system.",
+          description: "Sorry. Sign In Again.",
           className: "rounded-2xl border-2 shadow-2xl font-black",
         });
         return;
@@ -79,8 +80,8 @@ function LoginContent() {
         variant: "destructive",
         title: "Access System Error",
         description: isDomainError 
-          ? "This web domain is not authorized in Firebase Auth settings. Please add this URL to your 'Authorized Domains' in the Firebase Console."
-          : "Authentication failed. Please use your official @neu.edu.ph university account.",
+          ? "This web domain is not authorized. Please add this URL to 'Authorized Domains' in your Firebase Console Authentication settings."
+          : "Authentication failed. Sorry. Sign In Again.",
         className: "rounded-2xl border-2 shadow-2xl font-black",
       });
     }
