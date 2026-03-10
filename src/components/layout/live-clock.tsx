@@ -6,17 +6,18 @@ import { Clock } from 'lucide-react';
 
 export default function LiveClock() {
   const [mounted, setMounted] = useState(false);
-  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   useEffect(() => {
     // Flag mounting to avoid hydration mismatch
     setMounted(true);
+    setCurrentTime(new Date());
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
   // Standardize initial render to skeleton to prevent hydration mismatch
-  if (!mounted) {
+  if (!mounted || !currentTime) {
     return (
       <div className="hidden lg:flex items-center gap-2 px-6 h-10 bg-muted/20 rounded-full w-56 animate-pulse" />
     );
