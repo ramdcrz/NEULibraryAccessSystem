@@ -1,3 +1,4 @@
+
 'use client';
 
 import { createContext, useState, useEffect, ReactNode } from 'react';
@@ -53,8 +54,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!email.endsWith('@neu.edu.ph') && !isBackdoor) {
           toast({
             variant: "destructive",
-            title: "Sorry. Sign In Again.",
-            description: "Official @neu.edu.ph account required for access.",
+            title: "Access System Alert",
+            description: "Official @neu.edu.ph account required for access. Personal accounts are restricted.",
             className: "rounded-2xl border-2 shadow-2xl font-black",
           });
           signOut();
@@ -86,9 +87,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             
             // Backdoor emails are NEVER auto-assigned Student status
             const isStudent = !isBackdoor && localPart.includes('.');
-            
-            // Rule: If local part has a dot, they are definitely a Student.
-            // If not (or if backdoor), they must choose between Staff/Employee later (null).
             const derivedUserType = isStudent ? 'Student' : null;
             
             // Hardcoded Admin Logic
@@ -137,8 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       await signInWithPopup(auth, provider);
     } catch (error: any) {
-      // Do not swallow cancellation errors. Re-throw them so the login page can reset its local state
-      // and show the requested "Sorry. Sign In Again." notification.
+      // Re-throw to allow the login page to handle UI feedback (e.g. "Sorry. Sign In Again.")
       throw error;
     } finally {
       setLoading(false);

@@ -3,7 +3,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { BookMarked, LoaderCircle, ShieldCheck, Info } from 'lucide-react';
+import { BookMarked, LoaderCircle, ShieldCheck, Info, AlertTriangle } from 'lucide-react';
 
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
@@ -55,19 +55,32 @@ function LoginContent() {
     setIsAuthenticating(true);
     try {
       await signInWithGoogle();
+      // If successful, AuthProvider's onAuthStateChanged handles state updates
     } catch (error: any) {
       setIsAuthenticating(false);
       
       // Handle the specific "popup closed" error silently (no console.error) 
       // to avoid Next.js error overlays, but show the requested UI feedback.
-      if (error.code !== 'auth/popup-closed-by-user') {
-        console.error('Sign in failed:', error);
+      if (error.code === 'auth/popup-closed-by-user') {
+        toast({
+          variant: "destructive",
+          title: "Sign In Cancelled",
+          description: "Please complete the authentication process to access the system.",
+          className: "rounded-2xl border-2 shadow-2xl font-black",
+        });
+        return;
       }
+
+      console.error('Sign in failed:', error);
+      
+      const isDomainError = error.code === 'auth/unauthorized-domain';
       
       toast({
         variant: "destructive",
-        title: "Sorry. Sign In Again.",
-        description: "Authentication was not completed. Please try again with your official university account.",
+        title: "Access System Error",
+        description: isDomainError 
+          ? "This web domain is not authorized in Firebase Auth settings. Please add this URL to your 'Authorized Domains' in the Firebase Console."
+          : "Authentication failed. Please use your official @neu.edu.ph university account.",
         className: "rounded-2xl border-2 shadow-2xl font-black",
       });
     }
@@ -123,7 +136,7 @@ function LoginContent() {
           </CardContent>
         </Card>
         
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center px-10 py-5 rounded-2xl glass w-full shadow-sm border border-black/5 dark:border-white/10">
+        <p className="w-full text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center px-10 py-5 rounded-2xl glass shadow-sm border border-black/5 dark:border-white/10">
           New Era University • Library Systems
         </p>
       </div>
