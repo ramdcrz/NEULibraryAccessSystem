@@ -137,13 +137,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       await signInWithPopup(auth, provider);
     } catch (error: any) {
-      const isCancellation = 
-        error.code === 'auth/popup-closed-by-user' || 
-        error.code === 'auth/cancelled-popup-request';
-        
-      if (!isCancellation) {
-        throw error;
-      }
+      // Do not swallow cancellation errors. Re-throw them so the login page can reset its local state
+      // and show the requested "Sorry. Sign In Again." notification.
+      throw error;
     } finally {
       setLoading(false);
     }

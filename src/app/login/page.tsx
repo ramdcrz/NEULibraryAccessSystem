@@ -2,13 +2,12 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { BookMarked, LoaderCircle, ShieldCheck, Info, AlertCircle } from 'lucide-react';
+import { BookMarked, LoaderCircle, ShieldCheck, Info } from 'lucide-react';
 
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 
 function LoginContent() {
   const { user, loading, signInWithGoogle } = useAuth();
@@ -58,10 +57,12 @@ function LoginContent() {
     } catch (error: any) {
       setIsAuthenticating(false);
       console.error('Sign in failed:', error);
+      
+      // Ensure we catch popup closures and other auth failures to show the requested popup
       toast({
         variant: "destructive",
         title: "Sorry. Sign In Again.",
-        description: error.message || "Authentication could not be completed at this time.",
+        description: "Authentication was not completed. Please try again with your official university account.",
         className: "rounded-2xl border-2 shadow-2xl font-black",
       });
     }
@@ -88,6 +89,7 @@ function LoginContent() {
     <main className="flex min-h-screen flex-col items-center justify-center p-6 animate-in fade-in duration-1000">
       <div className="w-full max-w-md flex flex-col items-center justify-center gap-10">
         <Card className="w-full glass border border-black/5 dark:border-white/20 animate-in zoom-in-95 duration-1000 shadow-2xl shadow-primary/20 relative overflow-hidden rounded-[2rem]">
+          <div className="absolute top-0 left-0 w-full h-2 blue-gradient" />
           <CardHeader className="text-center pb-12 pt-20 px-10 relative z-10">
             <div className="mx-auto mb-10 flex h-24 w-24 items-center justify-center rounded-2xl blue-gradient text-white animate-float shadow-xl shadow-primary/30">
               <BookMarked className="h-12 w-12" />
@@ -117,7 +119,7 @@ function LoginContent() {
           </CardContent>
         </Card>
         
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center px-10 py-4 rounded-2xl glass w-full max-w-md shadow-sm">
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center px-10 py-5 rounded-2xl glass w-full max-w-md shadow-sm border border-black/5 dark:border-white/10">
           New Era University • Library Systems
         </p>
       </div>
