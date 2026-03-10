@@ -32,10 +32,12 @@ import {
   Stethoscope,
   Activity,
   Wind,
-  Globe
+  Globe,
+  Check
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { format } from 'date-fns';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -422,7 +424,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
                     </FormControl>
                     <SelectContent className="rounded-2xl border-black/5 dark:border-white/20 glass shadow-2xl">
                       {visitReasons.map((reason) => (
-                        <SelectItem key={reason} value={reason} className="py-4 px-6 text-base font-bold cursor-pointer rounded-xl hover:bg-primary/5">
+                        <SelectItem key={reason} value={reason} className="py-4 px-6 text-base font-bold cursor-pointer rounded-xl hover:bg-primary/5 relative pr-12">
                           {reason}
                         </SelectItem>
                       ))}

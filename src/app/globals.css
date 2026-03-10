@@ -87,16 +87,15 @@
 }
 
 .blue-gradient {
-  background: linear-gradient(135deg, hsl(var(--primary)) 0%, #1e40af 100%) !important;
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
 }
 
 .text-blue-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-br from-primary to-[#1e40af] !important;
-  display: inline-block;
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
   -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent;
-  padding-bottom: 0.12em;
-  margin-bottom: -0.12em;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  display: inline-block;
 }
 
 .hover-glass:hover {
