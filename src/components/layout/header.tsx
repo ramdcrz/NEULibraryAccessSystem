@@ -33,15 +33,15 @@ export default function Header() {
   const isAdminPage = pathname?.startsWith('/admin');
 
   return (
-    <header className="sticky top-0 z-[100] w-full bg-background/5 backdrop-blur-3xl border-b border-black/5 dark:border-white/10 flex h-20 items-center gap-4 px-6 md:px-12 transition-all">
-      <div className="flex items-center gap-8 py-2">
-        <Link href="/" className="flex items-center gap-3.5 group transition-opacity hover:opacity-80 py-1">
-          <div className="p-2 rounded-xl blue-gradient text-white shadow-md shadow-primary/20 transition-transform group-active:scale-95">
-            <BookMarked className="h-5 w-5" />
+    <header className="sticky top-0 z-[100] w-full bg-background/5 backdrop-blur-3xl border-b border-black/5 dark:border-white/10 flex h-20 items-center gap-4 px-4 sm:px-6 md:px-12 transition-all">
+      <div className="flex items-center gap-4 sm:gap-8 py-2">
+        <Link href="/" className="flex items-center gap-2 sm:gap-3.5 group transition-opacity hover:opacity-80 py-1">
+          <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl blue-gradient text-white shadow-md shadow-primary/20 transition-transform group-active:scale-95">
+            <BookMarked className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-black leading-none tracking-tight text-blue-gradient">NEU Library</span>
-            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-1">Access System</span>
+            <span className="text-sm sm:text-lg font-black leading-none tracking-tight text-blue-gradient">NEU Library</span>
+            <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-0.5 sm:mt-1">Access System</span>
           </div>
         </Link>
         
@@ -50,75 +50,75 @@ export default function Header() {
         <LiveClock />
       </div>
 
-      <div className="ml-auto flex items-center gap-4">
+      <div className="ml-auto flex items-center gap-2 sm:gap-4">
         {isAdmin && (
-          <div className="hidden md:flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              asChild
-              className={cn(
-                "h-10 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm group",
-                "hover:bg-primary/10 hover:text-primary dark:hover:bg-white/10"
-              )}
-            >
-              {isAdminPage ? (
-                <Link href="/">
-                  <LayoutDashboard className="h-3.5 w-3.5 mr-2 group-hover:text-primary transition-colors" />
-                  Logger Mode
-                </Link>
-              ) : (
-                <Link href="/admin">
-                  <ShieldCheck className="h-3.5 w-3.5 mr-2 group-hover:text-primary transition-colors" />
-                  Admin Panel
-                </Link>
-              )}
-            </Button>
-          </div>
+          <Button 
+            variant="ghost" 
+            asChild
+            className={cn(
+              "h-8 sm:h-10 px-3 sm:px-6 font-black text-[8px] sm:text-[10px] uppercase tracking-widest rounded-full transition-all border border-black/5 dark:border-white/10 bg-white/5 shadow-sm group",
+              "hover:bg-primary/10 hover:text-primary dark:hover:bg-white/10"
+            )}
+          >
+            {isAdminPage ? (
+              <Link href="/">
+                <LayoutDashboard className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1.5 sm:mr-2 group-hover:text-primary transition-colors" />
+                <span className="hidden xs:inline">Logger Mode</span>
+                <span className="xs:hidden">Logger</span>
+              </Link>
+            ) : (
+              <Link href="/admin">
+                <ShieldCheck className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1.5 sm:mr-2 group-hover:text-primary transition-colors" />
+                <span className="hidden xs:inline">Admin Panel</span>
+                <span className="xs:hidden">Admin</span>
+              </Link>
+            )}
+          </Button>
         )}
 
         <ThemeToggle />
         
         {loading ? (
-           <div className="h-10 w-10 animate-pulse rounded-full bg-muted shadow-inner" />
+           <div className="h-8 w-8 sm:h-10 sm:w-10 animate-pulse rounded-full bg-muted shadow-inner" />
         ) : user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="flex h-[42px] w-[42px] items-center justify-center rounded-full blue-gradient cursor-pointer active:scale-95 transition-transform group shadow-md shadow-primary/10">
-                <div className="relative h-[38px] w-[38px] rounded-full overflow-hidden border-2 border-background bg-background flex items-center justify-center shadow-sm">
+              <div className="flex h-9 w-9 sm:h-[42px] sm:w-[42px] items-center justify-center rounded-full blue-gradient cursor-pointer active:scale-95 transition-transform group shadow-md shadow-primary/10">
+                <div className="relative h-8 w-8 sm:h-[38px] sm:w-[38px] rounded-full overflow-hidden border-2 border-background bg-background flex items-center justify-center shadow-sm">
                   <Avatar className="h-full w-full">
                     <AvatarImage src={user.photoURL ?? ''} alt={user.email ?? ''} />
-                    <AvatarFallback className="blue-gradient text-white font-bold text-xs">{getInitials(user.email)}</AvatarFallback>
+                    <AvatarFallback className="blue-gradient text-white font-bold text-[10px] sm:text-xs">{getInitials(user.email)}</AvatarFallback>
                   </Avatar>
                 </div>
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-72 p-2 rounded-[2rem] border glass mt-4 shadow-2xl overflow-hidden border-white/20" align="end">
-              <DropdownMenuLabel className="font-normal p-5">
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-14 w-14 border border-black/5 dark:border-white/10 shadow-sm">
+            <DropdownMenuContent className="w-64 sm:w-72 p-2 rounded-[1.5rem] sm:rounded-[2rem] border glass mt-4 shadow-2xl overflow-hidden border-white/20" align="end">
+              <DropdownMenuLabel className="font-normal p-4 sm:p-5">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <Avatar className="h-10 w-10 sm:h-14 sm:w-14 border border-black/5 dark:border-white/10 shadow-sm">
                     <AvatarImage src={user.photoURL ?? ''} />
-                    <AvatarFallback className="font-bold text-xs bg-muted text-foreground">{getInitials(user.email)}</AvatarFallback>
+                    <AvatarFallback className="font-bold text-[10px] sm:text-xs bg-muted text-foreground">{getInitials(user.email)}</AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col space-y-1 overflow-hidden flex-1">
-                    <p className="text-base font-black leading-none truncate tracking-tight text-foreground">
+                  <div className="flex flex-col space-y-0.5 sm:space-y-1 overflow-hidden flex-1">
+                    <p className="text-sm sm:text-base font-black leading-none truncate tracking-tight text-foreground">
                       {user.displayName || 'Faculty/Staff'}
                     </p>
-                    <p className="truncate text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
+                    <p className="truncate text-[8px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5 sm:mt-1">
                       {user.email}
                     </p>
                   </div>
                 </div>
                 {user.user_type && (
-                  <Badge variant="secondary" className="mt-5 w-full justify-center py-2.5 rounded-2xl text-foreground/70 font-black uppercase text-[8px] tracking-[0.25em] border-none bg-primary/10">
+                  <Badge variant="secondary" className="mt-4 sm:mt-5 w-full justify-center py-2 rounded-xl sm:rounded-2xl text-foreground/70 font-black uppercase text-[7px] sm:text-[8px] tracking-[0.25em] border-none bg-primary/10">
                     Verified {user.user_type}
                   </Badge>
                 )}
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-black/5 dark:bg-white/5 mx-2" />
               <div className="p-1">
-                <DropdownMenuItem onClick={signOut} className="rounded-2xl cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive py-4 px-4 text-sm font-bold transition-all gap-3">
-                  <LogOut className="h-4 w-4" />
-                  <span className="uppercase tracking-[0.25em] text-[9px] font-black">End Session</span>
+                <DropdownMenuItem onClick={signOut} className="rounded-xl sm:rounded-2xl cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive py-3 sm:py-4 px-3 sm:px-4 text-xs sm:text-sm font-bold transition-all gap-3">
+                  <LogOut className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span className="uppercase tracking-[0.25em] text-[8px] sm:text-[9px] font-black">End Session</span>
                 </DropdownMenuItem>
               </div>
             </DropdownMenuContent>
