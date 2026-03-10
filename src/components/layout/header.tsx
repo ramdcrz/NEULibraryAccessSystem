@@ -39,8 +39,8 @@ export default function Header() {
             <BookMarked className="h-6 w-6 sm:h-7 sm:w-7" />
           </div>
           <div className="flex flex-col justify-center">
-            <span className="text-2xl sm:text-3xl font-extrabold leading-tight text-blue-gradient">NEU Library</span>
-            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground mt-0">Access System</span>
+            <span className="text-2xl sm:text-3xl font-extrabold leading-tight text-blue-700 dark:text-blue-500">NEU Library</span>
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400 mt-0.5">Access System</span>
           </div>
         </Link>
         
