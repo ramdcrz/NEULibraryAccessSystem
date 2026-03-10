@@ -347,7 +347,7 @@ export default function AdminDashboard() {
                 )}
               >
                 <Activity className="h-3.5 w-3.5" />
-                Activity
+                Logs
               </TabsTrigger>
               <TabsTrigger 
                 value="analytics" 
@@ -368,7 +368,7 @@ export default function AdminDashboard() {
               className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 w-full sm:w-auto"
             >
               {isExporting ? <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" /> : <FileDown className="h-3.5 w-3.5 mr-2" />}
-              Export Activity
+              Export Logs
             </Button>
           </div>
         </div>
@@ -708,7 +708,7 @@ export default function AdminDashboard() {
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
-                      const dateStr = log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy') : 'Pending...';
+                      const dateStr = log.timestamp ? format(log.timestamp.toDate(), 'MMMM d, yyyy') : 'Pending...';
                       const timeIn = log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--';
                       const timeOut = log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--';
                       const durationStr = formatDuration(log.duration);
@@ -716,23 +716,18 @@ export default function AdminDashboard() {
                       return (
                         <Card key={log.id} className="glass border border-black/5 dark:border-white/20 rounded-[2rem] overflow-hidden shadow-lg shadow-primary/5">
                           <CardContent className="p-5 space-y-4">
-                            {/* Header row: Date and Status (Minimized) */}
-                            <div className="flex justify-between items-center mb-1">
+                            {/* High-Fidelity Header Row 1: Date and Status */}
+                            <div className="flex justify-between items-center">
                               <div className="text-[9px] font-black text-foreground/40 uppercase tracking-[0.2em]">
                                 {dateStr.toUpperCase()}
                               </div>
                               {getStatusBadge(log.status || 'active', true)}
                             </div>
 
-                            {/* User identity & Duration */}
+                            {/* High-Fidelity Header Row 2: Email and Duration */}
                             <div className="flex justify-between items-start gap-3">
-                              <div className="space-y-0.5 overflow-hidden">
-                                <div className="font-black text-lg text-foreground truncate leading-tight">
-                                  {log.email}
-                                </div>
-                                <div className="text-[9px] font-black text-primary uppercase tracking-widest truncate">
-                                  {log.userType} • {log.college_office}
-                                </div>
+                              <div className="font-black text-lg text-foreground truncate flex-1 leading-none">
+                                {log.email}
                               </div>
                               <Badge className={cn(
                                 "rounded-xl font-black text-[8px] py-1 px-3 border-none shadow-none uppercase flex-shrink-0",
@@ -740,6 +735,11 @@ export default function AdminDashboard() {
                               )}>
                                 {durationStr}
                               </Badge>
+                            </div>
+
+                            {/* High-Fidelity Header Row 3: Identity Classification */}
+                            <div className="text-[9px] font-black text-primary uppercase tracking-widest truncate">
+                              {log.userType} • {log.college_office}
                             </div>
 
                             {/* Time container (Compact Gray Box) */}
