@@ -261,7 +261,7 @@ export default function AdminDashboard() {
   return (
     <main className="flex-1 px-4 sm:px-6 md:px-12 py-8 sm:py-12 space-y-8 sm:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-in-out">
       <Tabs defaultValue="activity" className="space-y-8 sm:space-y-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8">
+        <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 sm:gap-8">
           <div className="flex flex-col gap-2 sm:gap-3 text-left">
             <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.4em] text-[8px] sm:text-[10px] opacity-60">
               <ShieldCheck className="h-3.5 w-3.5" />
@@ -275,8 +275,8 @@ export default function AdminDashboard() {
             </p>
           </div>
           
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
-            <TabsList className="h-12 p-1 border border-black/5 dark:border-white/10 rounded-full w-full sm:w-[280px] grid grid-cols-2 bg-transparent shadow-sm">
+          <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4 w-full xl:w-auto">
+            <TabsList className="h-12 p-1 border border-black/5 dark:border-white/10 rounded-full w-full lg:w-[280px] grid grid-cols-2 bg-transparent shadow-sm">
               <TabsTrigger 
                 value="activity" 
                 className={cn(
@@ -304,7 +304,7 @@ export default function AdminDashboard() {
             <Button 
               onClick={exportToPDF} 
               disabled={isExporting || logsLoading || filteredLogs.length === 0}
-              className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 w-full sm:w-auto"
+              className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 w-full lg:w-auto"
             >
               {isExporting ? <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" /> : <FileDown className="h-3.5 w-3.5 mr-2" />}
               Export Logs
@@ -552,7 +552,7 @@ export default function AdminDashboard() {
                 </div>
               ) : (
                 <>
-                  <div className="hidden md:block w-full overflow-x-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+                  <div className="hidden xl:block w-full overflow-x-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
                     <Table className="min-w-[1000px] border-collapse">
                       <TableHeader className="border-b border-black/5 dark:border-white/10">
                         <TableRow className="hover:bg-transparent border-none">
@@ -639,7 +639,7 @@ export default function AdminDashboard() {
                     </Table>
                   </div>
 
-                  <div className="md:hidden space-y-4 p-4 pb-24">
+                  <div className="xl:hidden space-y-4 p-4 pb-24">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
