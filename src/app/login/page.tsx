@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { BookMarked, LoaderCircle, ShieldCheck, Info } from 'lucide-react';
+import { BookMarked, LoaderCircle, ShieldCheck, Info, AlertCircle } from 'lucide-react';
 
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
@@ -60,8 +60,9 @@ function LoginContent() {
       console.error('Sign in failed:', error);
       toast({
         variant: "destructive",
-        title: "Authentication Error",
-        description: error.message || "Failed to verify your Google account.",
+        title: "Sorry. Sign In Again.",
+        description: error.message || "Authentication could not be completed at this time.",
+        className: "rounded-2xl border-2 shadow-2xl font-black",
       });
     }
   };
@@ -116,7 +117,7 @@ function LoginContent() {
           </CardContent>
         </Card>
         
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center px-10 py-4 rounded-2xl glass w-full max-w-[420px] shadow-sm">
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center px-10 py-4 rounded-2xl glass w-full max-w-md shadow-sm">
           New Era University • Library Systems
         </p>
       </div>

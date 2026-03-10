@@ -53,8 +53,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!email.endsWith('@neu.edu.ph') && !isBackdoor) {
           toast({
             variant: "destructive",
-            title: "Access Restricted",
-            description: "Please use your official @neu.edu.ph account.",
+            title: "Sorry. Sign In Again.",
+            description: "Official @neu.edu.ph account required for access.",
+            className: "rounded-2xl border-2 shadow-2xl font-black",
           });
           signOut();
           return;
@@ -129,7 +130,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    // Removed 'hd' constraint to allow selecting the backdoor account during testing
     provider.setCustomParameters({
       prompt: 'select_account'
     });
