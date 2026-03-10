@@ -501,7 +501,7 @@ export default function AdminDashboard() {
             
             <CardContent className="p-0">
               {showFilters && (
-                <div className="px-6 sm:px-10 py-6 border-b border-black/5 dark:border-white/10 bg-black/[0.02] animate-in slide-in-from-top-4 duration-500">
+                <div className="px-6 sm:px-10 py-6 border-b border-black/5 dark:border-white/10 bg-primary/5 dark:bg-blue-900/10 animate-in slide-in-from-top-4 duration-500">
                   <div className="flex flex-col lg:flex-row gap-6 items-end">
                     <div className="flex-1 w-full space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
@@ -512,7 +512,7 @@ export default function AdminDashboard() {
                         placeholder="Search by email..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="h-11 rounded-xl border-2 bg-background/50 transition-all text-sm font-bold focus:border-primary/30"
+                        className="h-11 rounded-xl border-2 bg-background/50 dark:bg-blue-900/20 transition-all text-sm font-bold focus:border-primary/30 border-primary/10"
                       />
                     </div>
 
@@ -527,7 +527,7 @@ export default function AdminDashboard() {
                             <Button
                               variant="outline"
                               className={cn(
-                                "w-full h-11 justify-start text-left font-bold rounded-xl border-2 bg-background/50 transition-all hover:bg-primary/5 hover:text-primary hover:border-primary/20",
+                                "w-full h-11 justify-start text-left font-bold rounded-xl border-2 bg-background/50 dark:bg-blue-900/20 transition-all hover:bg-primary/5 hover:text-primary hover:border-primary/20 border-primary/10",
                                 !startDate && "text-muted-foreground"
                               )}
                             >
@@ -562,7 +562,7 @@ export default function AdminDashboard() {
                             <Button
                               variant="outline"
                               className={cn(
-                                "w-full h-11 justify-start text-left font-bold rounded-xl border-2 bg-background/50 transition-all hover:bg-primary/5 hover:text-primary hover:border-primary/20",
+                                "w-full h-11 justify-start text-left font-bold rounded-xl border-2 bg-background/50 dark:bg-blue-900/20 transition-all hover:bg-primary/5 hover:text-primary hover:border-primary/20 border-primary/10",
                                 !endDate && "text-muted-foreground"
                               )}
                             >
@@ -629,6 +629,7 @@ export default function AdminDashboard() {
                       <TableBody>
                         {filteredLogs.map((log) => {
                           const isBlocked = userStatusMap[log.uid] || false;
+                          const isOngoing = !log.duration;
                           return (
                             <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10">
                               <TableCell className="pl-10 py-6 whitespace-nowrap">
@@ -660,7 +661,9 @@ export default function AdminDashboard() {
                                   <Badge 
                                     className={cn(
                                       "rounded-2xl font-black text-[10px] py-1.5 px-4 w-32 flex justify-center border-none pointer-events-none shadow-none uppercase",
-                                      log.duration ? "bg-primary/10 text-primary hover:bg-primary/10" : "bg-secondary text-muted-foreground"
+                                      isOngoing 
+                                        ? "bg-sky-500/15 text-sky-600 dark:text-sky-400" 
+                                        : "bg-primary/10 text-primary hover:bg-primary/10"
                                     )}
                                   >
                                     {formatDuration(log.duration)}
@@ -702,6 +705,7 @@ export default function AdminDashboard() {
                   <div className="md:hidden space-y-4 p-4">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
+                      const isOngoing = !log.duration;
                       return (
                         <Card key={log.id} className="p-5 space-y-5 rounded-2xl bg-white/5 border border-black/5 dark:border-white/10 hover:bg-primary/[0.02] transition-colors relative overflow-hidden">
                           <div className="flex justify-between items-start gap-4">
@@ -721,7 +725,9 @@ export default function AdminDashboard() {
                               <Badge 
                                 className={cn(
                                   "rounded-xl font-black text-[8px] py-1 px-3 w-full flex justify-center border-none pointer-events-none shadow-none uppercase",
-                                  log.duration ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"
+                                  isOngoing 
+                                    ? "bg-sky-500/15 text-sky-600 dark:text-sky-400" 
+                                    : "bg-primary/10 text-primary"
                                 )}
                               >
                                 {formatDuration(log.duration)}

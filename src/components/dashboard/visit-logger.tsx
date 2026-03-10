@@ -13,7 +13,6 @@ import {
   School, 
   Clock, 
   MoveRight, 
-  AlertCircle,
   GraduationCap,
   UserCog,
   Briefcase,
@@ -90,7 +89,7 @@ const formSchema = z.object({
   path: ["otherReason"],
 });
 
-// Icon Mapping Helpers for elite terminal branding
+// Icon Mapping Helpers for elite branding
 function getUserTypeIcon(type: string | null | undefined) {
   switch (type) {
     case 'Student': return GraduationCap;
@@ -133,6 +132,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLogged, setIsLogged] = useState(false);
   const [smartActiveLog, setSmartActiveLog] = useState<any>(null);
+  const [progress, setProgress] = useState(100);
 
   const UserTypeIcon = getUserTypeIcon(user.user_type);
   const AffiliationIcon = getAffiliationIcon(user.college_office);
@@ -149,6 +149,16 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   }, [firestore, user?.uid]);
 
   const { data: recentLogs, isLoading: logsLoading } = useCollection(activeSessionQuery);
+
+  // Session Progress Timer Effect
+  useEffect(() => {
+    if (isLogged) {
+      const interval = setInterval(() => {
+        setProgress((prev) => Math.max(0, prev - (100 / 30))); // 3 seconds = 30 intervals of 100ms
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, [isLogged]);
 
   // Smart Evaluation Logic
   useEffect(() => {
@@ -266,7 +276,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
 
   if (isLogged) {
     return (
-      <Card className="glass p-12 text-center animate-in zoom-in-95 duration-500 rounded-[3rem] border border-black/5 dark:border-white/20 shadow-2xl shadow-primary/10">
+      <Card className="glass p-12 text-center animate-in zoom-in-95 duration-500 rounded-[3rem] border border-black/5 dark:border-white/20 shadow-2xl shadow-primary/10 relative overflow-hidden">
         <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-green-500/10 text-green-500 shadow-inner">
           <CheckCircle2 className="h-12 w-12" />
         </div>
@@ -282,6 +292,12 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
           <LogOut className="h-4 w-4 mr-2" />
           End Session
         </Button>
+        <div className="absolute bottom-0 left-0 w-full h-1.5 bg-primary/10">
+          <div 
+            className="h-full bg-primary transition-all duration-100 ease-linear"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
       </Card>
     );
   }
@@ -346,21 +362,16 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   return (
     <Card className="glass rounded-[3rem] overflow-hidden border border-black/5 dark:border-white/20 shadow-2xl shadow-primary/10">
       <CardHeader className="bg-white/5 dark:bg-white/5 pb-10 pt-10 px-10 border-b border-black/5 dark:border-white/10">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-5">
-            <div className="p-3.5 rounded-2xl blue-gradient text-white border border-black/5 dark:border-white/20 shadow-inner">
-              <Library className="h-8 w-8" />
-            </div>
-            <div>
-              <CardTitle className="leading-none">
-                <span className="text-3xl font-black tracking-tighter text-blue-gradient">Visit Log</span>
-              </CardTitle>
-              <CardDescription className="text-sm font-medium opacity-60 tracking-tight text-muted-foreground mt-1">Identity verification system</CardDescription>
-            </div>
+        <div className="flex items-center gap-5">
+          <div className="p-3.5 rounded-2xl blue-gradient text-white border border-black/5 dark:border-white/20 shadow-inner">
+            <Library className="h-8 w-8" />
           </div>
-          <Badge className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.25em] blue-gradient text-white rounded-full shadow-lg shadow-primary/20 border-none">
-            {user.user_type}
-          </Badge>
+          <div>
+            <CardTitle className="leading-none">
+              <span className="text-3xl font-black tracking-tighter text-blue-gradient">Visit Log</span>
+            </CardTitle>
+            <CardDescription className="text-sm font-medium opacity-60 tracking-tight text-muted-foreground mt-1">Identity verification system</CardDescription>
+          </div>
         </div>
       </CardHeader>
       
