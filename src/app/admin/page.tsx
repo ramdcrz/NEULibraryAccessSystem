@@ -430,9 +430,7 @@ export default function AdminDashboard() {
                 onClick={() => setShowFilters(!showFilters)}
                 className={cn(
                   "h-10 sm:h-11 px-4 sm:px-6 font-black text-[8px] sm:text-[9px] uppercase tracking-widest rounded-full transition-all border shadow-sm",
-                  showFilters 
-                    ? "bg-primary/10 text-primary border-primary/20" 
-                    : "border-black/5 dark:border-white/10 bg-white/5 hover:bg-primary/10 hover:text-primary"
+                  "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
                 )}
               >
                 <Filter className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-2" />
@@ -658,10 +656,10 @@ export default function AdminDashboard() {
                                 <div className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">
                                   {dateStr.toUpperCase()}
                                 </div>
-                                <div className="text-lg font-bold text-foreground block truncate leading-tight">
+                                <div className="text-base font-bold text-foreground block truncate leading-tight">
                                   {log.email}
                                 </div>
-                                <div className="text-[10px] font-black text-primary uppercase tracking-widest mt-1">
+                                <div className="text-[9px] font-black text-primary uppercase tracking-widest mt-1">
                                   {log.userType} • {log.college_office}
                                 </div>
                               </div>
@@ -669,7 +667,7 @@ export default function AdminDashboard() {
                               <div className="flex flex-col items-end gap-2 shrink-0">
                                 {getStatusBadge(log.status || 'active', true)}
                                 <Badge className={cn(
-                                  "rounded-xl font-black text-[8px] py-1 px-2 border-none shadow-none uppercase shrink-0 w-28 justify-center text-center",
+                                  "rounded-xl font-black text-[8px] py-1 px-2 border-none shadow-none uppercase shrink-0 w-28 justify-center text-center pointer-events-none",
                                   isOngoing ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"
                                 )}>
                                   {durationStr}
