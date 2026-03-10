@@ -305,13 +305,13 @@ export default function AdminDashboard() {
   const getStatusBadge = (status: string, isMobile = false) => {
     const baseClasses = cn(
       "rounded-2xl border font-black text-[9px] px-3 py-1.5 flex gap-1.5 items-center justify-center pointer-events-none",
-      isMobile ? "shadow-none px-2 py-1 text-[8px]" : "w-32 mx-auto"
+      isMobile ? "shadow-none w-28 text-[8px]" : "w-32 mx-auto"
     );
     switch(status) {
       case 'active':
         return <Badge className={cn(baseClasses, "bg-blue-500/10 text-blue-600 border-blue-500/20 hover:bg-blue-500/10")}><Clock className="h-2.5 w-2.5" /> ACTIVE</Badge>;
       case 'completed':
-        return <Badge className={cn(baseClasses, "bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/10")}><CheckCircle2 className="h-2.5 w-2.5" /> COMPLETED</Badge>;
+        return <Badge className={cn(baseClasses, "bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-600 hover:text-white")}><CheckCircle2 className="h-2.5 w-2.5" /> COMPLETED</Badge>;
       case 'auto-closed':
         return <Badge className={cn(baseClasses, "bg-amber-500/10 text-amber-600 border-amber-500/20 hover:bg-amber-500/10")}><AlertCircle className="h-2.5 w-2.5" /> AUTO-CLOSED</Badge>;
       default:
@@ -603,7 +603,7 @@ export default function AdminDashboard() {
               {logsLoading ? (
                 <div className="p-20 sm:p-32 flex flex-col items-center justify-center gap-4 sm:gap-6">
                   <LoaderCircle className="h-10 w-10 sm:h-12 w-12 animate-spin text-primary/30" />
-                  <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] opacity-30">Syncing logs...</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-30">Syncing logs...</p>
                 </div>
               ) : filteredLogs.length === 0 ? (
                 <div className="p-20 sm:p-40 text-center flex flex-col items-center gap-6 sm:gap-8">
@@ -717,13 +717,13 @@ export default function AdminDashboard() {
                         <Card key={log.id} className="glass border border-black/5 dark:border-white/15 rounded-2xl overflow-hidden shadow-sm">
                           <CardContent className="p-4 space-y-3">
                             {/* Header Flex Layout */}
-                            <div className="flex justify-between items-start gap-3">
+                            <div className="flex justify-between gap-4 items-start">
                               {/* Left Column (Data Stack) */}
-                              <div className="flex-1 min-w-0 space-y-0.5">
+                              <div className="flex-1 min-w-0 space-y-1">
                                 <div className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">
                                   {dateStr.toUpperCase()}
                                 </div>
-                                <div className="text-lg font-black text-foreground truncate max-w-[180px] sm:max-w-[220px] leading-tight">
+                                <div className="text-lg font-bold text-foreground block truncate leading-tight">
                                   {log.email}
                                 </div>
                                 <div className="text-[10px] font-black text-primary uppercase tracking-widest mt-1">
@@ -732,10 +732,10 @@ export default function AdminDashboard() {
                               </div>
 
                               {/* Right Column (Status Pills Stack) */}
-                              <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                              <div className="flex flex-col items-end gap-2 shrink-0">
                                 {getStatusBadge(log.status || 'active', true)}
                                 <Badge className={cn(
-                                  "rounded-xl font-black text-[8px] py-1 px-2 border-none shadow-none uppercase flex-shrink-0",
+                                  "rounded-xl font-black text-[8px] py-1 px-2 border-none shadow-none uppercase shrink-0 w-28 justify-center text-center",
                                   isOngoing ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"
                                 )}>
                                   {durationStr}
