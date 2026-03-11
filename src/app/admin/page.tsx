@@ -315,7 +315,7 @@ export default function AdminDashboard() {
               { label: 'Today', val: stats.today, icon: Clock },
               { label: 'Verified Reach', val: stats.unique, icon: Users }
             ].map((stat, i) => (
-              <Card key={i} className="glass rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 relative overflow-hidden group border border-black/5 dark:border-white/18 shadow-xl">
+              <Card key={i} className="glass rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 relative overflow-hidden group border border-black/5 dark:border-white/10 shadow-xl">
                 <div className="absolute -bottom-8 -right-8 opacity-[0.15] rotate-12 group-hover:rotate-6 transition-all duration-700">
                   <stat.icon className="h-24 sm:h-32 w-24 sm:w-32 text-primary" />
                 </div>
@@ -326,7 +326,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Card className="glass rounded-[2rem] border-none shadow-xl p-6 sm:p-10">
+            <Card className="glass rounded-[2rem] border border-black/5 dark:border-white/10 shadow-xl p-6 sm:p-10">
               <CardHeader className="p-0 mb-8">
                 <CardTitle className="text-xl font-black tracking-tight">Weekly Engagement</CardTitle>
                 <CardDescription className="font-bold">Total visits recorded over the last 7 days</CardDescription>
@@ -336,13 +336,13 @@ export default function AdminDashboard() {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
                   <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900 }} tickFormatter={(val) => format(new Date(val), 'MMM d')} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900 }} />
-                  <ChartTooltip cursor={{ fill: 'rgba(0,0,0,0.02)' }} content={<ChartTooltipContent hideLabel />} />
+                  <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
                   <Bar dataKey="count" fill="var(--color-count)" radius={[6, 6, 0, 0]} barSize={40} />
                 </BarChart>
               </ChartContainer>
             </Card>
 
-            <Card className="glass rounded-[2rem] border-none shadow-xl p-6 sm:p-10">
+            <Card className="glass rounded-[2rem] border border-black/5 dark:border-white/10 shadow-xl p-6 sm:p-10">
               <CardHeader className="p-0 mb-8">
                 <CardTitle className="text-xl font-black tracking-tight">User Demographics</CardTitle>
                 <CardDescription className="font-bold">Distribution by classification</CardDescription>
@@ -359,7 +359,7 @@ export default function AdminDashboard() {
               </ChartContainer>
             </Card>
 
-            <Card className="glass rounded-[2rem] border-none shadow-xl p-6 sm:p-10 lg:col-span-2">
+            <Card className="glass rounded-[2rem] border border-black/5 dark:border-white/10 shadow-xl p-6 sm:p-10 lg:col-span-2">
               <CardHeader className="p-0 mb-8">
                 <CardTitle className="text-xl font-black tracking-tight">Peak Activity Hours</CardTitle>
                 <CardDescription className="font-bold">Usage intensity throughout the day</CardDescription>
@@ -384,7 +384,7 @@ export default function AdminDashboard() {
         </TabsContent>
 
         <TabsContent value="activity" className="space-y-4 sm:space-y-12 mt-0">
-          <Card className="glass overflow-hidden rounded-[2.5rem] border border-black/5 dark:border-white/18 shadow-xl">
+          <Card className="glass overflow-hidden rounded-[2.5rem] border border-black/5 dark:border-white/10 shadow-xl">
             <CardHeader className="p-6 sm:p-10 border-b border-black/5 dark:border-white/10 flex flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4 sm:gap-5 text-left">
                 <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl blue-gradient text-white shadow-inner flex-shrink-0 aspect-square flex items-center justify-center">
