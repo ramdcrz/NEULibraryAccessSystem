@@ -37,6 +37,21 @@ import { cn, formatDuration } from '@/lib/utils';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer, 
+  PieChart, 
+  Pie, 
+  Cell, 
+  AreaChart, 
+  Area 
+} from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
@@ -63,7 +78,7 @@ export default function AdminDashboard() {
     return query(
       collection(firestore, 'visit_logs'), 
       orderBy('timestamp', 'desc'),
-      limit(100)
+      limit(200)
     );
   }, [firestore, user?.uid, user?.role]);
 
@@ -95,6 +110,47 @@ export default function AdminDashboard() {
       unique: uniqueUids.size
     };
   }, [sortedLogs]);
+
+  // Analytics Processing
+  const analyticsData = useMemo(() => {
+    if (!sortedLogs) return { daily: [], types: [], hourly: [] };
+
+    // Daily Visits (Last 7 Days)
+    const dailyMap = new Map();
+    sortedLogs.forEach(log => {
+      const date = log.entryDate;
+      dailyMap.set(date, (dailyMap.get(date) || 0) + 1);
+    });
+    const daily = Array.from(dailyMap.entries())
+      .map(([date, count]) => ({ date, count }))
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(-7);
+
+    // User Classification
+    const typeMap = new Map();
+    sortedLogs.forEach(log => {
+      const type = log.userType || 'Unknown';
+      typeMap.set(type, (typeMap.get(type) || 0) + 1);
+    });
+    const types = Array.from(typeMap.entries()).map(([name, value]) => ({ name, value }));
+
+    // Hourly Peaks
+    const hourMap = new Int32Array(24).fill(0);
+    sortedLogs.forEach(log => {
+      if (log.timestamp) {
+        const hour = log.timestamp.toDate().getHours();
+        hourMap[hour]++;
+      }
+    });
+    const hourly = Array.from(hourMap).map((count, hour) => ({
+      hour: `${hour % 12 || 12}${hour >= 12 ? 'PM' : 'AM'}`,
+      count
+    }));
+
+    return { daily, types, hourly };
+  }, [sortedLogs]);
+
+  const COLORS = ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
   const userStatusMap = useMemo(() => {
     const map: Record<string, boolean> = {};
@@ -281,6 +337,98 @@ export default function AdminDashboard() {
                 <CardTitle className="text-left text-4xl sm:text-5xl font-black tracking-tighter relative z-10">{stat.val}</CardTitle>
               </Card>
             ))}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <Card className="glass rounded-[2rem] border-none shadow-xl shadow-primary/5 p-6 sm:p-10">
+              <CardHeader className="p-0 mb-8">
+                <CardTitle className="text-xl font-black tracking-tight">Weekly Engagement</CardTitle>
+                <CardDescription className="font-bold">Total visits recorded over the last 7 days</CardDescription>
+              </CardHeader>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={analyticsData.daily}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                    <XAxis 
+                      dataKey="date" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fontSize: 10, fontWeight: 900 }} 
+                      tickFormatter={(val) => format(new Date(val), 'MMM d')}
+                    />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900 }} />
+                    <Tooltip 
+                      cursor={{ fill: 'rgba(0,0,0,0.02)' }}
+                      content={<ChartTooltipContent hideLabel />}
+                    />
+                    <Bar dataKey="count" fill="#2563eb" radius={[6, 6, 0, 0]} barSize={40} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </Card>
+
+            <Card className="glass rounded-[2rem] border-none shadow-xl shadow-primary/5 p-6 sm:p-10">
+              <CardHeader className="p-0 mb-8">
+                <CardTitle className="text-xl font-black tracking-tight">User Demographics</CardTitle>
+                <CardDescription className="font-bold">Distribution by classification</CardDescription>
+              </CardHeader>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={analyticsData.types}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={80}
+                      outerRadius={100}
+                      paddingAngle={8}
+                      dataKey="value"
+                    >
+                      {analyticsData.types.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<ChartTooltipContent />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </Card>
+
+            <Card className="glass rounded-[2rem] border-none shadow-xl shadow-primary/5 p-6 sm:p-10 lg:col-span-2">
+              <CardHeader className="p-0 mb-8">
+                <CardTitle className="text-xl font-black tracking-tight">Peak Activity Hours</CardTitle>
+                <CardDescription className="font-bold">Usage intensity throughout the day</CardDescription>
+              </CardHeader>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={analyticsData.hourly}>
+                    <defs>
+                      <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                    <XAxis 
+                      dataKey="hour" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fontSize: 10, fontWeight: 900 }} 
+                    />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900 }} />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Area 
+                      type="monotone" 
+                      dataKey="count" 
+                      stroke="#2563eb" 
+                      strokeWidth={4}
+                      fillOpacity={1} 
+                      fill="url(#colorCount)" 
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </Card>
           </div>
         </TabsContent>
 
