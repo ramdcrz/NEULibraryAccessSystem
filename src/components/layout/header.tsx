@@ -48,6 +48,7 @@ export default function Header() {
           </div>
         </Link>
         
+        {/* Divider hides with the clock at sm breakpoint */}
         <div className="hidden sm:block h-8 w-px bg-black/5 dark:bg-white/10 ml-3" />
         
         <LiveClock />

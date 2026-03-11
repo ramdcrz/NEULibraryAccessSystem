@@ -213,8 +213,8 @@ export default function AdminDashboard() {
   };
 
   return (
-    <main className="flex-1 px-4 sm:px-6 md:px-12 py-8 sm:py-12 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-in-out">
-      <Tabs defaultValue="activity" className="space-y-8 sm:space-y-12">
+    <main className="flex-1 px-4 sm:px-6 md:px-12 py-8 sm:py-12 pb-4 sm:pb-12 space-y-4 sm:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-in-out">
+      <Tabs defaultValue="activity" className="space-y-4 sm:space-y-12">
         <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 sm:gap-8">
           <div className="flex flex-col gap-2 sm:gap-3 text-left">
             <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.4em] text-[8px] sm:text-[10px] opacity-60">
@@ -284,7 +284,7 @@ export default function AdminDashboard() {
           </div>
         </TabsContent>
 
-        <TabsContent value="activity" className="space-y-8 sm:space-y-12 mt-0">
+        <TabsContent value="activity" className="space-y-4 sm:space-y-12 mt-0">
           <Card className="glass overflow-hidden rounded-[2.5rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5 animate-in fade-in duration-1000">
             <CardHeader className="p-6 sm:p-10 border-b border-black/5 dark:border-white/10 flex flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4 sm:gap-5 text-left">
@@ -314,7 +314,7 @@ export default function AdminDashboard() {
               </Button>
             </CardHeader>
             
-            <CardContent className="p-0 pb-6 sm:pb-12">
+            <CardContent className="p-0 pb-4 sm:pb-12">
               {showFilters && (
                 <div className="px-6 sm:px-10 py-6 border-b border-black/5 dark:border-white/10 bg-primary/5 dark:bg-blue-900/10 animate-in slide-in-from-top-4 duration-500">
                   <div className="flex flex-col lg:flex-row gap-6 items-end">
@@ -429,7 +429,7 @@ export default function AdminDashboard() {
                     </Table>
                   </div>
 
-                  <div className="xl:hidden space-y-4 p-4">
+                  <div className="xl:hidden space-y-4 p-4 pb-0">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
@@ -515,7 +515,7 @@ export default function AdminDashboard() {
           </Card>
         </TabsContent>
       </Tabs>
-      <div className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 py-8">
+      <div className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 py-4 sm:py-8">
         2026 NEW ERA UNIVERSITY
       </div>
     </main>
