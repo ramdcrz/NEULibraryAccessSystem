@@ -240,11 +240,11 @@ export default function AdminDashboard() {
       const now = new Date();
       doc.setFontSize(9);
       doc.setTextColor(60, 60, 60);
-      doc.text(`Generated: ${format(now, 'MMMM d, yyyy @ hh:mm a')}`, 14, 40);
+      doc.text(`Generated On: ${format(now, 'MMMM d, yyyy @ hh:mm a')}`, 14, 40);
       
       const rangeText = isFiltered 
-        ? `Filter: Showing records matching "${searchQuery || 'N/A'}"`
-        : "Filter: Showing all recent records (Top 200)";
+        ? `Reporting Period: Records matching "${searchQuery || 'N/A'}"`
+        : "Reporting Period: All Recent Records (Last 200 Logs)";
       doc.text(rangeText, 14, 45);
 
       const tableRows = filteredLogs.map(log => [
@@ -254,7 +254,7 @@ export default function AdminDashboard() {
         log.email,
         log.userType,
         log.college_office,
-        log.reason || 'Others',
+        log.reason || 'N/A',
         log.status?.toUpperCase() || 'ACTIVE'
       ]);
 
@@ -273,18 +273,23 @@ export default function AdminDashboard() {
           4: { halign: 'center', cellWidth: 20 },
           5: { halign: 'left' },
           6: { halign: 'left' },
-          7: { halign: 'center', cellWidth: 20 }
-        },
-        didDrawPage: (data) => {
-          doc.setFontSize(8);
-          doc.setTextColor(150);
-          const pageNum = `Page ${data.pageNumber}`;
-          doc.text(pageNum, doc.internal.pageSize.width - 25, doc.internal.pageSize.height - 10);
+          // Index 7 is Status: Width increased to 25 to prevent 'AUTO-CLOSED' wrapping
+          7: { halign: 'center', cellWidth: 25 }
         }
       });
 
+      // Post-processing: Add Page X of Y numbering
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150);
+        const pageText = `Page ${i} of ${totalPages}`;
+        doc.text(pageText, doc.internal.pageSize.width - 25, doc.internal.pageSize.height - 10);
+      }
+
       doc.save(`NEU_Library_Report_${format(now, 'yyyy-MM-dd_HHmm')}.pdf`);
-      toast({ title: "Report Exported", description: "PDF with zebra-striping generated." });
+      toast({ title: "Report Exported", description: "Professional zebra-striped PDF generated." });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Export Error", description: error.message });
     } finally {
@@ -333,7 +338,7 @@ export default function AdminDashboard() {
           </div>
           
           <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4 w-full xl:w-auto">
-            <TabsList className="h-12 p-1 border border-black/5 dark:border-white/10 rounded-full w-full lg:w-[320px] grid grid-cols-2 bg-transparent shadow-sm">
+            <TabsList className="h-12 p-1 border border-black/5 dark:border-white/10 rounded-full w-full lg:w-[320px] grid grid-cols-2 bg-background/50 dark:bg-white/5 shadow-sm">
               <TabsTrigger 
                 value="activity" 
                 className="rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2 data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-md data-[state=active]:bg-primary/5"
@@ -541,7 +546,7 @@ export default function AdminDashboard() {
                       </TableBody>
                     </Table>
                   </div>
-                  <div className="xl:hidden space-y-4 p-4 pb-6">
+                  <div className="xl:hidden space-y-4 p-4 pb-2">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
