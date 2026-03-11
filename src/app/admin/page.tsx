@@ -260,7 +260,7 @@ export default function AdminDashboard() {
     const baseClasses = cn(
       "rounded-2xl border font-black flex gap-1 items-center justify-center pointer-events-none transition-all",
       isMobile 
-        ? "shadow-none w-24 text-[8px] px-2 py-0 h-4" 
+        ? "shadow-none w-28 text-[10px] px-2 py-0 h-6" 
         : "text-[9px] px-3 py-1.5 w-32 mx-auto"
     );
     switch(status) {
@@ -294,10 +294,10 @@ export default function AdminDashboard() {
           
           <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4 w-full xl:w-auto">
             <TabsList className="h-12 p-1 border border-black/5 dark:border-white/10 rounded-full w-full lg:w-[280px] grid grid-cols-2 bg-transparent shadow-sm">
-              <TabsTrigger value="activity" className="rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2">
+              <TabsTrigger value="activity" className="rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2 data-[state=active]:blue-gradient data-[state=active]:text-white data-[state=active]:shadow-lg">
                 <Activity className="h-3.5 w-3.5" /> Logs
               </TabsTrigger>
-              <TabsTrigger value="analytics" className="rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2">
+              <TabsTrigger value="analytics" className="rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2 data-[state=active]:blue-gradient data-[state=active]:text-white data-[state=active]:shadow-lg">
                 <PieChartIcon className="h-3.5 w-3.5" /> Analytics
               </TabsTrigger>
             </TabsList>
@@ -472,7 +472,7 @@ export default function AdminDashboard() {
                                 <span className="truncate block">{log.reason}</span>
                               </TableCell>
                               <TableCell className="text-center pr-10 w-[160px]">
-                                <Button variant="ghost" className={cn("h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl border transition-all shadow-sm", isBlocked ? "text-green-600 bg-green-500/10" : "text-destructive bg-destructive/5")} onClick={() => handleToggleBlock(log.uid, log.email)} disabled={blockingUid === log.uid}>
+                                <Button variant="ghost" className={cn("h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl border transition-all shadow-sm", isBlocked ? "text-green-600 bg-green-500/10 hover:bg-green-600 hover:text-white" : "text-destructive bg-destructive/5 hover:bg-destructive hover:text-white")} onClick={() => handleToggleBlock(log.uid, log.email)} disabled={blockingUid === log.uid}>
                                   {blockingUid === log.uid ? <LoaderCircle className="h-4 animate-spin" /> : isBlocked ? "Restore" : "Block"}
                                 </Button>
                               </TableCell>
@@ -482,7 +482,7 @@ export default function AdminDashboard() {
                       </TableBody>
                     </Table>
                   </div>
-                  <div className="xl:hidden space-y-4 p-4 pb-2">
+                  <div className="xl:hidden space-y-4 p-4 pb-6">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
@@ -490,34 +490,34 @@ export default function AdminDashboard() {
                         <Card key={log.id} className="glass border rounded-2xl overflow-hidden shadow-sm">
                           <CardContent className="p-4 space-y-3">
                             <div className="flex justify-between gap-4 items-start text-left">
-                              <div className="flex-1 min-w-0 space-y-0.5">
+                              <div className="flex-1 min-w-0 space-y-1">
                                 <div className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">{log.timestamp ? format(log.timestamp.toDate(), 'MMMM d, yyyy').toUpperCase() : 'PENDING...'}</div>
-                                <div className="text-sm font-bold text-foreground truncate">{log.email}</div>
-                                <div className="text-[8px] font-black text-primary uppercase tracking-widest">{log.userType} • {log.college_office}</div>
+                                <div className="text-base font-bold text-foreground truncate">{log.email}</div>
+                                <div className="text-[10px] font-black text-primary uppercase tracking-widest">{log.userType} • {log.college_office}</div>
                               </div>
                               <div className="flex flex-col items-end gap-2 shrink-0">
                                 {getStatusBadge(log.status || 'active', true)}
-                                <Badge className={cn("rounded-xl font-black text-[8px] h-4 w-24 justify-center uppercase border-none", isOngoing ? "bg-sky-500/15 text-sky-600" : "bg-primary/10 text-primary")}>
+                                <Badge className={cn("rounded-xl font-black text-[10px] h-6 w-28 justify-center uppercase border-none", isOngoing ? "bg-sky-500/15 text-sky-600" : "bg-primary/10 text-primary")}>
                                   {formatDuration(log.duration)}
                                 </Badge>
                               </div>
                             </div>
                             <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 flex items-center justify-between">
-                              <div className="space-y-0.5 flex-1 text-left">
-                                <div className="text-[8px] font-black text-foreground/40 uppercase tracking-widest"><LogIn className="h-2.5 w-2.5 inline mr-1" /> Time In</div>
+                              <div className="space-y-1 flex-1 text-left">
+                                <div className="text-[10px] font-black text-foreground/40 uppercase tracking-widest"><LogIn className="h-2.5 w-2.5 inline mr-1" /> Time In</div>
                                 <div className="text-sm font-black text-primary uppercase">{log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--'}</div>
                               </div>
                               <div className="w-px h-6 bg-black/10 mx-2" />
-                              <div className="space-y-0.5 flex-1 text-right">
-                                <div className="text-[8px] font-black text-foreground/40 uppercase tracking-widest"><LogOut className="h-2.5 w-2.5 inline mr-1" /> Time Out</div>
+                              <div className="space-y-1 flex-1 text-right">
+                                <div className="text-[10px] font-black text-foreground/40 uppercase tracking-widest"><LogOut className="h-2.5 w-2.5 inline mr-1" /> Time Out</div>
                                 <div className="text-sm font-black text-muted-foreground uppercase opacity-40">{log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--'}</div>
                               </div>
                             </div>
                             <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 border border-black/5 text-left">
-                              <span className="text-[8px] font-black uppercase text-primary/60 block mb-1">Purpose of Visit</span>
-                              <p className="text-xs font-bold text-foreground leading-snug">{log.reason}</p>
+                              <span className="text-[10px] font-black uppercase text-primary/60 block mb-1">Purpose of Visit</span>
+                              <p className="text-sm font-bold text-foreground leading-snug">{log.reason}</p>
                             </div>
-                            <Button variant="ghost" className={cn("w-full h-11 font-black text-[9px] uppercase tracking-[0.2em] rounded-xl border transition-all shadow-sm", isBlocked ? "text-green-600 bg-green-500/10" : "text-destructive bg-destructive/5")} onClick={() => handleToggleBlock(log.uid, log.email)} disabled={blockingUid === log.uid}>
+                            <Button variant="ghost" className={cn("w-full h-11 font-black text-[10px] uppercase tracking-[0.2em] rounded-xl border transition-all shadow-sm", isBlocked ? "text-green-600 bg-green-500/10 hover:bg-green-600 hover:text-white" : "text-destructive bg-destructive/5 hover:bg-destructive hover:text-white")} onClick={() => handleToggleBlock(log.uid, log.email)} disabled={blockingUid === log.uid}>
                               {blockingUid === log.uid ? <LoaderCircle className="h-3.5 animate-spin" /> : isBlocked ? "Restore User" : "Block User"}
                             </Button>
                           </CardContent>
