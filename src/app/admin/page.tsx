@@ -486,7 +486,13 @@ export default function AdminDashboard() {
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0 rounded-2xl border-none shadow-2xl" align="start">
-                            <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus />
+                            <Calendar 
+                              mode="single" 
+                              selected={startDate} 
+                              onSelect={setStartDate} 
+                              disabled={(date) => endDate ? isAfter(date, endDate) : false}
+                              initialFocus 
+                            />
                           </PopoverContent>
                         </Popover>
                         <span className="text-muted-foreground font-black opacity-20">—</span>
@@ -497,7 +503,13 @@ export default function AdminDashboard() {
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0 rounded-2xl border-none shadow-2xl" align="end">
-                            <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus />
+                            <Calendar 
+                              mode="single" 
+                              selected={endDate} 
+                              onSelect={setEndDate} 
+                              disabled={(date) => startDate ? isBefore(date, startDate) : false}
+                              initialFocus 
+                            />
                           </PopoverContent>
                         </Popover>
                       </div>
