@@ -22,7 +22,6 @@ function Calendar({
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
-        // The caption is now the anchor. h-10 gives it a bit more "header" presence.
         caption: "flex justify-center relative items-center w-full mb-4 h-10", 
         nav: "contents", 
         month_caption: "flex justify-center items-center w-full",
@@ -35,7 +34,7 @@ function Calendar({
         day: "h-9 w-9 text-center text-sm p-0 relative flex-1 flex items-center justify-center",
         day_button: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-9 w-9 p-0 font-medium aria-selected:opacity-100 mx-auto rounded-full transition-colors hover:bg-primary/10 hover:!text-primary"
+          "h-9 w-9 p-0 font-medium aria-selected:opacity-100 mx-auto rounded-full transition-all duration-200 hover:bg-primary/10 hover:text-primary aria-selected:hover:bg-primary aria-selected:hover:text-primary-foreground"
         ),
         selected:
           "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground rounded-full shadow-lg shadow-primary/20",
@@ -46,7 +45,6 @@ function Calendar({
         range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         hidden: "invisible",
-        // Anchored to the top corners of the header area, not the middle of the box
         button_previous: cn(
           buttonVariants({ variant: "outline" }),
           "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 rounded-full transition-all absolute left-0 top-1/2 -translate-y-1/2"
