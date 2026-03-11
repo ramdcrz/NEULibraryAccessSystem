@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Clock } from 'lucide-react';
 
 export default function LiveClock() {
   const [mounted, setMounted] = useState(false);
@@ -20,8 +19,7 @@ export default function LiveClock() {
   }
 
   return (
-    <div className="hidden sm:flex items-center gap-3 px-4 h-10 rounded-full bg-white/5 border border-black/5 dark:border-white/10 text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground shadow-inner flex-nowrap whitespace-nowrap overflow-hidden animate-in fade-in duration-500">
-      <Clock className="h-4 w-4 text-primary opacity-60 flex-shrink-0" />
+    <div className="hidden sm:flex items-center px-4 h-10 rounded-full bg-white/5 border border-black/5 dark:border-white/10 text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground shadow-inner flex-nowrap whitespace-nowrap overflow-hidden animate-in fade-in duration-500">
       <div className="flex items-center flex-nowrap whitespace-nowrap">
         {/* Time is primary and stays visible longer */}
         <span className="text-foreground font-black tabular-nums tracking-normal text-xs">

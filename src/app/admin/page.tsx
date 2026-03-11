@@ -51,7 +51,7 @@ import {
   AreaChart, 
   Area 
 } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
@@ -111,11 +111,9 @@ export default function AdminDashboard() {
     };
   }, [sortedLogs]);
 
-  // Analytics Processing
   const analyticsData = useMemo(() => {
     if (!sortedLogs) return { daily: [], types: [], hourly: [] };
 
-    // Daily Visits (Last 7 Days)
     const dailyMap = new Map();
     sortedLogs.forEach(log => {
       const date = log.entryDate;
@@ -126,7 +124,6 @@ export default function AdminDashboard() {
       .sort((a, b) => a.date.localeCompare(b.date))
       .slice(-7);
 
-    // User Classification
     const typeMap = new Map();
     sortedLogs.forEach(log => {
       const type = log.userType || 'Unknown';
@@ -134,7 +131,6 @@ export default function AdminDashboard() {
     });
     const types = Array.from(typeMap.entries()).map(([name, value]) => ({ name, value }));
 
-    // Hourly Peaks
     const hourMap = new Int32Array(24).fill(0);
     sortedLogs.forEach(log => {
       if (log.timestamp) {
@@ -149,6 +145,17 @@ export default function AdminDashboard() {
 
     return { daily, types, hourly };
   }, [sortedLogs]);
+
+  const chartConfig = {
+    count: {
+      label: "Visits",
+      color: "hsl(var(--primary))",
+    },
+    value: {
+      label: "User Count",
+      color: "hsl(var(--primary))",
+    }
+  } satisfies ChartConfig;
 
   const COLORS = ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
@@ -287,35 +294,14 @@ export default function AdminDashboard() {
           
           <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4 w-full xl:w-auto">
             <TabsList className="h-12 p-1 border border-black/5 dark:border-white/10 rounded-full w-full lg:w-[280px] grid grid-cols-2 bg-transparent shadow-sm">
-              <TabsTrigger 
-                value="activity" 
-                className={cn(
-                  "rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2",
-                  "text-muted-foreground bg-transparent", 
-                  "data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 data-[state=active]:ring-2 data-[state=active]:ring-primary/20" 
-                )}
-              >
-                <Activity className="h-3.5 w-3.5" />
-                Logs
+              <TabsTrigger value="activity" className="rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2">
+                <Activity className="h-3.5 w-3.5" /> Logs
               </TabsTrigger>
-              <TabsTrigger 
-                value="analytics" 
-                className={cn(
-                  "rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2",
-                  "text-muted-foreground bg-transparent", 
-                  "data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 data-[state=active]:ring-2 data-[state=active]:ring-primary/20" 
-                )}
-              >
-                <PieChartIcon className="h-3.5 w-3.5" />
-                Analytics
+              <TabsTrigger value="analytics" className="rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2">
+                <PieChartIcon className="h-3.5 w-3.5" /> Analytics
               </TabsTrigger>
             </TabsList>
-
-            <Button 
-              onClick={exportToPDF} 
-              disabled={isExporting || logsLoading || filteredLogs.length === 0}
-              className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 w-full lg:w-auto shrink-0"
-            >
+            <Button onClick={exportToPDF} disabled={isExporting || logsLoading || filteredLogs.length === 0} className="h-12 px-6 font-black text-[10px] uppercase tracking-widest rounded-full transition-all blue-gradient text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] w-full lg:w-auto">
               {isExporting ? <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-2" /> : <FileDown className="h-3.5 w-3.5 mr-2" />}
               Export Logs
             </Button>
@@ -323,176 +309,118 @@ export default function AdminDashboard() {
         </div>
 
         <TabsContent value="analytics" className="space-y-8 sm:space-y-12 mt-0">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
             {[
               { label: 'Total Visits', val: stats.total, icon: BarChart3 },
               { label: 'Today', val: stats.today, icon: Clock },
               { label: 'Verified Reach', val: stats.unique, icon: Users }
             ].map((stat, i) => (
-              <Card key={i} className="glass rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 relative overflow-hidden group border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5 animate-in zoom-in-95 duration-700">
-                <div className="absolute -bottom-8 -right-8 opacity-[0.15] group-hover:opacity-[0.22] transition-all duration-700 rotate-12 group-hover:rotate-6">
+              <Card key={i} className="glass rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 relative overflow-hidden group border border-black/5 dark:border-white/18 shadow-xl">
+                <div className="absolute -bottom-8 -right-8 opacity-[0.15] rotate-12 group-hover:rotate-6 transition-all duration-700">
                   <stat.icon className="h-24 sm:h-32 w-24 sm:w-32 text-primary" />
                 </div>
-                <CardDescription className="text-left text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] opacity-50 mb-2 sm:mb-3 relative z-10">{stat.label}</CardDescription>
+                <CardDescription className="text-left text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] opacity-50 mb-2 relative z-10">{stat.label}</CardDescription>
                 <CardTitle className="text-left text-4xl sm:text-5xl font-black tracking-tighter relative z-10">{stat.val}</CardTitle>
               </Card>
             ))}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Card className="glass rounded-[2rem] border-none shadow-xl shadow-primary/5 p-6 sm:p-10">
+            <Card className="glass rounded-[2rem] border-none shadow-xl p-6 sm:p-10">
               <CardHeader className="p-0 mb-8">
                 <CardTitle className="text-xl font-black tracking-tight">Weekly Engagement</CardTitle>
                 <CardDescription className="font-bold">Total visits recorded over the last 7 days</CardDescription>
               </CardHeader>
-              <div className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={analyticsData.daily}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-                    <XAxis 
-                      dataKey="date" 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{ fontSize: 10, fontWeight: 900 }} 
-                      tickFormatter={(val) => format(new Date(val), 'MMM d')}
-                    />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900 }} />
-                    <Tooltip 
-                      cursor={{ fill: 'rgba(0,0,0,0.02)' }}
-                      content={<ChartTooltipContent hideLabel />}
-                    />
-                    <Bar dataKey="count" fill="#2563eb" radius={[6, 6, 0, 0]} barSize={40} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <ChartContainer config={chartConfig} className="h-[300px] w-full">
+                <BarChart data={analyticsData.daily}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900 }} tickFormatter={(val) => format(new Date(val), 'MMM d')} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900 }} />
+                  <ChartTooltip cursor={{ fill: 'rgba(0,0,0,0.02)' }} content={<ChartTooltipContent hideLabel />} />
+                  <Bar dataKey="count" fill="var(--color-count)" radius={[6, 6, 0, 0]} barSize={40} />
+                </BarChart>
+              </ChartContainer>
             </Card>
 
-            <Card className="glass rounded-[2rem] border-none shadow-xl shadow-primary/5 p-6 sm:p-10">
+            <Card className="glass rounded-[2rem] border-none shadow-xl p-6 sm:p-10">
               <CardHeader className="p-0 mb-8">
                 <CardTitle className="text-xl font-black tracking-tight">User Demographics</CardTitle>
                 <CardDescription className="font-bold">Distribution by classification</CardDescription>
               </CardHeader>
-              <div className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={analyticsData.types}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={80}
-                      outerRadius={100}
-                      paddingAngle={8}
-                      dataKey="value"
-                    >
-                      {analyticsData.types.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<ChartTooltipContent />} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
+              <ChartContainer config={chartConfig} className="h-[300px] w-full">
+                <PieChart>
+                  <Pie data={analyticsData.types} cx="50%" cy="50%" innerRadius={80} outerRadius={100} paddingAngle={8} dataKey="value">
+                    {analyticsData.types.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                </PieChart>
+              </ChartContainer>
             </Card>
 
-            <Card className="glass rounded-[2rem] border-none shadow-xl shadow-primary/5 p-6 sm:p-10 lg:col-span-2">
+            <Card className="glass rounded-[2rem] border-none shadow-xl p-6 sm:p-10 lg:col-span-2">
               <CardHeader className="p-0 mb-8">
                 <CardTitle className="text-xl font-black tracking-tight">Peak Activity Hours</CardTitle>
                 <CardDescription className="font-bold">Usage intensity throughout the day</CardDescription>
               </CardHeader>
-              <div className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={analyticsData.hourly}>
-                    <defs>
-                      <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-                    <XAxis 
-                      dataKey="hour" 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{ fontSize: 10, fontWeight: 900 }} 
-                    />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900 }} />
-                    <Tooltip content={<ChartTooltipContent />} />
-                    <Area 
-                      type="monotone" 
-                      dataKey="count" 
-                      stroke="#2563eb" 
-                      strokeWidth={4}
-                      fillOpacity={1} 
-                      fill="url(#colorCount)" 
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+              <ChartContainer config={chartConfig} className="h-[300px] w-full">
+                <AreaChart data={analyticsData.hourly}>
+                  <defs>
+                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                  <XAxis dataKey="hour" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900 }} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Area type="monotone" dataKey="count" stroke="#2563eb" strokeWidth={4} fillOpacity={1} fill="url(#colorCount)" />
+                </AreaChart>
+              </ChartContainer>
             </Card>
           </div>
         </TabsContent>
 
         <TabsContent value="activity" className="space-y-4 sm:space-y-12 mt-0">
-          <Card className="glass overflow-hidden rounded-[2.5rem] border border-black/5 dark:border-white/18 shadow-xl shadow-primary/5 animate-in fade-in duration-1000">
+          <Card className="glass overflow-hidden rounded-[2.5rem] border border-black/5 dark:border-white/18 shadow-xl">
             <CardHeader className="p-6 sm:p-10 border-b border-black/5 dark:border-white/10 flex flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4 sm:gap-5 text-left">
                 <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl blue-gradient text-white shadow-inner flex-shrink-0 aspect-square flex items-center justify-center">
                   <Activity className="h-5 w-5 sm:h-7 sm:w-7" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl sm:text-3xl font-black tracking-tighter">
-                    Logs
-                  </CardTitle>
+                  <CardTitle className="text-xl sm:text-3xl font-black tracking-tighter">Logs</CardTitle>
                   <CardDescription className="text-xs sm:text-sm font-bold opacity-60 mt-0.5 sm:mt-1">
                     {filteredLogs.length} {isFiltered ? 'matching' : 'total'} records
                   </CardDescription>
                 </div>
               </div>
-
-              <Button
-                variant="ghost"
-                onClick={() => setShowFilters(!showFilters)}
-                className={cn(
-                  "h-10 sm:h-11 px-4 sm:px-6 font-black text-[8px] sm:text-[9px] uppercase tracking-widest rounded-full transition-all border shadow-sm",
-                  "bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-white"
-                )}
-              >
+              <Button variant="ghost" onClick={() => setShowFilters(!showFilters)} className="h-10 sm:h-11 px-4 sm:px-6 font-black text-[8px] sm:text-[9px] uppercase tracking-widest rounded-full border shadow-sm bg-primary/10 text-primary">
                 <Filter className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-2" />
                 {showFilters ? 'Hide Filters' : 'Filter View'}
               </Button>
             </CardHeader>
-            
-            <CardContent className="p-0 pb-4">
+            <CardContent className="p-0 pb-2">
               {showFilters && (
-                <div className="px-6 sm:px-10 py-6 border-b border-black/5 dark:border-white/10 bg-primary/5 dark:bg-blue-900/10 animate-in slide-in-from-top-4 duration-500">
+                <div className="px-6 sm:px-10 py-6 border-b border-black/5 dark:border-white/10 bg-primary/5 dark:bg-blue-900/10">
                   <div className="flex flex-col lg:flex-row gap-6 items-end">
                     <div className="flex-1 w-full space-y-2 text-left">
                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
-                        <Search className="h-3.5 w-3.5" />
-                        User Identity Search
+                        <Search className="h-3.5 w-3.5" /> Identity Search
                       </label>
-                      <Input
-                        placeholder="Search by email..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="h-11 rounded-xl border-2 bg-background/50 dark:bg-blue-900/20 transition-all text-sm font-bold focus:border-primary/30 border-primary/10"
-                      />
+                      <Input placeholder="Search by email..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="h-11 rounded-xl border-2 bg-background/50 text-sm font-bold border-primary/10" />
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      onClick={clearFilters}
-                      className="h-11 px-6 font-black text-[9px] uppercase tracking-widest rounded-xl transition-all border border-destructive/30 text-destructive bg-destructive/5 hover:bg-destructive hover:text-white w-full lg:w-auto"
-                    >
-                      <XCircle className="h-3.5 w-3.5 mr-2" />
-                      Clear
+                    <Button variant="ghost" onClick={clearFilters} className="h-11 px-6 font-black text-[9px] uppercase tracking-widest rounded-xl border border-destructive/30 text-destructive bg-destructive/5">
+                      <XCircle className="h-3.5 w-3.5 mr-2" /> Clear
                     </Button>
                   </div>
                 </div>
               )}
-
               {logsLoading ? (
-                <div className="p-20 sm:p-32 flex flex-col items-center justify-center gap-4 sm:gap-6">
-                  <LoaderCircle className="h-10 w-10 sm:h-12 w-12 animate-spin text-primary/30" />
+                <div className="p-20 flex flex-col items-center justify-center gap-4">
+                  <LoaderCircle className="h-10 animate-spin text-primary/30" />
                   <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-30">Syncing logs...</p>
                 </div>
               ) : (
@@ -506,7 +434,7 @@ export default function AdminDashboard() {
                           <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground min-w-[250px]">Verified Identity</TableHead>
                           <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground text-center w-[130px]">Duration</TableHead>
                           <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-foreground min-w-[180px]">Purpose</TableHead>
-                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10 text-foreground w-[160px] shrink-0">Control</TableHead>
+                          <TableHead className="font-black text-[11px] uppercase tracking-[0.25em] h-16 text-center pr-10 text-foreground w-[160px]">Control</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -514,9 +442,9 @@ export default function AdminDashboard() {
                           const isBlocked = userStatusMap[log.uid] || false;
                           const isOngoing = !log.duration;
                           return (
-                            <TableRow key={log.id} className="hover:bg-primary/[0.04] dark:hover:bg-white/5 transition-colors border-black/5 dark:border-white/10">
-                              <TableCell className="pl-10 py-6 whitespace-nowrap w-[160px] text-left">
-                                <div className="flex flex-col gap-1">
+                            <TableRow key={log.id} className="hover:bg-primary/[0.04] transition-colors">
+                              <TableCell className="pl-10 py-6 whitespace-nowrap w-[160px]">
+                                <div className="flex flex-col gap-1 text-left">
                                   <div className="text-[10px] font-black text-foreground/40 uppercase tracking-widest mb-1">
                                     {log.timestamp ? format(log.timestamp.toDate(), 'MMM d, yyyy') : 'PENDING...'}
                                   </div>
@@ -528,46 +456,24 @@ export default function AdminDashboard() {
                                   </div>
                                 </div>
                               </TableCell>
-                              <TableCell className="w-[140px]">
-                                <div className="flex justify-center">
-                                  {getStatusBadge(log.status || 'active')}
-                                </div>
-                              </TableCell>
+                              <TableCell className="w-[140px] text-center">{getStatusBadge(log.status || 'active')}</TableCell>
                               <TableCell className="font-black text-foreground min-w-[250px] text-left">
                                 <div className="flex flex-col truncate">
-                                  <span className="truncate block" title={log.email}>{log.email}</span>
+                                  <span className="truncate block">{log.email}</span>
                                   <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1 truncate block">{log.userType} • {log.college_office}</span>
                                 </div>
                               </TableCell>
-                              <TableCell className="w-[130px]">
-                                <div className="flex justify-center">
-                                  <Badge className={cn("rounded-2xl font-black text-[10px] py-1.5 px-4 w-32 flex justify-center border-none pointer-events-none shadow-none uppercase", isOngoing ? "bg-sky-500/15 text-sky-600 dark:text-sky-400" : "bg-primary/10 text-primary")}>
-                                    {formatDuration(log.duration)}
-                                  </Badge>
-                                </div>
+                              <TableCell className="w-[130px] text-center">
+                                <Badge className={cn("rounded-2xl font-black text-[10px] py-1.5 px-4 w-32 justify-center uppercase", isOngoing ? "bg-sky-500/15 text-sky-600 border-none" : "bg-primary/10 text-primary border-none")}>
+                                  {formatDuration(log.duration)}
+                                </Badge>
                               </TableCell>
                               <TableCell className="min-w-[180px] font-bold text-foreground/80 text-left">
                                 <span className="truncate block">{log.reason}</span>
                               </TableCell>
-                              <TableCell className="text-center pr-10 w-[160px] shrink-0">
-                                <Button
-                                  variant="ghost"
-                                  className={cn(
-                                    "h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border shadow-sm",
-                                    isBlocked 
-                                      ? "text-green-600 dark:text-green-400 bg-green-500/10 border-green-500/20 hover:bg-green-600 dark:hover:bg-green-400 hover:text-white dark:hover:text-green-950" 
-                                      : "text-destructive dark:text-red-400 bg-destructive/5 border-destructive/10 hover:bg-destructive dark:hover:bg-red-400 hover:text-white dark:hover:text-red-950"
-                                    )}
-                                  onClick={() => handleToggleBlock(log.uid, log.email)}
-                                  disabled={blockingUid === log.uid}
-                                >
-                                  {blockingUid === log.uid ? (
-                                    <LoaderCircle className="h-4 w-4 animate-spin" />
-                                  ) : isBlocked ? (
-                                    <><UserCheck className="h-3.5 w-3.5 mr-2" />Restore</>
-                                  ) : (
-                                    <><UserX className="h-3.5 w-3.5 mr-2" />Block</>
-                                  )}
+                              <TableCell className="text-center pr-10 w-[160px]">
+                                <Button variant="ghost" className={cn("h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl border transition-all shadow-sm", isBlocked ? "text-green-600 bg-green-500/10" : "text-destructive bg-destructive/5")} onClick={() => handleToggleBlock(log.uid, log.email)} disabled={blockingUid === log.uid}>
+                                  {blockingUid === log.uid ? <LoaderCircle className="h-4 animate-spin" /> : isBlocked ? "Restore" : "Block"}
                                 </Button>
                               </TableCell>
                             </TableRow>
@@ -576,81 +482,43 @@ export default function AdminDashboard() {
                       </TableBody>
                     </Table>
                   </div>
-
                   <div className="xl:hidden space-y-4 p-4 pb-2">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
                       return (
-                        <Card key={log.id} className="glass border border-black/5 dark:border-white/15 rounded-2xl overflow-hidden shadow-sm animate-in zoom-in-95 duration-500">
+                        <Card key={log.id} className="glass border rounded-2xl overflow-hidden shadow-sm">
                           <CardContent className="p-4 space-y-3">
                             <div className="flex justify-between gap-4 items-start text-left">
                               <div className="flex-1 min-w-0 space-y-0.5">
-                                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">
-                                  {log.timestamp ? format(log.timestamp.toDate(), 'MMMM d, yyyy').toUpperCase() : 'PENDING...'}
-                                </div>
-                                <div className="text-sm font-bold text-foreground block truncate leading-tight">
-                                  {log.email}
-                                </div>
-                                <div className="text-[8px] font-black text-primary uppercase tracking-widest mt-1">
-                                  {log.userType} • {log.college_office}
-                                </div>
+                                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">{log.timestamp ? format(log.timestamp.toDate(), 'MMMM d, yyyy').toUpperCase() : 'PENDING...'}</div>
+                                <div className="text-sm font-bold text-foreground truncate">{log.email}</div>
+                                <div className="text-[8px] font-black text-primary uppercase tracking-widest">{log.userType} • {log.college_office}</div>
                               </div>
-
                               <div className="flex flex-col items-end gap-2 shrink-0">
                                 {getStatusBadge(log.status || 'active', true)}
-                                <Badge className={cn(
-                                  "rounded-xl font-black text-[8px] py-0 h-4 border-none shadow-none uppercase shrink-0 w-24 justify-center text-center pointer-events-none",
-                                  isOngoing ? "bg-sky-500/15 text-sky-600 dark:text-sky-400" : "bg-primary/10 text-primary"
-                                )}>
+                                <Badge className={cn("rounded-xl font-black text-[8px] h-4 w-24 justify-center uppercase border-none", isOngoing ? "bg-sky-500/15 text-sky-600" : "bg-primary/10 text-primary")}>
                                   {formatDuration(log.duration)}
                                 </Badge>
                               </div>
                             </div>
-                            
                             <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 flex items-center justify-between">
                               <div className="space-y-0.5 flex-1 text-left">
-                                <div className="flex items-center gap-1.5 text-[8px] font-black text-foreground/40 uppercase tracking-widest leading-none">
-                                  <LogIn className="h-2.5 w-2.5" /> Time In
-                                </div>
-                                <div className="text-sm font-black text-primary uppercase leading-tight">
-                                  {log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--'}
-                                </div>
+                                <div className="text-[8px] font-black text-foreground/40 uppercase tracking-widest"><LogIn className="h-2.5 w-2.5 inline mr-1" /> Time In</div>
+                                <div className="text-sm font-black text-primary uppercase">{log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--'}</div>
                               </div>
-                              <div className="w-px h-6 bg-black/10 dark:bg-white/10 mx-2" />
+                              <div className="w-px h-6 bg-black/10 mx-2" />
                               <div className="space-y-0.5 flex-1 text-right">
-                                <div className="flex items-center justify-end gap-1.5 text-[8px] font-black text-foreground/40 uppercase tracking-widest leading-none">
-                                  <LogOut className="h-2.5 w-2.5" /> Time Out
-                                </div>
-                                <div className="text-sm font-black text-muted-foreground uppercase opacity-40 leading-tight">
-                                  {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--'}
-                                </div>
+                                <div className="text-[8px] font-black text-foreground/40 uppercase tracking-widest"><LogOut className="h-2.5 w-2.5 inline mr-1" /> Time Out</div>
+                                <div className="text-sm font-black text-muted-foreground uppercase opacity-40">{log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--'}</div>
                               </div>
                             </div>
-
-                            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 border border-black/5 dark:border-white/10 text-left">
-                              <span className="text-[8px] font-black uppercase text-primary/60 block mb-1 tracking-widest">Purpose of Visit</span>
+                            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 border border-black/5 text-left">
+                              <span className="text-[8px] font-black uppercase text-primary/60 block mb-1">Purpose of Visit</span>
                               <p className="text-xs font-bold text-foreground leading-snug">{log.reason}</p>
                             </div>
-
-                            <Button
-                              variant="ghost"
-                              className={cn(
-                                "w-full h-11 font-black text-[9px] uppercase tracking-[0.2em] rounded-xl transition-all border shadow-sm flex items-center justify-center gap-2.5",
-                                isBlocked 
-                                  ? "text-green-600 dark:text-green-400 bg-green-500/10 border-green-500/20 hover:bg-green-600 dark:hover:bg-green-400 hover:text-white dark:hover:text-green-950" 
-                                  : "text-destructive dark:text-red-400 bg-destructive/5 border-destructive/10 hover:bg-destructive dark:hover:bg-red-400 hover:text-white dark:hover:text-red-950"
-                                )}
-                              onClick={() => handleToggleBlock(log.uid, log.email)}
-                              disabled={blockingUid === log.uid}
-                            >
-                              {blockingUid === log.uid ? (
-                                <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
-                              ) : isBlocked ? (
-                                <><UserCheck className="h-3 w-3" /> Restore</>
-                              ) : (
-                                <><UserX className="h-3 w-3" /> Block</>
-                              )}
+                            <Button variant="ghost" className={cn("w-full h-11 font-black text-[9px] uppercase tracking-[0.2em] rounded-xl border transition-all shadow-sm", isBlocked ? "text-green-600 bg-green-500/10" : "text-destructive bg-destructive/5")} onClick={() => handleToggleBlock(log.uid, log.email)} disabled={blockingUid === log.uid}>
+                              {blockingUid === log.uid ? <LoaderCircle className="h-3.5 animate-spin" /> : isBlocked ? "Restore User" : "Block User"}
                             </Button>
                           </CardContent>
                         </Card>
@@ -663,9 +531,6 @@ export default function AdminDashboard() {
           </Card>
         </TabsContent>
       </Tabs>
-      <div className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 pt-2 pb-4">
-        2026 NEW ERA UNIVERSITY
-      </div>
     </main>
   );
 }
