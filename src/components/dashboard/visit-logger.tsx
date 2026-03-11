@@ -123,10 +123,8 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   const [isLogged, setIsLogged] = useState(false);
   const [smartActiveLog, setSmartActiveLog] = useState<any>(null);
   
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [timeLeft, setTimeLeft] = useState(30);
   const [timerProgress, setTimerProgress] = useState(100);
-  
-  // High-Fidelity Sync: 5 Second confirmation timer (100 steps * 50ms)
   const [confirmProgress, setConfirmProgress] = useState(100);
   
   const submitRef = useRef<boolean>(false);
@@ -153,8 +151,14 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     }
   });
 
+  // Main Kiosk Idle/Auto-Submit Timer (30 Seconds)
   useEffect(() => {
     if (logsLoading || smartActiveLog || isLogged || user.role === 'admin' || submitRef.current) return;
+
+    const resetTimer = () => {
+      setTimeLeft(30);
+      setTimerProgress(100);
+    };
 
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
@@ -167,10 +171,16 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
         }
         return prev - 1;
       });
-      setTimerProgress((prev) => Math.max(0, prev - (100 / 60)));
+      setTimerProgress((prev) => Math.max(0, prev - (100 / 30)));
     }, 1000);
 
-    return () => clearInterval(interval);
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    events.forEach(event => document.addEventListener(event, resetTimer));
+
+    return () => {
+      clearInterval(interval);
+      events.forEach(event => document.removeEventListener(event, resetTimer));
+    };
   }, [logsLoading, smartActiveLog, isLogged, user.role]);
 
   // Unified Success Timer: 5 Seconds precisely
@@ -455,7 +465,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
           <div 
             className={cn(
               "h-full transition-all duration-1000 ease-linear",
-              timeLeft > 15 ? "bg-primary" : "bg-amber-500"
+              timeLeft > 10 ? "bg-primary" : "bg-amber-500"
             )}
             style={{ width: `${timerProgress}%` }}
           />
