@@ -213,7 +213,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <main className="flex-1 px-4 sm:px-6 md:px-12 py-8 sm:py-12 pb-4 sm:pb-12 space-y-4 sm:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-in-out">
+    <main className="flex-1 px-4 sm:px-6 md:px-12 py-8 sm:py-12 pb-4 sm:pb-8 space-y-4 sm:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-in-out">
       <Tabs defaultValue="activity" className="space-y-4 sm:space-y-12">
         <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 sm:gap-8">
           <div className="flex flex-col gap-2 sm:gap-3 text-left">
@@ -314,7 +314,7 @@ export default function AdminDashboard() {
               </Button>
             </CardHeader>
             
-            <CardContent className="p-0 pb-4 sm:pb-12">
+            <CardContent className="p-0 pb-4">
               {showFilters && (
                 <div className="px-6 sm:px-10 py-6 border-b border-black/5 dark:border-white/10 bg-primary/5 dark:bg-blue-900/10 animate-in slide-in-from-top-4 duration-500">
                   <div className="flex flex-col lg:flex-row gap-6 items-end">
@@ -429,7 +429,7 @@ export default function AdminDashboard() {
                     </Table>
                   </div>
 
-                  <div className="xl:hidden space-y-4 p-4 pb-0">
+                  <div className="xl:hidden space-y-4 p-4 pb-2">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
@@ -515,7 +515,7 @@ export default function AdminDashboard() {
           </Card>
         </TabsContent>
       </Tabs>
-      <div className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 py-4 sm:py-8">
+      <div className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 pt-2 pb-4">
         2026 NEW ERA UNIVERSITY
       </div>
     </main>
