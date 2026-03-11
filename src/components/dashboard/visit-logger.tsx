@@ -126,6 +126,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
   const [timeLeft, setTimeLeft] = useState(60);
   const [timerProgress, setTimerProgress] = useState(100);
   
+  // High-Fidelity Sync: 5 Second confirmation timer (100 steps * 50ms)
   const [confirmProgress, setConfirmProgress] = useState(100);
   
   const submitRef = useRef<boolean>(false);
@@ -172,15 +173,19 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
     return () => clearInterval(interval);
   }, [logsLoading, smartActiveLog, isLogged, user.role]);
 
+  // Unified Success Timer: 5 Seconds precisely
   useEffect(() => {
     if (!isLogged) return;
 
     const interval = setInterval(() => {
       setConfirmProgress((prev) => {
-        const nextVal = Math.max(0, prev - (100 / 60)); 
-        return nextVal;
+        if (prev <= 0) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1; 
       });
-    }, 50);
+    }, 50); // 100 steps * 50ms = 5000ms (5 seconds)
 
     return () => clearInterval(interval);
   }, [isLogged]);
@@ -301,7 +306,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
         </Button>
         <div className="absolute bottom-0 left-0 w-full h-2 bg-black/5">
           <div 
-            className="h-full bg-green-500 transition-all duration-100 ease-linear"
+            className="h-full bg-green-500 transition-all duration-75 ease-linear"
             style={{ width: `${confirmProgress}%` }}
           />
         </div>
@@ -317,7 +322,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
             <div className="p-3.5 rounded-2xl blue-gradient text-white shadow-inner">
               <Clock className="h-8 w-8" />
             </div>
-            <div>
+            <div className="text-left">
               <CardTitle className="text-3xl font-black tracking-tighter text-blue-gradient">Active Session</CardTitle>
               <CardDescription className="text-sm font-medium opacity-60 mt-1">Check-out required to finalize duration</CardDescription>
             </div>
