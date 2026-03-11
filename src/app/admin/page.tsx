@@ -21,6 +21,7 @@ import {
   AlertCircle,
   Activity,
   PieChart as PieChartIcon,
+  Calendar as CalendarIcon,
 } from 'lucide-react';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
@@ -48,6 +49,8 @@ import {
   Area 
 } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
@@ -218,7 +221,6 @@ export default function AdminDashboard() {
     try {
       const doc = new jsPDF();
       
-      // Branding Section (Blue Squircle Logo + Text)
       doc.setFillColor(37, 99, 235);
       doc.roundedRect(14, 15, 12, 12, 3, 3, 'F');
       doc.setTextColor(255, 255, 255);
@@ -236,15 +238,17 @@ export default function AdminDashboard() {
       doc.setFont('helvetica', 'normal');
       doc.text('ACCESS SYSTEM OFFICIAL REPORT', 28, 26);
 
-      // Metadata Section
       const now = new Date();
       doc.setFontSize(9);
       doc.setTextColor(60, 60, 60);
       doc.text(`Generated On: ${format(now, 'MMMM d, yyyy @ hh:mm a')}`, 14, 40);
       
-      const rangeText = isFiltered 
-        ? `Reporting Period: Records matching "${searchQuery || 'N/A'}"`
-        : "Reporting Period: All Recent Records (Last 200 Logs)";
+      let rangeText = "Reporting Period: All Recent Records (Last 200 Logs)";
+      if (startDate || endDate) {
+        rangeText = `Reporting Period: ${startDate ? format(startDate, 'MMM d, yyyy') : 'Start'} to ${endDate ? format(endDate, 'MMM d, yyyy') : 'Latest'}`;
+      } else if (searchQuery) {
+        rangeText = `Reporting Period: Records matching "${searchQuery}"`;
+      }
       doc.text(rangeText, 14, 45);
 
       const tableRows = filteredLogs.map(log => [
@@ -273,12 +277,10 @@ export default function AdminDashboard() {
           4: { halign: 'center', cellWidth: 20 },
           5: { halign: 'left' },
           6: { halign: 'left' },
-          // Index 7 is Status: Width increased to 25 to prevent 'AUTO-CLOSED' wrapping
           7: { halign: 'center', cellWidth: 25 }
         }
       });
 
-      // Post-processing: Add Page X of Y numbering
       const totalPages = doc.internal.getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {
         doc.setPage(i);
@@ -471,7 +473,37 @@ export default function AdminDashboard() {
                       </label>
                       <Input placeholder="Search by email..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="h-11 rounded-xl border-2 bg-background/50 text-sm font-bold border-primary/10" />
                     </div>
-                    <Button variant="ghost" onClick={clearFilters} className="h-11 px-6 font-black text-[9px] uppercase tracking-widest rounded-xl border border-destructive/30 text-destructive bg-destructive/5">
+
+                    <div className="flex-1 w-full space-y-2 text-left">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
+                        <CalendarIcon className="h-3.5 w-3.5" /> Date Range
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline" className={cn("h-11 justify-start text-left font-bold rounded-xl border-2 bg-background/50 flex-1 border-primary/10", !startDate && "text-muted-foreground")}>
+                              {startDate ? format(startDate, "MMM d, yyyy") : "From Date"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0 rounded-2xl border-none shadow-2xl" align="start">
+                            <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus />
+                          </PopoverContent>
+                        </Popover>
+                        <span className="text-muted-foreground font-black opacity-20">—</span>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline" className={cn("h-11 justify-start text-left font-bold rounded-xl border-2 bg-background/50 flex-1 border-primary/10", !endDate && "text-muted-foreground")}>
+                              {endDate ? format(endDate, "MMM d, yyyy") : "To Date"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0 rounded-2xl border-none shadow-2xl" align="end">
+                            <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </div>
+
+                    <Button variant="ghost" onClick={clearFilters} className="h-11 px-6 font-black text-[9px] uppercase tracking-widest rounded-xl border border-destructive/30 text-destructive bg-destructive/5 hover:bg-destructive hover:text-white transition-all">
                       <XCircle className="h-3.5 w-3.5 mr-2" /> Clear
                     </Button>
                   </div>
