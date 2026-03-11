@@ -260,7 +260,7 @@ export default function AdminDashboard() {
     const baseClasses = cn(
       "rounded-2xl border font-black flex gap-1 items-center justify-center pointer-events-none transition-all",
       isMobile 
-        ? "shadow-none w-28 text-[10px] px-2 py-0 h-6" 
+        ? "shadow-none w-32 text-[10px] px-2 py-0 h-6" 
         : "text-[9px] px-3 py-1.5 w-32 mx-auto"
     );
     switch(status) {
@@ -293,11 +293,17 @@ export default function AdminDashboard() {
           </div>
           
           <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4 w-full xl:w-auto">
-            <TabsList className="h-12 p-1 border border-black/5 dark:border-white/10 rounded-full w-full lg:w-[280px] grid grid-cols-2 bg-transparent shadow-sm">
-              <TabsTrigger value="activity" className="rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2 data-[state=active]:blue-gradient data-[state=active]:text-white data-[state=active]:shadow-lg">
+            <TabsList className="h-12 p-1 border border-black/5 dark:border-white/10 rounded-full w-full lg:w-[320px] grid grid-cols-2 bg-transparent shadow-sm">
+              <TabsTrigger 
+                value="activity" 
+                className="rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2 data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-md data-[state=active]:bg-primary/5"
+              >
                 <Activity className="h-3.5 w-3.5" /> Logs
               </TabsTrigger>
-              <TabsTrigger value="analytics" className="rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2 data-[state=active]:blue-gradient data-[state=active]:text-white data-[state=active]:shadow-lg">
+              <TabsTrigger 
+                value="analytics" 
+                className="rounded-full font-black text-[9px] uppercase tracking-widest transition-all h-full gap-2 data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-md data-[state=active]:bg-primary/5"
+              >
                 <PieChartIcon className="h-3.5 w-3.5" /> Analytics
               </TabsTrigger>
             </TabsList>
@@ -337,7 +343,7 @@ export default function AdminDashboard() {
                   <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900 }} tickFormatter={(val) => format(new Date(val), 'MMM d')} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900 }} />
                   <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                  <Bar dataKey="count" fill="var(--color-count)" radius={[6, 6, 0, 0]} barSize={40} />
+                  <Bar dataKey="count" fill="var(--color-count)" radius={[6, 6, 0, 0]} barSize={60} />
                 </BarChart>
               </ChartContainer>
             </Card>
@@ -349,7 +355,15 @@ export default function AdminDashboard() {
               </CardHeader>
               <ChartContainer config={chartConfig} className="h-[300px] w-full">
                 <PieChart>
-                  <Pie data={analyticsData.types} cx="50%" cy="50%" innerRadius={80} outerRadius={100} paddingAngle={8} dataKey="value">
+                  <Pie 
+                    data={analyticsData.types} 
+                    cx="50%" 
+                    cy="50%" 
+                    innerRadius={65} 
+                    outerRadius={105} 
+                    paddingAngle={8} 
+                    dataKey="value"
+                  >
                     {analyticsData.types.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
@@ -376,7 +390,7 @@ export default function AdminDashboard() {
                   <XAxis dataKey="hour" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900 }} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900 }} />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <Area type="monotone" dataKey="count" stroke="#2563eb" strokeWidth={4} fillOpacity={1} fill="url(#colorCount)" />
+                  <Area type="monotone" dataKey="count" stroke="#2563eb" strokeWidth={6} fillOpacity={1} fill="url(#colorCount)" />
                 </AreaChart>
               </ChartContainer>
             </Card>
@@ -404,7 +418,7 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent className="p-0 pb-2">
               {showFilters && (
-                <div className="px-6 sm:px-10 py-6 border-b border-black/5 dark:border-white/10 bg-primary/5 dark:bg-blue-900/10">
+                <div className="px-6 sm:px-10 py-6 border-b border-black/5 dark:border-white/10 bg-primary/5 dark:bg-blue-900/10 animate-in slide-in-from-top-4 duration-500">
                   <div className="flex flex-col lg:flex-row gap-6 items-end">
                     <div className="flex-1 w-full space-y-2 text-left">
                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 flex items-center gap-2">
@@ -472,7 +486,12 @@ export default function AdminDashboard() {
                                 <span className="truncate block">{log.reason}</span>
                               </TableCell>
                               <TableCell className="text-center pr-10 w-[160px]">
-                                <Button variant="ghost" className={cn("h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl border transition-all shadow-sm", isBlocked ? "text-green-600 bg-green-500/10 hover:bg-green-600 hover:text-white" : "text-destructive bg-destructive/5 hover:bg-destructive hover:text-white")} onClick={() => handleToggleBlock(log.uid, log.email)} disabled={blockingUid === log.uid}>
+                                <Button 
+                                  variant="ghost" 
+                                  className={cn("h-12 w-32 font-black text-[10px] uppercase tracking-widest rounded-2xl border transition-all shadow-sm", isBlocked ? "text-green-600 bg-green-500/10 hover:bg-green-600 hover:text-white" : "text-destructive bg-destructive/5 hover:bg-destructive hover:text-white")} 
+                                  onClick={() => handleToggleBlock(log.uid, log.email)} 
+                                  disabled={blockingUid === log.uid}
+                                >
                                   {blockingUid === log.uid ? <LoaderCircle className="h-4 animate-spin" /> : isBlocked ? "Restore" : "Block"}
                                 </Button>
                               </TableCell>
@@ -497,7 +516,7 @@ export default function AdminDashboard() {
                               </div>
                               <div className="flex flex-col items-end gap-2 shrink-0">
                                 {getStatusBadge(log.status || 'active', true)}
-                                <Badge className={cn("rounded-xl font-black text-[10px] h-6 w-28 justify-center uppercase border-none", isOngoing ? "bg-sky-500/15 text-sky-600" : "bg-primary/10 text-primary")}>
+                                <Badge className={cn("rounded-xl font-black text-[10px] h-6 w-32 justify-center uppercase border-none", isOngoing ? "bg-sky-500/15 text-sky-600" : "bg-primary/10 text-primary")}>
                                   {formatDuration(log.duration)}
                                 </Badge>
                               </div>
@@ -517,7 +536,12 @@ export default function AdminDashboard() {
                               <span className="text-[10px] font-black uppercase text-primary/60 block mb-1">Purpose of Visit</span>
                               <p className="text-sm font-bold text-foreground leading-snug">{log.reason}</p>
                             </div>
-                            <Button variant="ghost" className={cn("w-full h-11 font-black text-[10px] uppercase tracking-[0.2em] rounded-xl border transition-all shadow-sm", isBlocked ? "text-green-600 bg-green-500/10 hover:bg-green-600 hover:text-white" : "text-destructive bg-destructive/5 hover:bg-destructive hover:text-white")} onClick={() => handleToggleBlock(log.uid, log.email)} disabled={blockingUid === log.uid}>
+                            <Button 
+                              variant="ghost" 
+                              className={cn("w-full h-11 font-black text-[10px] uppercase tracking-[0.2em] rounded-xl border transition-all shadow-sm", isBlocked ? "text-green-600 bg-green-500/10 hover:bg-green-600 hover:text-white" : "text-destructive bg-destructive/5 hover:bg-destructive hover:text-white")} 
+                              onClick={() => handleToggleBlock(log.uid, log.email)} 
+                              disabled={blockingUid === log.uid}
+                            >
                               {blockingUid === log.uid ? <LoaderCircle className="h-3.5 animate-spin" /> : isBlocked ? "Restore User" : "Block User"}
                             </Button>
                           </CardContent>
