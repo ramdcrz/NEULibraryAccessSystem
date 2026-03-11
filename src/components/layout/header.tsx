@@ -35,8 +35,8 @@ export default function Header() {
     <header className="sticky top-0 z-[100] w-full bg-background/5 backdrop-blur-3xl border-b border-black/5 dark:border-white/10 flex h-16 sm:h-20 items-center gap-4 px-4 sm:px-6 md:px-12 transition-all">
       <div className="flex items-center gap-4 py-2 w-full sm:w-auto">
         <Link href="/" className="flex items-center gap-2.5 group transition-opacity hover:opacity-80 py-1">
-          <div className="w-10 h-10 shrink-0 rounded-xl blue-gradient text-white shadow-md flex items-center justify-center transition-transform group-active:scale-95">
-            <BookMarked className="h-5 w-5" />
+          <div className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 rounded-xl blue-gradient text-white shadow-md flex items-center justify-center transition-transform group-active:scale-95">
+            <BookMarked className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
           <div className="flex flex-col justify-center w-max">
             <span className="text-base sm:text-lg lg:text-xl font-extrabold leading-none text-blue-gradient">
@@ -48,8 +48,7 @@ export default function Header() {
           </div>
         </Link>
         
-        {/* Equalized and responsive divider */}
-        <div className="hidden sm:block h-8 w-px bg-black/5 dark:bg-white/10" />
+        <div className="hidden sm:block h-8 w-px bg-black/5 dark:bg-white/10 ml-3" />
         
         <LiveClock />
       </div>

@@ -23,7 +23,6 @@ import {
   AlertCircle,
   Activity,
   PieChart as PieChartIcon,
-  Library,
 } from 'lucide-react';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
@@ -78,7 +77,6 @@ export default function AdminDashboard() {
 
   const sortedLogs = useMemo(() => {
     if (!allLogs) return [];
-    // Prioritize pending records (no timestamp yet) at the top for faster visual feedback
     return [...allLogs].sort((a, b) => {
       const timeA = a.timestamp?.toMillis() || Date.now() + 10000;
       const timeB = b.timestamp?.toMillis() || Date.now() + 10000;
@@ -197,7 +195,7 @@ export default function AdminDashboard() {
 
   const getStatusBadge = (status: string, isMobile = false) => {
     const baseClasses = cn(
-      "rounded-2xl border font-black flex gap-1 items-center justify-center pointer-events-none",
+      "rounded-2xl border font-black flex gap-1 items-center justify-center pointer-events-none transition-all",
       isMobile 
         ? "shadow-none w-24 text-[8px] px-2 py-0 h-4" 
         : "text-[9px] px-3 py-1.5 w-32 mx-auto"
@@ -316,7 +314,7 @@ export default function AdminDashboard() {
               </Button>
             </CardHeader>
             
-            <CardContent className="p-0">
+            <CardContent className="p-0 pb-6 sm:pb-12">
               {showFilters && (
                 <div className="px-6 sm:px-10 py-6 border-b border-black/5 dark:border-white/10 bg-primary/5 dark:bg-blue-900/10 animate-in slide-in-from-top-4 duration-500">
                   <div className="flex flex-col lg:flex-row gap-6 items-end">
@@ -431,8 +429,7 @@ export default function AdminDashboard() {
                     </Table>
                   </div>
 
-                  {/* High-Density Mobile View */}
-                  <div className="xl:hidden space-y-4 p-4 pb-4">
+                  <div className="xl:hidden space-y-4 p-4">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
@@ -483,7 +480,6 @@ export default function AdminDashboard() {
                               </div>
                             </div>
 
-                            {/* Restored Purpose of Visit in Mobile Card */}
                             <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 border border-black/5 dark:border-white/10 text-left">
                               <span className="text-[8px] font-black uppercase text-primary/60 block mb-1 tracking-widest">Purpose of Visit</span>
                               <p className="text-xs font-bold text-foreground leading-snug">{log.reason}</p>
