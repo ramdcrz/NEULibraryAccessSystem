@@ -7,8 +7,6 @@ import Loading from '@/app/loading';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { 
   ShieldCheck, 
-  UserX, 
-  UserCheck, 
   LoaderCircle, 
   FileDown, 
   Search, 
@@ -43,8 +41,6 @@ import {
   XAxis, 
   YAxis, 
   CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
   PieChart, 
   Pie, 
   Cell, 
@@ -152,7 +148,7 @@ export default function AdminDashboard() {
       color: "hsl(var(--primary))",
     },
     value: {
-      label: "User Count",
+      label: "Count",
       color: "hsl(var(--primary))",
     }
   } satisfies ChartConfig;
@@ -221,30 +217,74 @@ export default function AdminDashboard() {
     setIsExporting(true);
     try {
       const doc = new jsPDF();
-      doc.setFontSize(22);
-      doc.setTextColor(37, 99, 235);
-      doc.text('NEU Library Access System', 14, 22);
       
+      // Branding Section (Blue Squircle Logo + Text)
+      doc.setFillColor(37, 99, 235);
+      doc.roundedRect(14, 15, 12, 12, 3, 3, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      doc.text('NEU', 15.5, 22.5);
+
+      doc.setTextColor(37, 99, 235);
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.text('NEU Library', 28, 22);
+      
+      doc.setFontSize(8);
+      doc.setTextColor(120, 120, 120);
+      doc.setFont('helvetica', 'normal');
+      doc.text('ACCESS SYSTEM OFFICIAL REPORT', 28, 26);
+
+      // Metadata Section
+      const now = new Date();
+      doc.setFontSize(9);
+      doc.setTextColor(60, 60, 60);
+      doc.text(`Generated: ${format(now, 'MMMM d, yyyy @ hh:mm a')}`, 14, 40);
+      
+      const rangeText = isFiltered 
+        ? `Filter: Showing records matching "${searchQuery || 'N/A'}"`
+        : "Filter: Showing all recent records (Top 200)";
+      doc.text(rangeText, 14, 45);
+
       const tableRows = filteredLogs.map(log => [
-        log.timestamp ? format(log.timestamp.toDate(), 'yyyy-MM-dd hh:mm a') : 'Pending...',
+        log.timestamp ? format(log.timestamp.toDate(), 'hh:mm a') : '--:--',
+        log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : 'N/A',
+        formatDuration(log.duration, 'Ongoing', false),
         log.email,
         log.userType,
         log.college_office,
-        log.reason,
+        log.reason || 'Others',
         log.status?.toUpperCase() || 'ACTIVE'
       ]);
 
       autoTable(doc, {
-        head: [['Time In', 'Email', 'Type', 'Affiliation', 'Purpose', 'Status']],
+        head: [['In', 'Out', 'Duration', 'Email', 'Type', 'Affiliation', 'Purpose', 'Status']],
         body: tableRows,
-        startY: 35,
-        theme: 'grid',
-        headStyles: { fillColor: [37, 99, 235] },
-        styles: { fontSize: 8 },
+        startY: 55,
+        theme: 'striped',
+        headStyles: { fillColor: [37, 99, 235], halign: 'center', fontSize: 8 },
+        styles: { fontSize: 7, cellPadding: 2 },
+        columnStyles: {
+          0: { halign: 'center', cellWidth: 15 },
+          1: { halign: 'center', cellWidth: 15 },
+          2: { halign: 'center', cellWidth: 20 },
+          3: { halign: 'left' },
+          4: { halign: 'center', cellWidth: 20 },
+          5: { halign: 'left' },
+          6: { halign: 'left' },
+          7: { halign: 'center', cellWidth: 20 }
+        },
+        didDrawPage: (data) => {
+          doc.setFontSize(8);
+          doc.setTextColor(150);
+          const pageNum = `Page ${data.pageNumber}`;
+          doc.text(pageNum, doc.internal.pageSize.width - 25, doc.internal.pageSize.height - 10);
+        }
       });
 
-      doc.save(`NEU_Logs_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
-      toast({ title: "Report Exported", description: "PDF has been downloaded." });
+      doc.save(`NEU_Library_Report_${format(now, 'yyyy-MM-dd_HHmm')}.pdf`);
+      toast({ title: "Report Exported", description: "PDF with zebra-striping generated." });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Export Error", description: error.message });
     } finally {
@@ -284,7 +324,7 @@ export default function AdminDashboard() {
               <ShieldCheck className="h-3.5 w-3.5" />
               Administrative Access System
             </div>
-            <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-blue-gradient pb-2 px-1">
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-blue-gradient pb-2 px-1 leading-tight">
               System Analytics
             </h1>
             <p className="text-muted-foreground text-lg sm:text-xl font-bold opacity-70 tracking-tight">
@@ -315,7 +355,7 @@ export default function AdminDashboard() {
         </div>
 
         <TabsContent value="analytics" className="space-y-8 sm:space-y-12 mt-0">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {[
               { label: 'Total Visits', val: stats.total, icon: BarChart3 },
               { label: 'Today', val: stats.today, icon: Clock },
@@ -405,8 +445,8 @@ export default function AdminDashboard() {
                   <Activity className="h-5 w-5 sm:h-7 sm:w-7" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl sm:text-3xl font-black tracking-tighter">Logs</CardTitle>
-                  <CardDescription className="text-xs sm:text-sm font-bold opacity-60 mt-0.5 sm:mt-1">
+                  <CardTitle className="text-xl sm:text-3xl font-black tracking-tighter leading-none">Logs</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm font-bold opacity-60 mt-1">
                     {filteredLogs.length} {isFiltered ? 'matching' : 'total'} records
                   </CardDescription>
                 </div>
@@ -483,7 +523,7 @@ export default function AdminDashboard() {
                                 </Badge>
                               </TableCell>
                               <TableCell className="min-w-[180px] font-bold text-foreground/80 text-left">
-                                <span className="truncate block">{log.reason}</span>
+                                <span className="truncate block">{log.reason || 'Others'}</span>
                               </TableCell>
                               <TableCell className="text-center pr-10 w-[160px]">
                                 <Button 
@@ -534,7 +574,7 @@ export default function AdminDashboard() {
                             </div>
                             <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 border border-black/5 text-left">
                               <span className="text-[10px] font-black uppercase text-primary/60 block mb-1">Purpose of Visit</span>
-                              <p className="text-sm font-bold text-foreground leading-snug">{log.reason}</p>
+                              <p className="text-sm font-bold text-foreground leading-snug">{log.reason || 'Others'}</p>
                             </div>
                             <Button 
                               variant="ghost" 
