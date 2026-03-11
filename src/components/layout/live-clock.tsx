@@ -19,16 +19,17 @@ export default function LiveClock() {
   // Standardize initial render to skeleton to prevent hydration mismatch
   if (!mounted || !currentTime) {
     return (
-      <div className="hidden lg:flex items-center gap-2 px-6 h-10 bg-muted/20 rounded-full w-56 animate-pulse" />
+      <div className="hidden sm:flex items-center gap-2 px-6 h-10 bg-muted/20 rounded-full w-48 sm:w-56 animate-pulse" />
     );
   }
 
   return (
-    <div className="hidden lg:flex items-center gap-4 px-6 h-10 rounded-full bg-white/5 border border-black/5 dark:border-white/10 text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground shadow-inner">
+    <div className="hidden sm:flex items-center gap-4 px-6 h-10 rounded-full bg-white/5 border border-black/5 dark:border-white/10 text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground shadow-inner">
       <Clock className="h-4 w-4 text-primary opacity-60" />
       <div className="flex items-center gap-3">
         <span className="font-bold">{format(currentTime, 'EEEE, MMM d')}</span>
-        <div className="hidden sm:flex items-center">
+        {/* The line and timestamp hide together on smaller viewports */}
+        <div className="hidden md:flex items-center">
           <span className="text-primary/20 font-black mx-3">|</span>
           <span className="text-foreground font-black tabular-nums tracking-normal text-xs">
             {format(currentTime, 'hh:mm:ss a')}

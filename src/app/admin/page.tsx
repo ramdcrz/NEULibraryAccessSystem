@@ -23,6 +23,7 @@ import {
   AlertCircle,
   Activity,
   PieChart as PieChartIcon,
+  Library,
 } from 'lucide-react';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
@@ -196,9 +197,9 @@ export default function AdminDashboard() {
 
   const getStatusBadge = (status: string, isMobile = false) => {
     const baseClasses = cn(
-      "rounded-2xl border font-black flex gap-1.5 items-center justify-center pointer-events-none",
+      "rounded-2xl border font-black flex gap-1 items-center justify-center pointer-events-none",
       isMobile 
-        ? "shadow-none w-28 text-[8px] px-2 py-0 h-4" 
+        ? "shadow-none w-24 text-[8px] px-2 py-0 h-4" 
         : "text-[9px] px-3 py-1.5 w-32 mx-auto"
     );
     switch(status) {
@@ -315,7 +316,7 @@ export default function AdminDashboard() {
               </Button>
             </CardHeader>
             
-            <CardContent className="p-0 pb-12">
+            <CardContent className="p-0">
               {showFilters && (
                 <div className="px-6 sm:px-10 py-6 border-b border-black/5 dark:border-white/10 bg-primary/5 dark:bg-blue-900/10 animate-in slide-in-from-top-4 duration-500">
                   <div className="flex flex-col lg:flex-row gap-6 items-end">
@@ -431,7 +432,7 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* High-Density Mobile View */}
-                  <div className="xl:hidden space-y-4 p-4 pb-6">
+                  <div className="xl:hidden space-y-4 p-4 pb-4">
                     {filteredLogs.map((log) => {
                       const isBlocked = userStatusMap[log.uid] || false;
                       const isOngoing = !log.duration;
@@ -454,7 +455,7 @@ export default function AdminDashboard() {
                               <div className="flex flex-col items-end gap-2 shrink-0">
                                 {getStatusBadge(log.status || 'active', true)}
                                 <Badge className={cn(
-                                  "rounded-xl font-black text-[8px] py-0 h-4 border-none shadow-none uppercase shrink-0 w-28 justify-center text-center pointer-events-none",
+                                  "rounded-xl font-black text-[8px] py-0 h-4 border-none shadow-none uppercase shrink-0 w-24 justify-center text-center pointer-events-none",
                                   isOngoing ? "bg-sky-500/15 text-sky-600 dark:text-sky-400" : "bg-primary/10 text-primary"
                                 )}>
                                   {formatDuration(log.duration)}
@@ -480,6 +481,12 @@ export default function AdminDashboard() {
                                   {log.exitTimestamp ? format(log.exitTimestamp.toDate(), 'hh:mm a') : '--:--'}
                                 </div>
                               </div>
+                            </div>
+
+                            {/* Restored Purpose of Visit in Mobile Card */}
+                            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 border border-black/5 dark:border-white/10 text-left">
+                              <span className="text-[8px] font-black uppercase text-primary/60 block mb-1 tracking-widest">Purpose of Visit</span>
+                              <p className="text-xs font-bold text-foreground leading-snug">{log.reason}</p>
                             </div>
 
                             <Button
