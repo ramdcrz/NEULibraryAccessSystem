@@ -81,5 +81,5 @@ Because CI/CD is fully configured, any code pushed to the main branch on GitHub 
 ## 👨‍💻 Author
 
 **Ramil Deocariza Jr.**.
-* **Institution**: College of Computer Studies, New Era University
+* **Institution**: College of Informatics and Computing Studies, New Era University
 * **Email**: ramildeocariza009@gmail.com
