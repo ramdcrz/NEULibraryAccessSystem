@@ -102,8 +102,6 @@ type OnboardingFormProps = {
   user: AuthenticatedUser;
 };
 
-const BACKDOOR_EMAIL = 'nemostyles009@gmail.com';
-
 // Icon Mapping Helper for Onboarding - Synchronized with Logger
 function getAffiliationIcon(name: string | null | undefined) {
   if (!name) return School;
@@ -135,9 +133,8 @@ export default function OnboardingForm({ user }: OnboardingFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const email = user.email || '';
-  const isBackdoor = email === BACKDOOR_EMAIL;
   const localPart = email.split('@')[0];
-  const isAutoStudent = !isBackdoor && localPart.includes('.');
+  const isAutoStudent = localPart.includes('.');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

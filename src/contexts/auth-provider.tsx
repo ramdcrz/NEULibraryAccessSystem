@@ -51,10 +51,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
       if (firebaseUser) {
         const email = firebaseUser.email || '';
-        const isBackdoor = email === BACKDOOR_EMAIL;
         
-        // Strict Email Validation (with Backdoor bypass)
-        if (!email.endsWith('@neu.edu.ph') && !isBackdoor) {
+        // Strict Institutional Email Validation
+        if (!email.endsWith('@neu.edu.ph')) {
           toast({
             variant: "destructive",
             title: "Access System Alert",
@@ -106,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           } else {
             // New Profile Creation Flow
             const localPart = email.split('@')[0];
-            const isStudent = !isBackdoor && localPart.includes('.');
+            const isStudent = localPart.includes('.');
             const isTargetAdmin = ADMIN_EMAILS.includes(email);
             
             // Proactive classification for new Admin Staff
