@@ -23,7 +23,11 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const BACKDOOR_EMAIL = 'nemostyles009@gmail.com';
-const ADMIN_EMAILS = ['ramiljr.deocariza@neu.edu.ph', 'juliusalbert.ortiz@neu.edu.ph'];
+const ADMIN_EMAILS = [
+  'ramiljr.deocariza@neu.edu.ph', 
+  'juliusalbert.ortiz@neu.edu.ph', 
+  'jcesperanza@neu.edu.ph'
+];
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const auth = useAuth();
@@ -81,6 +85,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               data.role = 'admin';
             }
 
+            // Auto-migration: Ensure specific admin email has correct Staff classification
+            if (email === 'jcesperanza@neu.edu.ph' && data.user_type !== 'Staff') {
+              updateDoc(userRef, { user_type: 'Staff' });
+              data.user_type = 'Staff';
+            }
+
             setUser({
               id: firebaseUser.uid,
               uid: firebaseUser.uid,
@@ -98,8 +108,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // New Profile Creation Flow
             const localPart = email.split('@')[0];
             const isStudent = !isBackdoor && localPart.includes('.');
-            const derivedUserType = isStudent ? 'Student' : null;
             const isTargetAdmin = ADMIN_EMAILS.includes(email);
+            
+            // Proactive classification for new Admin Staff
+            let derivedUserType = isStudent ? 'Student' : null;
+            if (email === 'jcesperanza@neu.edu.ph') {
+              derivedUserType = 'Staff';
+            }
 
             const newUserProfileData = {
               email: email,
