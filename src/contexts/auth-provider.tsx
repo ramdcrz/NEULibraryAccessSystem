@@ -22,7 +22,6 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const BACKDOOR_EMAIL = 'nemostyles009@gmail.com';
 const ADMIN_EMAILS = [
   'ramiljr.deocariza@neu.edu.ph', 
   'juliusalbert.ortiz@neu.edu.ph', 
