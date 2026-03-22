@@ -92,6 +92,11 @@ function getUserTypeIcon(type: string | null | undefined) {
 function getAffiliationIcon(name: string | null | undefined) {
   if (!name) return School;
   
+  // Normalization for icon mapping
+  const normalizedName = name === 'College of Computer Studies' 
+    ? 'College of Informatics and Computing Studies' 
+    : name;
+
   const iconMap: Record<string, any> = {
     'College of Accountancy': Calculator,
     'College of Agriculture': Sprout,
@@ -111,7 +116,7 @@ function getAffiliationIcon(name: string | null | undefined) {
     'School of International Relations': Globe,
   };
 
-  return iconMap[name] || BookMarked;
+  return iconMap[normalizedName] || BookMarked;
 }
 
 export default function VisitLogger({ user, onLogSuccess }: { user: AuthenticatedUser; onLogSuccess?: () => void }) {
@@ -411,7 +416,7 @@ export default function VisitLogger({ user, onLogSuccess }: { user: Authenticate
                   <span className="text-[10px] font-black uppercase tracking-widest">University Affiliation</span>
                 </div>
                 <p className="text-base font-black text-foreground truncate relative z-10">
-                  {user.college_office}
+                  {user.college_office === 'College of Computer Studies' ? 'College of Informatics and Computing Studies' : user.college_office}
                 </p>
               </div>
             </div>

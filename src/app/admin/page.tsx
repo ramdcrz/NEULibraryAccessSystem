@@ -52,6 +52,13 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } f
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 
+// Helper to normalize legacy college names for display
+const normalizeAffiliation = (name: string | null | undefined) => {
+  if (!name) return 'N/A';
+  if (name === 'College of Computer Studies') return 'College of Informatics and Computing Studies';
+  return name;
+};
+
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
   const { toast } = useToast();
@@ -257,7 +264,7 @@ export default function AdminDashboard() {
         formatDuration(log.duration, 'Ongoing', false),
         log.email,
         log.userType,
-        log.college_office,
+        normalizeAffiliation(log.college_office),
         log.reason || 'N/A',
         log.status?.toUpperCase() || 'ACTIVE'
       ]);
@@ -563,7 +570,7 @@ export default function AdminDashboard() {
                               <TableCell className="font-black text-foreground min-w-[250px] text-left">
                                 <div className="flex flex-col truncate">
                                   <span className="truncate block">{log.email}</span>
-                                  <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1 truncate block">{log.userType} • {log.college_office}</span>
+                                  <span className="text-[10px] opacity-40 uppercase tracking-widest mt-1 truncate block">{log.userType} • {normalizeAffiliation(log.college_office)}</span>
                                 </div>
                               </TableCell>
                               <TableCell className="w-[130px] text-center">
@@ -601,7 +608,7 @@ export default function AdminDashboard() {
                               <div className="flex-1 min-w-0 space-y-1">
                                 <div className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">{log.timestamp ? format(log.timestamp.toDate(), 'MMMM d, yyyy').toUpperCase() : 'PENDING...'}</div>
                                 <div className="text-base font-bold text-foreground truncate">{log.email}</div>
-                                <div className="text-[10px] font-black text-primary uppercase tracking-widest">{log.userType} • {log.college_office}</div>
+                                <div className="text-[10px] font-black text-primary uppercase tracking-widest">{log.userType} • {normalizeAffiliation(log.college_office)}</div>
                               </div>
                               <div className="flex flex-col items-end gap-2 shrink-0">
                                 {getStatusBadge(log.status || 'active', true)}

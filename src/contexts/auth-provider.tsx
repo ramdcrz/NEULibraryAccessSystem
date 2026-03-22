@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (docSnap.exists()) {
             let data = docSnap.data();
             
-            // Auto-migration: Update legacy college name in database
+            // Auto-migration: Update legacy college name in database profile
             if (data.college_office === 'College of Computer Studies') {
               const updatedName = 'College of Informatics and Computing Studies';
               updateDoc(userRef, { college_office: updatedName });
