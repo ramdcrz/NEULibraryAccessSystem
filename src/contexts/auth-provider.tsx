@@ -1,9 +1,8 @@
-
 'use client';
 
 import { createContext, useState, useEffect, ReactNode } from 'react';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut as firebaseSignOut, User as FirebaseUser } from 'firebase/auth';
-import { onSnapshot, doc, Timestamp, serverTimestamp, setDoc } from 'firebase/firestore';
+import { onSnapshot, doc, Timestamp, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 import { useAuth, useFirestore } from '@/firebase';
 import type { UserProfile } from '@/types';
 import { toast } from '@/hooks/use-toast';
@@ -66,8 +65,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         unsubscribeDoc = onSnapshot(userRef, (docSnap) => {
           if (docSnap.exists()) {
-            const data = docSnap.data();
+            let data = docSnap.data();
             
+            // Auto-migration: Update legacy college name in database
+            if (data.college_office === 'College of Computer Studies') {
+              const updatedName = 'College of Informatics and Computing Studies';
+              updateDoc(userRef, { college_office: updatedName });
+              data.college_office = updatedName;
+            }
+
             setUser({
               id: firebaseUser.uid,
               uid: firebaseUser.uid,
