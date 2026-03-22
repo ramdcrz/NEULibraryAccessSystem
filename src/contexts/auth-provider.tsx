@@ -23,6 +23,7 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const BACKDOOR_EMAIL = 'nemostyles009@gmail.com';
+const ADMIN_EMAILS = ['ramiljr.deocariza@neu.edu.ph', 'juliusalbert.ortiz@neu.edu.ph'];
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const auth = useAuth();
@@ -67,11 +68,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (docSnap.exists()) {
             let data = docSnap.data();
             
-            // Auto-migration: Update legacy college name in database profile
+            // Auto-migration: Update legacy college name
             if (data.college_office === 'College of Computer Studies') {
               const updatedName = 'College of Informatics and Computing Studies';
               updateDoc(userRef, { college_office: updatedName });
               data.college_office = updatedName;
+            }
+
+            // Auto-migration: Ensure specific emails have admin role
+            if (ADMIN_EMAILS.includes(email) && data.role !== 'admin') {
+              updateDoc(userRef, { role: 'admin' });
+              data.role = 'admin';
             }
 
             setUser({
@@ -92,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const localPart = email.split('@')[0];
             const isStudent = !isBackdoor && localPart.includes('.');
             const derivedUserType = isStudent ? 'Student' : null;
-            const isTargetAdmin = email === 'ramiljr.deocariza@neu.edu.ph';
+            const isTargetAdmin = ADMIN_EMAILS.includes(email);
 
             const newUserProfileData = {
               email: email,
@@ -105,9 +112,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
             
             setDoc(userRef, newUserProfileData)
-              .then(() => {
-                // onSnapshot will trigger again and set loading: false
-              })
               .catch(err => {
                  console.error("Error creating user profile document:", err);
                  setLoading(false);
